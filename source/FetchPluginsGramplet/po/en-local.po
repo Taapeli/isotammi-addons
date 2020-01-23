@@ -1,0 +1,174 @@
+# English translations for PROJECT.
+# Copyright (C) 2019 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2019.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2019-06-20 09:06+0300\n"
+"PO-Revision-Date: 2019-06-20 09:06+0300\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: en\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.6.0\n"
+
+#: DeepConnectionsGramplet.gpr.py:3
+msgid "Deep Connections Gramplet2"
+msgstr ""
+
+#: DeepConnectionsGramplet.gpr.py:4
+msgid "Gramplet showing a deep relationship between active and home people"
+msgstr ""
+
+#: DeepConnectionsGramplet.gpr.py:10
+msgid "Deep Connections2"
+msgstr ""
+
+#: DeepConnectionsGramplet.py:62
+msgid "Double-click name for details"
+msgstr ""
+
+#: DeepConnectionsGramplet.py:63
+msgid "No Family Tree loaded."
+msgstr ""
+
+#: DeepConnectionsGramplet.py:68
+msgid "Pause"
+msgstr ""
+
+#: DeepConnectionsGramplet.py:70
+msgid "Continue"
+msgstr ""
+
+#: DeepConnectionsGramplet.py:72
+msgid "Copy"
+msgstr ""
+
+#: DeepConnectionsGramplet.py:125
+msgid "mentioned in note"
+msgstr ""
+
+#: DeepConnectionsGramplet.py:139 DeepConnectionsGramplet.py:151
+msgid "has a note mentioning"
+msgstr ""
+
+#: DeepConnectionsGramplet.py:164
+msgid "Role|Primary"
+msgstr ""
+
+#: DeepConnectionsGramplet.py:177
+msgid "is {} in {} event"
+msgstr ""
+
+#: DeepConnectionsGramplet.py:180
+msgid "whose {} event has {}"
+msgstr ""
+
+#: DeepConnectionsGramplet.py:205
+msgid "child"
+msgstr ""
+
+#: DeepConnectionsGramplet.py:209
+msgid "husband"
+msgstr ""
+
+#: DeepConnectionsGramplet.py:211
+msgid "wife"
+msgstr ""
+
+#: DeepConnectionsGramplet.py:212
+msgid "Note on Family"
+msgstr ""
+
+#: DeepConnectionsGramplet.py:222
+msgid "sibling"
+msgstr ""
+
+#: DeepConnectionsGramplet.py:226
+msgid "father"
+msgstr ""
+
+#: DeepConnectionsGramplet.py:229
+msgid "mother"
+msgstr ""
+
+#: DeepConnectionsGramplet.py:230
+msgid "Note on Parent Family"
+msgstr ""
+
+#: DeepConnectionsGramplet.py:233
+#, python-format
+msgid "%s (association)"
+msgstr ""
+
+#: DeepConnectionsGramplet.py:237
+msgid "Note on Person"
+msgstr ""
+
+#: DeepConnectionsGramplet.py:238
+msgid "Note on Person 2"
+msgstr ""
+
+#: DeepConnectionsGramplet.py:239
+msgid "Event on Person"
+msgstr ""
+
+#: DeepConnectionsGramplet.py:269
+#, python-format
+msgid ""
+"\n"
+"   %s of "
+msgstr ""
+
+#: DeepConnectionsGramplet.py:287
+msgid "No Home Person set."
+msgstr ""
+
+#: DeepConnectionsGramplet.py:290
+msgid "No Active Person set."
+msgstr ""
+
+#: DeepConnectionsGramplet.py:294
+msgid "self"
+msgstr ""
+
+#: DeepConnectionsGramplet.py:298
+msgid "Looking for relationship between\n"
+msgstr ""
+
+#: DeepConnectionsGramplet.py:299
+#, python-format
+msgid "  <b>%s</b> (Home Person) and\n"
+msgstr ""
+
+#: DeepConnectionsGramplet.py:300
+#, python-format
+msgid "  <b>%s</b> (Active Person)...\n"
+msgstr ""
+
+#: DeepConnectionsGramplet.py:311
+#, python-format
+msgid ""
+"Found relation #%d: \n"
+"   "
+msgstr ""
+
+#: DeepConnectionsGramplet.py:321
+msgid ""
+"Paused.\n"
+"Press Continue to search for additional relations.\n"
+msgstr ""
+
+#: DeepConnectionsGramplet.py:337
+#, python-format
+msgid ""
+"\n"
+"Search completed. %d relations found."
+msgstr ""
+

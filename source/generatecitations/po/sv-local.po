@@ -1,0 +1,72 @@
+# Swedish translations for PROJECT.
+# Copyright (C) 2018 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2018.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2018-12-08 15:39+0200\n"
+"PO-Revision-Date: 2018-12-08 15:39+0200\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: sv\n"
+"Language-Team: sv <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.6.0\n"
+
+#: generatecitations.gpr.py:33 generatecitations.gpr.py:34
+msgid "Generate source citations from notes"
+msgstr ""
+
+#: generatecitations.py:140
+msgid "Error occurred, please report this message:"
+msgstr ""
+
+#: generatecitations.py:260
+msgid "Generating citations"
+msgstr ""
+
+#: generatecitations.py:303
+msgid "Add citations"
+msgstr ""
+
+#: generatecitations.py:357
+msgid "Total objects processed: {total_objects}"
+msgstr ""
+
+#: generatecitations.py:358
+msgid "Total notes: {total_notes}"
+msgstr ""
+
+#: generatecitations.py:359
+msgid "Matching notes: {matching_notes}"
+msgstr ""
+
+#: generatecitations.py:360
+msgid "Unique matching notes: {unique_matching_notes}"
+msgstr ""
+
+#: generatecitations.py:361
+msgid "Skipped notes: {skipped}"
+msgstr ""
+
+#: generatecitations.py:362
+msgid "Citations added: {citations_added}"
+msgstr ""
+
+#: generatecitations.py:363
+msgid "Sources added: {sources_added}"
+msgstr ""
+
+#: generatecitations.py:364
+msgid "Repositories added: {repos_added}"
+msgstr ""
+
+#: generatecitations.py:367
+msgid "All events processed"
+msgstr ""
+
