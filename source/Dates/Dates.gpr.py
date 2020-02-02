@@ -1,10 +1,12 @@
+from gramps.version import major_version
+
 register(GRAMPLET,
          id = "Dates",
          name = _("Dates"),
          description = _("Dates"),
          status = STABLE,
-         version = '1.0.1',
-         gramps_target_version = '5.1',
+         version = '1.0.7',
+         gramps_target_version = major_version,
          fname = "Dates.py",
          gramplet = 'Dates',
          height = 375,
