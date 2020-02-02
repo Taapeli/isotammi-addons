@@ -1,7 +1,6 @@
-{"t":'Gramplet',"i":'Dates',"n":'Dates',"v":'0.0.15',"g":'5.1',"d":'Dates',"z":'Dates.addon.tgz'}
-{"t":'Gramplet',"i":'FetchPluginsGramplet',"n":'FetchPluginsGramplet',"v":'1.0.39',"g":'5.1',"d":'FetchPluginsGramplet',"z":'FetchPluginsGramplet.addon.tgz'}
-{"t":'Gramplet',"i":'PlaceTool',"n":'Paikkatyökalu',"v":'0.0.16',"g":'5.1',"d":'Gramplet, joka käsittelee useita paikkoja kerrallaan',"z":'PlaceTool.addon.tgz'}
-{"t":'Gramplet',"i":'selectaddonsource',"n":'Select addon source',"v":'0.0.13',"g":'5.1',"d":'Select addon source',"z":'selectaddonsource.addon.tgz'}
-{"t":'Rule',"i":'HasInValidDate',"n":'Events with an in valid date',"v":'0.0.7',"g":'5.1',"d":'Events with an invalid date',"z":'_hasvaliddate.addon.tgz'}
-{"t":'Rule',"i":'HasValidDate',"n":'Events with a valid date',"v":'0.0.7',"g":'5.1',"d":'Events with a valid date',"z":'_hasvaliddate.addon.tgz'}
-{"t":'Tool',"i":'generatecitations',"n":'Muodosta lähdeviitteet lisätietojen perusteella',"v":'1.0.12',"g":'5.1',"d":'Muodosta lähdeviitteet lisätietojen perusteella',"z":'generatecitations.addon.tgz'}
+{"t":'Gramplet',"i":'Dates',"n":'Dates',"v":'1.0.1',"g":'5.1',"d":'Dates',"z":'Dates.addon.tgz'}
+{"t":'Gramplet',"i":'PlaceTool',"n":'Paikkatyökalu',"v":'1.0.1',"g":'5.1',"d":'Gramplet, joka käsittelee useita paikkoja kerrallaan',"z":'PlaceTool.addon.tgz'}
+{"t":'Gramplet',"i":'selectaddonsource',"n":'Select addon source',"v":'1.0.1',"g":'5.1',"d":'Select addon source',"z":'selectaddonsource.addon.tgz'}
+{"t":'Rule',"i":'HasInValidDate',"n":'Events with an in valid date',"v":'1.0.1',"g":'5.1',"d":'Events with an invalid date',"z":'_hasvaliddate.addon.tgz'}
+{"t":'Rule',"i":'HasValidDate',"n":'Events with a valid date',"v":'1.0.1',"g":'5.1',"d":'Events with a valid date',"z":'_hasvaliddate.addon.tgz'}
+{"t":'Tool',"i":'generatecitations',"n":'Muodosta lähdeviitteet lisätietojen perusteella',"v":'1.0.1',"g":'5.1',"d":'Muodosta lähdeviitteet lisätietojen perusteella',"z":'generatecitations.addon.tgz'}
