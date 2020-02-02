@@ -1,6 +1,6 @@
-{"t":'Gramplet',"i":'Dates',"n":'Dates',"v":'1.0.7',"g":'5.1',"d":'Dates',"z":'Dates.addon.tgz'}
-{"t":'Gramplet',"i":'PlaceTool',"n":'Paikkatyökalu',"v":'1.0.5',"g":'5.1',"d":'Gramplet, joka käsittelee useita paikkoja kerrallaan',"z":'PlaceTool.addon.tgz'}
-{"t":'Gramplet',"i":'selectaddonsource',"n":'Select addon source',"v":'1.0.5',"g":'5.1',"d":'Select addon source',"z":'selectaddonsource.addon.tgz'}
-{"t":'Rule',"i":'HasInValidDate',"n":'Events with an in valid date',"v":'1.0.5',"g":'5.1',"d":'Events with an invalid date',"z":'_hasvaliddate.addon.tgz'}
-{"t":'Rule',"i":'HasValidDate',"n":'Events with a valid date',"v":'1.0.5',"g":'5.1',"d":'Events with a valid date',"z":'_hasvaliddate.addon.tgz'}
-{"t":'Tool',"i":'generatecitations',"n":'Muodosta lähdeviitteet lisätietojen perusteella',"v":'1.0.5',"g":'5.1',"d":'Muodosta lähdeviitteet lisätietojen perusteella',"z":'generatecitations.addon.tgz'}
+{"t":'Gramplet',"i":'Dates',"n":'Dates',"v":'1.0.9',"g":'5.1',"d":'Dates',"z":'Dates.addon.tgz'}
+{"t":'Gramplet',"i":'PlaceTool',"n":'Paikkatyökalu',"v":'1.0.7',"g":'5.1',"d":'Gramplet, joka käsittelee useita paikkoja kerrallaan',"z":'PlaceTool.addon.tgz'}
+{"t":'Gramplet',"i":'selectaddonsource',"n":'Select addon source',"v":'1.0.7',"g":'5.1',"d":'Select addon source',"z":'selectaddonsource.addon.tgz'}
+{"t":'Rule',"i":'HasInValidDate',"n":'Events with an in valid date',"v":'1.0.6',"g":'5.1',"d":'Events with an invalid date',"z":'_hasvaliddate.addon.tgz'}
+{"t":'Rule',"i":'HasValidDate',"n":'Events with a valid date',"v":'1.0.6',"g":'5.1',"d":'Events with a valid date',"z":'_hasvaliddate.addon.tgz'}
+{"t":'Tool',"i":'generatecitations',"n":'Muodosta lähdeviitteet lisätietojen perusteella',"v":'1.0.7',"g":'5.1',"d":'Muodosta lähdeviitteet lisätietojen perusteella',"z":'generatecitations.addon.tgz'}
