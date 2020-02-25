@@ -22,8 +22,6 @@ Asennuksen jälkeen voit lisätä laajennuksen "Select addon source"  Grampsin t
 
 Huomaa että Työkalut-valikon alle asentuvat Isotammen Gramps-työkalut ovat omassa alavalikossaan "Isotammi-työkalut".
 
-On suositeltavaa asentaa myös "Laajennusten parannettu hallinta",joka on Grampsin vakiolaajennusten joukossa kohdassa "Laajennuskirjasto". Sen avulla voi asennettuja laajennuksia myös helposti poistaa.
-
 ----------------------
 # Isotammi addons
 
@@ -46,7 +44,4 @@ After installation go to Gramps Dashboard and add the gramplet "Select addon sou
 ![Selectsource](Selectsource.png)
 
 Note that those Isotammi tools that install under the "Tools" menu will be in their own submenu "Isotammi tools".
-
-It is recommended also to install the "Plugin Manager Enhanced"
-available in the Gramps default addons as a "Plugin lib". It can be used to manage and uninstall addons.
 
