@@ -70,3 +70,7 @@ msgstr "Arkistoja lisätty: {repos_added}"
 #: generatecitations.py:367
 msgid "All events processed"
 msgstr "Kaikki tapahtumat käsitelty"
+
+msgid "Isotammi tools"
+msgstr "Isotammi-työkalut"
+
