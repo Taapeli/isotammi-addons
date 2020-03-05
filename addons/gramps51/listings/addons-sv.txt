@@ -1,6 +1,6 @@
 {"t":'Gramplet',"i":'AddSourcesGramplet',"n":'AddSourcesGramplet',"v":'0.9.2',"g":'5.1',"d":'Gramplet to add sources',"z":'AddSourcesGramplet.addon.tgz'}
 {"t":'Gramplet',"i":'Dates',"n":'Dates',"v":'1.0.11',"g":'5.1',"d":'Dates',"z":'Dates.addon.tgz'}
-{"t":'Gramplet',"i":'PlaceTool',"n":'PlaceTool',"v":'1.0.7',"g":'5.1',"d":'Gramplet to manipulate multiple places',"z":'PlaceTool.addon.tgz'}
+{"t":'Gramplet',"i":'PlaceTool',"n":'PlaceTool',"v":'1.0.25',"g":'5.1',"d":'Gramplet to manipulate multiple places',"z":'PlaceTool.addon.tgz'}
 {"t":'Gramplet',"i":'selectaddonsource',"n":'Select addon source',"v":'1.0.9',"g":'5.1',"d":'Select addon source',"z":'selectaddonsource.addon.tgz'}
 {"t":'Rule',"i":'HasInValidDate',"n":'Events with an in valid date',"v":'1.0.6',"g":'5.1',"d":'Events with an invalid date',"z":'_hasvaliddate.addon.tgz'}
 {"t":'Rule',"i":'HasValidDate',"n":'Events with a valid date',"v":'1.0.6',"g":'5.1',"d":'Events with a valid date',"z":'_hasvaliddate.addon.tgz'}

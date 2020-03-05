@@ -52,7 +52,6 @@ class PlaceTool(Gramplet):
         self.gui.get_container_widget().add_with_viewport(self.root)
         self.selected_handle = None
         self.sep = ','
-        self.set_tooltip(_("Set properties for multiple places"))
 
     def db_changed(self):
         self.cb_clear(None)
@@ -203,7 +202,7 @@ class PlaceTool(Gramplet):
         self.replace_text.connect("clicked", self.cb_select_replace_text)
 
         self.use_regex = Gtk.CheckButton(_("Use regex"))
-        self.use_regex.set_tooltip_text(_("If checked then the old text can be a regular expression and the new text can contain substitutions"))
+        self.use_regex.set_tooltip_text(_("If checked then the old text can be a regular expression and the new text can contain substitutions (\\1, \\2 etc.)"))
         self.use_regex.set_sensitive(False)
 
         replace_text_box = Gtk.HBox()

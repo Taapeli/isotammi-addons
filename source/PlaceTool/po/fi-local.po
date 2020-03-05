@@ -6,104 +6,188 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
-"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2019-06-13 10:47+0300\n"
-"PO-Revision-Date: 2019-06-13 10:48+0300\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-03-05 20:39+0200\n"
+"PO-Revision-Date: 2020-03-05 21:36+0200\n"
 "Last-Translator: \n"
-"Language: fi\n"
 "Language-Team: fi <LL@li.org>\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Language: fi\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "Generated-By: Babel 2.6.0\n"
 "X-Generator: Poedit 1.8.7.1\n"
 
-#: PlaceTool.gpr.py:3 PlaceTool.gpr.py:14
+#: PlaceTool/PlaceTool.gpr.py:5 PlaceTool/PlaceTool.gpr.py:16
 msgid "PlaceTool"
 msgstr "Paikkatyökalu"
 
-#: PlaceTool.gpr.py:4
+#: PlaceTool/PlaceTool.gpr.py:6
 msgid "Gramplet to manipulate multiple places"
 msgstr "Gramplet, joka käsittelee useita paikkoja kerrallaan"
 
-#: PlaceTool.py:56
+#: PlaceTool/PlaceTool.py:55
 msgid "Set properties for multiple places"
 msgstr "Aseta usean paikan ominaisuuksia"
 
-#: PlaceTool.py:78 PlaceTool.py:118
+#: PlaceTool/PlaceTool.py:75 PlaceTool/PlaceTool.py:130
+#: PlaceTool/placetool.glade:135
 msgid "None"
 msgstr "Ei mitään"
 
-#: PlaceTool.py:95
-msgid ""
-"This gramplet allows setting properties for multiple places at the same time"
+#: PlaceTool/PlaceTool.py:93
+msgid "This gramplet allows setting properties for multiple places at the same time"
 msgstr "Tällä Grampletilla voi asettaa ominaisuuksia monelle paikalle kerrallaan"
 
-#: PlaceTool.py:101
+#: PlaceTool/PlaceTool.py:98 PlaceTool/placetool.glade:35
 msgid "Place type:"
 msgstr "Paikan tyyppi:"
 
-#: PlaceTool.py:107
+#: PlaceTool/PlaceTool.py:101
+msgid "New place type for the selected places"
+msgstr "Uusi paikan tyyppi"
+
+#: PlaceTool/PlaceTool.py:104 PlaceTool/placetool.glade:47
 msgid "Tag:"
 msgstr "Tagi:"
 
-#: PlaceTool.py:113
-msgid "New enclosing place"
+#: PlaceTool/PlaceTool.py:107
+msgid "New tag for the selected places"
+msgstr "Uusi paikan tagi"
+
+#: PlaceTool/PlaceTool.py:110 PlaceTool/placetool.glade:59
+msgid "Timespan:"
+msgstr "Aikaväli:"
+
+#: PlaceTool/PlaceTool.py:114
+msgid "Set timespan for enclosing places"
+msgstr "Aseta aikaväli ympäröiville paikoille"
+
+#: PlaceTool/PlaceTool.py:125 PlaceTool/placetool.glade:71
+msgid "New enclosing place:"
 msgstr "Uusi ympäröivä paikka:"
 
-#: PlaceTool.py:132
-msgid "Set enclosing place"
-msgstr "Aseta ympäröivä paikka"
+#: PlaceTool/PlaceTool.py:132
+msgid "New enclosing place for the selected places"
+msgstr "Valittujen paikkojen uusi ympäröivä paikka"
 
-#: PlaceTool.py:136
+#: PlaceTool/PlaceTool.py:150
+msgid "Select enclosing place"
+msgstr "Valitse ympäröivä paikka"
+
+#: PlaceTool/PlaceTool.py:152
+msgid "Select a new enclosing place for the selected places"
+msgstr "Valitse uusi ympäröivä paikka"
+
+#: PlaceTool/PlaceTool.py:155
 msgid "Clear original enclosing places"
 msgstr "Poista aiemmat ympäröivät paikat"
 
-#: PlaceTool.py:139
+#: PlaceTool/PlaceTool.py:156
+msgid "If checked then any previous enclosing place will be removed from the selected places"
+msgstr "Aiemmat ympäröivät paikat poistetaan"
+
+#: PlaceTool/PlaceTool.py:159
 msgid "Clear tags"
 msgstr "Poista aiemmat tagit"
 
-#: PlaceTool.py:142
+#: PlaceTool/PlaceTool.py:160
+msgid "If checked then any previous tag will be removed from the selected places"
+msgstr "Aiemmat tagit paikat poistetaan"
+
+#: PlaceTool/PlaceTool.py:163
 msgid "Generate hierarchy"
 msgstr "Generoi paikkahierarkia"
 
-#: PlaceTool.py:148
-msgid "use spaces as separator"
-msgstr "välilyönti erotinmerkkinä"
+#: PlaceTool/PlaceTool.py:165
+msgid "If checked then a place hierarchy will be generated, based on the names of the original places"
+msgstr "Generoidaan paikkahierarkia perustuen paikkojen alkuperäisiin nimiin"
 
-#: PlaceTool.py:152
+#: PlaceTool/PlaceTool.py:173
+msgid "Separator:"
+msgstr "Erotin"
+
+#: PlaceTool/PlaceTool.py:177
+msgid "Comma"
+msgstr "Pilkku"
+
+#: PlaceTool/PlaceTool.py:179
+msgid "If selected then the original names will be split at commas to create the new hierarchy"
+msgstr "Alkuperäiset paikkanimet katkaistaan pilkkujen kohdalta ja näin saaduista nimistä muodostetaan hierarkia"
+
+#: PlaceTool/PlaceTool.py:185
+msgid "Space"
+msgstr "Välilyönti"
+
+#: PlaceTool/PlaceTool.py:187
+msgid "If selected then the original names will be split at blank spaces to create the new hierarchy"
+msgstr "Alkuperäiset paikkanimet katkaistaan välilyöntien kohdalta ja näin saaduista nimistä muodostetaan hierarkia"
+
+#: PlaceTool/PlaceTool.py:194
 msgid "reverse hierarchy"
 msgstr "käänteinen hierarkia"
 
-#: PlaceTool.py:158
+#: PlaceTool/PlaceTool.py:195
+msgid "If checked then the original name is assumed to start with the largest place in the hierarchy"
+msgstr "Jos tässä on ruksi niin oletetaan että alkuperäisissä nimissä on suurin paikka (esim. maa/valtio) alussa"
+
+#: PlaceTool/PlaceTool.py:201
 msgid "Replace text"
 msgstr "Korvaa teksti"
 
-#: PlaceTool.py:161
+#: PlaceTool/PlaceTool.py:202
+msgid "If checked then a specified text is replaced with a new text in the selected place names"
+msgstr "Korvataan annettu merkkijono toisella paikkojen nimissä"
+
+#: PlaceTool/PlaceTool.py:205
 msgid "Use regex"
 msgstr "Käytä säännöllisiä lausekkeita"
 
-#: PlaceTool.py:171
+#: PlaceTool/PlaceTool.py:206
+msgid "If checked then the old text can be a regular expression and the new text can contain substitutions (\\1, \\2 etc.)"
+msgstr "Jos tässä on ruksi, niin alkuperäinen merkkijono voi olla säännöllinen lauseke ja korvaavassa merkkijonossa voi käyttää korvausmerkkejä (\\1, \\2 jne)"
+
+#: PlaceTool/PlaceTool.py:215
 msgid "Old text:"
 msgstr "Korvattava teksti:"
 
-#: PlaceTool.py:179
+#: PlaceTool/PlaceTool.py:218
+msgid "The original text (or regular expression) to be  replaced"
+msgstr "Korvattava merkkijono"
+
+#: PlaceTool/PlaceTool.py:220
 msgid "New text:"
 msgstr "Uusi teksti:"
 
-#: PlaceTool.py:194
+#: PlaceTool/PlaceTool.py:223
+msgid "The new text that will replace the old text"
+msgstr "Korvaava merkkijono"
+
+#: PlaceTool/PlaceTool.py:233
 msgid "Clear selections"
 msgstr "Poista valinnat"
 
-#: PlaceTool.py:198
+#: PlaceTool/PlaceTool.py:235
+msgid "Clears all settings"
+msgstr "Poista valinnat"
+
+#: PlaceTool/PlaceTool.py:238
 msgid "Apply to selected places"
 msgstr "Suorita valituille paikoilla"
 
-#: PlaceTool.py:217
-msgid "Please select a place that will be set as an enclosing place"
-msgstr "Valitse uusi ympäröivä paikka"
+#: PlaceTool/PlaceTool.py:240
+msgid "Executes all specified operations for selected places"
+msgstr "Tehdään valituille paikoille kaikki annetut toiminnot"
 
-#: PlaceTool.py:237
+#: PlaceTool/PlaceTool.py:281
 msgid "Setting place properties"
 msgstr "Paikkojen ominaisuuksien asettaminen"
+
+#: PlaceTool/PlaceTool.py:319
+msgid "Regex operation failed: {}"
+msgstr "Virhe säännöllisen lausekkeen käsittelyssä"
+
+#: PlaceTool/placetool.glade:82
+msgid "Set type for the selected places"
+msgstr "Aseta tyyppi valituille paikoille"
