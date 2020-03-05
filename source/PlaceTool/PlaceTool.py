@@ -32,9 +32,10 @@ from gi.repository import Gtk
 
 from gramps.gen.plug import Gramplet
 from gramps.gen.db import DbTxn
-from gramps.gen.lib import Place, PlaceRef, PlaceName, PlaceType, Tag
+from gramps.gen.lib import Place, PlaceRef, PlaceName, PlaceType, Tag, Date
 
 from gramps.gui.selectors import SelectorFactory
+from gramps.gui.widgets import MonitoredDate, ValidatableMaskedEntry
 
 from gramps.gen.const import GRAMPS_LOCALE as glocale
 try:
@@ -82,6 +83,8 @@ class PlaceTool(Gramplet):
         self.use_regex.set_active(False)
         self.old_text.set_text("")
         self.new_text.set_text("")
+        self.date_object.set()
+        self.date_entry.set_text("")
 
     def __create_gui(self):
         vbox = Gtk.VBox(orientation=Gtk.Orientation.VERTICAL)
@@ -102,6 +105,21 @@ class PlaceTool(Gramplet):
         self.tagcombo = Gtk.ComboBoxText.new_with_entry()
         self.__fill_combo(self.tagcombo, list(self.__tagnames()))
 
+        date_label = Gtk.Label(_('Timespan:'))
+        date_label.set_halign(Gtk.Align.START)
+        self.date_entry = ValidatableMaskedEntry()
+        date_button = Gtk.Button.new_from_icon_name("gramps-date", -1)
+        timespan_tooltip = _("Set timespan for enclosing places")
+        date_label.set_tooltip_text(timespan_tooltip)
+        date_button.set_tooltip_text(timespan_tooltip)
+        self.date_entry.set_tooltip_text(timespan_tooltip)
+        self.date_object = Date()
+        self.track = []
+        self.date_field = MonitoredDate(self.date_entry,
+                                        date_button,
+                                        self.date_object,
+                                        self.uistate, self.track)
+
         label1 = Gtk.Label(_("New enclosing place"))
         label1.set_halign(Gtk.Align.START)
         label1.set_line_wrap(True)
@@ -116,8 +134,13 @@ class PlaceTool(Gramplet):
 
         pt_grid.attach(tag_label, 0, 1, 1, 1)
         pt_grid.attach(self.tagcombo, 1, 1, 1, 1)
-        pt_grid.attach(label1, 0, 2, 1, 1)
-        pt_grid.attach(self.enclosing_place, 1, 2, 1, 1)
+        
+        pt_grid.attach(date_label, 0, 2, 1, 1)
+        pt_grid.attach(self.date_entry, 1, 2, 1, 1)
+        pt_grid.attach(date_button, 2, 2, 1, 1)
+
+        pt_grid.attach(label1, 0, 3, 1, 1)
+        pt_grid.attach(self.enclosing_place, 1, 3, 1, 1)
 
         vbox.pack_start(pt_grid, False, True, 0)
 
@@ -301,6 +324,7 @@ class PlaceTool(Gramplet):
             return # prevent duplicates
         print(pname, "<", self.selected_name)
         placeref = PlaceRef()
+        placeref.set_date_object(self.date_object)
         placeref.ref = self.selected_handle
         place.add_placeref(placeref)
 
@@ -353,6 +377,7 @@ class PlaceTool(Gramplet):
                 if parent_handle is not None:
                     placeref = PlaceRef()
                     placeref.ref = parent_handle
+                    placeref.set_date_object(self.date_object)
                     new_place.add_placeref(placeref)
                 parent_handle = self.dbstate.db.add_place(new_place, self.trans)
             else:
@@ -363,6 +388,7 @@ class PlaceTool(Gramplet):
         if parent_handle is not None:
             placeref = PlaceRef()
             placeref.ref = parent_handle
+            placeref.set_date_object(self.date_object)
             place.set_placeref_list([placeref]) # this removes any previous parent
         return top_place
 
