@@ -51,6 +51,7 @@ class PlaceTool(Gramplet):
         self.gui.get_container_widget().remove(self.gui.textview)
         self.gui.get_container_widget().add_with_viewport(self.root)
         self.selected_handle = None
+        self.sep = ','
         self.set_tooltip(_("Set properties for multiple places"))
 
     def db_changed(self):
@@ -77,7 +78,6 @@ class PlaceTool(Gramplet):
         self.clear_enclosing.set_active(False)
         self.clear_tags.set_active(False)
         self.generate_hierarchy.set_active(False)
-        self.spaces.set_active(False)
         self.reverse.set_active(False)
         self.replace_text.set_active(False)
         self.use_regex.set_active(False)
@@ -120,7 +120,7 @@ class PlaceTool(Gramplet):
                                         self.date_object,
                                         self.uistate, self.track)
 
-        label1 = Gtk.Label(_("New enclosing place"))
+        label1 = Gtk.Label(_("New enclosing place:"))
         label1.set_halign(Gtk.Align.START)
         label1.set_line_wrap(True)
         self.label1 = label1
@@ -128,7 +128,7 @@ class PlaceTool(Gramplet):
         self.enclosing_place = Gtk.Label(_("None"))
         self.enclosing_place.set_halign(Gtk.Align.START)
 
-        pt_grid = Gtk.Grid(column_spacing=10)
+        pt_grid = Gtk.Grid(column_spacing=10, row_spacing=2)
         pt_grid.attach(pt_label, 0, 0, 1, 1)
         pt_grid.attach(self.typecombo, 1, 0, 1, 1)
 
@@ -158,17 +158,35 @@ class PlaceTool(Gramplet):
         self.generate_hierarchy.connect("clicked", self.cb_select_generate_hierarchy)
         vbox.pack_start(self.generate_hierarchy, False, True, 0)
 
-        butbox1 = Gtk.VBox()
-        butbox1.set_margin_left(20)
-        self.spaces = Gtk.CheckButton(_("use spaces as separator"))
-        self.spaces.set_sensitive(False)
-        butbox1.pack_start(self.spaces, False, True, 0)
+        box1 = Gtk.VBox()
+        box1.set_margin_left(20)
+
+        box2 = Gtk.HBox()
+
+        box2.pack_start(Gtk.Label(_("Separator:")), False, True, 0)
+
+        group = None
+        rownum = 0
+        group = Gtk.RadioButton.new_with_label_from_widget(group, _("Comma"))
+        group.connect("toggled", self.cb_set_sep, ',')
+        group.set_sensitive(False)
+        box2.pack_start(group, False, True, 0)
+        group.set_active(True)
+
+        rownum += 1
+        group = Gtk.RadioButton.new_with_label_from_widget(group, _("Space"))
+        group.connect("toggled", self.cb_set_sep, None)
+        group.set_sensitive(False)
+        box2.pack_start(group, False, True, 0)
+        self.sep_group = group
+
+        box1.pack_start(box2, False, True, 0)
 
         self.reverse = Gtk.CheckButton(_("reverse hierarchy"))
         self.reverse.set_sensitive(False)
-        butbox1.pack_start(self.reverse, False, True, 0)
+        box1.pack_start(self.reverse, False, True, 0)
 
-        vbox.pack_start(butbox1, False, True, 0)
+        vbox.pack_start(box1, False, True, 0)
 
         self.replace_text = Gtk.CheckButton(_("Replace text"))
         self.replace_text.connect("clicked", self.cb_select_replace_text)
@@ -231,7 +249,7 @@ class PlaceTool(Gramplet):
 
     def cb_select_generate_hierarchy(self, obj):
         checked = self.generate_hierarchy.get_active()
-        self.spaces.set_sensitive(checked)
+        for g in self.sep_group.get_group(): g.set_sensitive(checked)
         self.reverse.set_sensitive(checked)
 
     def cb_select_replace_text(self, obj):
@@ -239,6 +257,9 @@ class PlaceTool(Gramplet):
         self.old_text.set_sensitive(checked)
         self.new_text.set_sensitive(checked)
         self.use_regex.set_sensitive(checked)
+
+    def cb_set_sep(self, obj, sep):
+        self.sep = sep
 
     def cb__apply(self, obj):
         with DbTxn(_("Setting place properties"), self.dbstate.db) as self.trans:
@@ -342,9 +363,8 @@ class PlaceTool(Gramplet):
         original_name = place.get_name().get_value()
         if original_name == "":
             original_name = place.get_title()
-        separator = ','
-        if self.spaces.get_active():
-            separator = None
+        separator = self.sep
+        if separator is None:
             if ' ' not in original_name:
                 return None
         else:
