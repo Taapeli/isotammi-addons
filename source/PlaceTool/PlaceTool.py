@@ -227,9 +227,6 @@ class PlaceTool(Gramplet):
         self.selected_handle = place.handle
         selected_parent = self.dbstate.db.get_place_from_handle(self.selected_handle)
         self.selected_name = selected_parent.get_name().value
-        title = selected_parent.get_title()
-        if title:
-            self.selected_name += " (title={})".format(title)
         self.enclosing_place.set_text(self.selected_name)
 
     def cb_select_generate_hierarchy(self, obj):
