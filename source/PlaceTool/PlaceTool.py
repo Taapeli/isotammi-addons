@@ -98,11 +98,13 @@ class PlaceTool(Gramplet):
         pt_label = Gtk.Label(_('Place type:'))
         pt_label.set_halign(Gtk.Align.START)
         self.typecombo = Gtk.ComboBoxText.new_with_entry()
+        self.typecombo.set_tooltip_text(_("New place type for the selected places"))
         self.__fill_combo(self.typecombo, list(self.__typenames()), wrap_width=4)
 
         tag_label = Gtk.Label(_('Tag:'))
         tag_label.set_halign(Gtk.Align.START)
         self.tagcombo = Gtk.ComboBoxText.new_with_entry()
+        self.tagcombo.set_tooltip_text(_("New tag for the selected places"))
         self.__fill_combo(self.tagcombo, list(self.__tagnames()))
 
         date_label = Gtk.Label(_('Timespan:'))
@@ -127,6 +129,7 @@ class PlaceTool(Gramplet):
 
         self.enclosing_place = Gtk.Label(_("None"))
         self.enclosing_place.set_halign(Gtk.Align.START)
+        self.enclosing_place.set_tooltip_text(_("New enclosing place for the selected places"))
 
         pt_grid = Gtk.Grid(column_spacing=10, row_spacing=2)
         pt_grid.attach(pt_label, 0, 0, 1, 1)
@@ -146,16 +149,20 @@ class PlaceTool(Gramplet):
 
         but_set_enclosing = Gtk.Button(label=_('Select enclosing place'))
         but_set_enclosing.connect("clicked", self.cb_select)
+        but_set_enclosing.set_tooltip_text(_("Select a new enclosing place for the selected places"))
         vbox.pack_start(but_set_enclosing, False, True, 10)
 
         self.clear_enclosing = Gtk.CheckButton(_("Clear original enclosing places"))
+        self.clear_enclosing.set_tooltip_text(_("If checked then any previous enclosing place will be removed from the selected places"))
         vbox.pack_start(self.clear_enclosing, False, True, 0)
 
         self.clear_tags = Gtk.CheckButton(_("Clear tags"))
+        self.clear_tags.set_tooltip_text(_("If checked then any previous tag will be removed from the selected places"))
         vbox.pack_start(self.clear_tags, False, True, 0)
 
         self.generate_hierarchy = Gtk.CheckButton(_("Generate hierarchy"))
         self.generate_hierarchy.connect("clicked", self.cb_select_generate_hierarchy)
+        self.generate_hierarchy.set_tooltip_text(_("If checked then a place hierarchy will be generated, based on the names of the original places"))
         vbox.pack_start(self.generate_hierarchy, False, True, 0)
 
         box1 = Gtk.VBox()
@@ -169,6 +176,7 @@ class PlaceTool(Gramplet):
         rownum = 0
         group = Gtk.RadioButton.new_with_label_from_widget(group, _("Comma"))
         group.connect("toggled", self.cb_set_sep, ',')
+        group.set_tooltip_text(_("If selected then the original names will be split at commas to create the new hierarchy"))
         group.set_sensitive(False)
         box2.pack_start(group, False, True, 0)
         group.set_active(True)
@@ -176,6 +184,7 @@ class PlaceTool(Gramplet):
         rownum += 1
         group = Gtk.RadioButton.new_with_label_from_widget(group, _("Space"))
         group.connect("toggled", self.cb_set_sep, None)
+        group.set_tooltip_text(_("If selected then the original names will be split at blank spaces to create the new hierarchy"))
         group.set_sensitive(False)
         box2.pack_start(group, False, True, 0)
         self.sep_group = group
@@ -183,15 +192,18 @@ class PlaceTool(Gramplet):
         box1.pack_start(box2, False, True, 0)
 
         self.reverse = Gtk.CheckButton(_("reverse hierarchy"))
+        self.reverse.set_tooltip_text(_("If checked then the original name is assumed to start with the largest place in the hierarchy"))
         self.reverse.set_sensitive(False)
         box1.pack_start(self.reverse, False, True, 0)
 
         vbox.pack_start(box1, False, True, 0)
 
         self.replace_text = Gtk.CheckButton(_("Replace text"))
+        self.replace_text.set_tooltip_text(_("If checked then a specified text is replaced with a new text in the selected place names"))
         self.replace_text.connect("clicked", self.cb_select_replace_text)
 
         self.use_regex = Gtk.CheckButton(_("Use regex"))
+        self.use_regex.set_tooltip_text(_("If checked then the old text can be a regular expression and the new text can contain substitutions"))
         self.use_regex.set_sensitive(False)
 
         replace_text_box = Gtk.HBox()
@@ -203,10 +215,12 @@ class PlaceTool(Gramplet):
         old_text_label = Gtk.Label(_("Old text:"))
         self.old_text = Gtk.Entry()
         self.old_text.set_sensitive(False)
+        self.old_text.set_tooltip_text(_("The original text (or regular expression) to be  replaced"))
 
         new_text_label = Gtk.Label(_("New text:"))
         self.new_text = Gtk.Entry()
         self.new_text.set_sensitive(False)
+        self.new_text.set_tooltip_text(_("The new text that will replace the old text"))
 
         replace_grid = Gtk.Grid(column_spacing=10)
         replace_grid.set_margin_left(20)
@@ -218,10 +232,12 @@ class PlaceTool(Gramplet):
 
         but_clear = Gtk.Button(label=_('Clear selections'))
         but_clear.connect("clicked", self.cb_clear)
+        but_clear.set_tooltip_text(_("Clears all settings"))
         vbox.pack_start(but_clear, False, True, 10)
 
         but_apply = Gtk.Button(label=_('Apply to selected places'))
         but_apply.connect("clicked", self.cb__apply)
+        but_apply.set_tooltip_text(_("Executes all specified operations for selected places"))
         vbox.pack_start(but_apply, False, True, 0)
 
         vbox.show_all()
