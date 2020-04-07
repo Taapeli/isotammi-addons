@@ -1,0 +1,322 @@
+
+<link rel="stylesheet" type="text/css" href="/static/css/styles.css">
+
+<script src="/static/js/vue.js"></script>
+<script src="/static/js/axios.min.js"></script>
+
+<style>
+.listbox {
+    display: inline-block;
+    position:absolute;
+    left:100px;
+    top:100px;
+    vertical-align:top;
+    width: 350px;
+    max-height: 500px;
+    overflow: scroll;
+    margin: 0 1em 1em 0;
+    padding: 1em; 
+    background-color: lightsteelblue;
+    min-height: 200px;
+    border-radius: 15px;
+    display:cnone;
+}
+.box {
+    display: inline-block;
+    vertical-align:top;
+    width: 900px;
+    xmax-height: 1000px;
+    xoverflow: scroll;
+    margin: 0 1em 1em 0;
+    padding: 1em; 
+    background-color: lightsteelblue;
+    min-height: 200px;
+    border-radius: 15px;
+}
+.personbox {
+    display: inline-block;
+    vertical-align:top;
+    width: 200px;
+    height: 50px;
+    margin: 0 1em 2em 0;
+    padding: 1em; 
+    background-color: #ffffaa;
+    border-radius: 15px;
+}
+.personbox2 {
+    background-color: #aaffff;
+}
+.imagebox {
+    display: inline-block;
+    vertical-align:top;
+    width: 200px;
+    margin: 0 1em 1em 0;
+    padding: 1em; 
+    border-radius: 15px;
+}
+.buttonbox {
+    display: inline-block;
+    xvertical-align:top;
+}
+.startbox, .startbox2 {
+    display: inline-block;
+    vertical-align:top;
+    margin: 0 1em 1em 0;
+    padding: 1em; 
+    background-color: bisque;
+    width: 280px;
+    min-height: 200px;
+    border-radius: 15px;
+}
+.node {
+
+}
+
+button {
+    vertical-align:top;
+    padding-left: 10px; 
+    padding-right: 10px; 
+    background-color: #dddddd;
+    border-radius: 5px;
+    font-size: 25px;
+}
+
+a.select {
+    font-size: 0.9em;
+}
+
+</style>
+
+<div id="app" :class="{ loading: loading}">
+    <h4>Database: {{ dbname }}</h4>
+    <span v-show="refresh_needed">Refresh needed</span>
+    <br>
+    
+    <div class="listbox" v-show="showlist">
+        <table>
+            <tr><td><input v-model="pattern" id="pattern">    
+                <td><button @click="cancel">Cancel</button>
+            <tr v-for="p in persons" v-show="match(p.name)">
+                <td><a href="#" v-bind:data-handle="p.handle" @click="select(p)"><span v-text="p.name"/></a>
+            </tr>
+        </table>
+    </div>    
+    <div class="box" cv-if="person1 && person2">    
+        <div class="personbox">
+            <b v-if="person1">{{ person1.name }}</b>
+            <br>
+            <a href="#" class="select" @click="select1">Select person 1</a>
+        </div>    
+
+        <button class="button" @click="swap" :disabled="!person1 || !person2">&RightArrowLeftArrow;</button>
+
+        <div class="personbox personbox2">
+            <b v-if="person2">{{ person2.name }}</b>
+            <br>
+            <a href="#"class="select" @click="select2">Select person 2</a>
+        </div>
+        <div class="buttonbox" xv-if="person1 && person2">
+            <table>
+            <tr><td><input type="checkbox" v-model="use_events">Use events
+                <!-- td><input type="checkbox" v-model="throttle">Throttle search -->
+            <tr><td><input type="checkbox" v-model="use_notes">Use notes
+            <tr><td><input type="checkbox" v-model="use_associations">Use associations
+            </table>
+            <p>    
+            <button @click="get_connections" :disabled="!person1 || !person2">Get connections</button>
+        </div>
+        <div class="imagebox" v-if="imageurl">
+            <img :src="imageurl" xwidth="200" xheight="500">
+            <br>
+            Num paths: {{ num_paths }} 
+            <br>
+            Shortest path: {{ shortest_path }}
+            <br>
+            Longest path: {{ longest_path }}
+        </div>    
+        <div id="svg">
+        </div>
+    </div>
+    <div id="waiter" class="modal"></div>	
+</div>
+
+
+<script>
+Vue.directive('focus', {
+    inserted: function (el) {
+        el.focus()
+    }
+});
+
+var app = new Vue({
+    // delimiters: ['${', '}'],
+    el: '#app',
+    created: function() {
+        this.init();    
+    },
+    filters: {
+        truncate: function(value, size) {
+            if (value.length > size) {
+                value = value.substring(0, size-3) + '...';
+            }
+            return value;
+        }
+    },
+    data: {
+        showlist: false,
+        dbname: "",
+        selecting: 0,
+        pattern: "",
+        imageurl: "",
+        svg: "",
+        person: null,
+        person1: null,
+        person2: null,
+        persons: [],
+        connections: [],
+        shortest_path: 0,
+        longest_path: 0,
+        num_paths: 0,
+        max:20,
+        current_path: 0,
+        use_relatives: true,
+        use_events: true,
+        use_notes: true,
+        use_associations: true,
+        use_places: false,
+        throttle: true,
+        classname: "",
+        loading: false,
+        refresh_needed: false,
+    }, // data
+    methods: {
+        init: function() {
+            this.get_dbname();
+            this.get_persons();
+        },
+
+		get_dbname:  function() {
+		    axios.defaults.timeout = 20000;
+		    axios.get("/get_dbname").
+		        then( (rsp) => {
+		            app.dbname = rsp.data.dbname;
+	            });
+		},
+		get_persons:  function() {
+		    axios.defaults.timeout = 20000;
+		    axios.get("/list_persons").
+		        then( (rsp) => {
+		            var persons = rsp.data;
+	                persons.sort( (p1,p2) => { if (p1.name < p2.name) return -1; else return 1});
+		            app.persons = persons;
+	            });
+		},
+		match: name => name.toLowerCase().indexOf(app.pattern.toLowerCase()) >= 0,
+		select_text: () => {
+            var input = document.getElementById('pattern');
+            input.select();
+            input.focus();
+		},
+		select1: () => {
+		    app.showlist = true;
+		    app.selecting = 1;
+		    setTimeout( app.select_text, 500 );
+		},
+		select2: () => {
+		    app.showlist = true;
+		    app.selecting = 2;
+		    setTimeout( app.select_text, 500 );
+		},
+		select: person => {
+		    if (app.selecting == 1) app.person1 = person;
+		    if (app.selecting == 2) app.person2 = person;
+		    app.showlist = false;
+	    },
+		cancel: () => {
+		    app.showlist = false;
+	    },
+		swap: () => {
+		    let p = app.person1;
+		    app.person1 = app.person2;
+		    app.person2 = p;
+	    },
+		get_connections: () => {
+            app.imageurl = null;
+		    var url = "/get_connections?";
+		    url += "handle1=" + encodeURIComponent(app.person1.handle);
+		    url += "&handle2=" + encodeURIComponent(app.person2.handle);
+		    url += "&use_relatives=" + encodeURIComponent(app.use_relatives);
+		    url += "&use_events=" + encodeURIComponent(app.use_events);
+		    url += "&use_notes=" + encodeURIComponent(app.use_notes);
+		    url += "&use_associations=" + encodeURIComponent(app.use_associations);
+		    url += "&use_places=" + encodeURIComponent(app.use_places);
+		    url += "&max=" + app.max;
+		    url += "&throttle=" + app.throttle;
+		    app.loading = true;
+		    axios.defaults.timeout = 20000;
+		    axios.get(url)
+                .then(resp => {
+                    var rsp = resp.data;
+                    app.connections = rsp.paths;
+                    app.num_paths = rsp.paths.length;
+                    app.shortest_path = rsp.shortest_path;
+                    app.longest_path = rsp.longest_path;
+                    app.refresh_needed = rsp.refresh_needed;
+                    if (app.connections.length > 0) {
+                        // app.get_svg(app.connections)
+                        app.get_image(app.connections)
+                    }
+                    else
+                        alert("No paths found");
+        		    app.classname = "";
+        		    app.loading = false;
+                 })
+                .catch(error => {
+        		    app.loading = false;
+                    alert(error +"\n\nUudelleenyritys voi auttaa");
+                 });
+	    },
+		get_image: function(paths) {
+		    var url = "/get_image?paths=" + (JSON.stringify(paths));
+		    url += "&handle1=" + encodeURIComponent(app.person1.handle);
+		    url += "&handle2=" + encodeURIComponent(app.person2.handle);
+		    axios.defaults.timeout = 20000;
+		    axios.get(url, {responseType: 'blob'})
+                .then(rsp => {
+                      var image = rsp.data;
+                      app.imageurl = URL.createObjectURL(image);
+                 })
+                .catch(error => {
+                    alert(error +"\n\nUudelleenyritys voi auttaa");
+                 });
+	    },
+		get_svg: function(paths) {
+		    var url = "/get_svg?paths=" + (JSON.stringify(paths));
+		    url += "&handle1=" + encodeURIComponent(app.person1.handle);
+		    url += "&handle2=" + encodeURIComponent(app.person2.handle);
+		    axios.defaults.timeout = 20000;
+		    axios.get(url)
+                .then(rsp => {
+                      app.svg = rsp.data;
+                      document.getElementById("svg").innerHTML = rsp.data;
+                 })
+                .catch(error => {
+                    alert(error +"\n\nUudelleenyritys voi auttaa");
+                 });
+	    },
+		prev: function() {
+		    if (this.current_path > 0)
+    		    this.current_path--;
+		    else
+    		    this.current_path = this.connections.length-1;
+            app.get_image(this.connections[this.current_path]);
+		},
+		next: function() {
+		    this.current_path++;
+		    if (this.current_path >= this.connections.length) this.current_path = 0;
+            app.get_image(this.connections[this.current_path]);
+		}
+	}
+});
+
+</script>
