@@ -13,9 +13,9 @@ tai tällä:
 
 ![Asetukset](Asetukset.png)
 
-Napsauta "Tarkista laajennusten päivitykset nyt" - saat listan Isotammen Gramps-laajennuksista. Paina "Valitse kaikki" tai valikoi ne jotka haluat asentaa (ainakin "Select addon source"). Paina "Asenna laajennukset".
+Napsauta "Tarkista laajennusten päivitykset nyt" - saat listan Isotammen Gramps-laajennuksista. Paina "Valitse kaikki" tai valikoi ne jotka haluat asentaa (ainakin "Isotammen asetukset"). Paina "Asenna laajennukset".
 
-Asennuksen jälkeen voit lisätä laajennuksen "Isotammen asetukset"  Grampsin työpöydälle. Sen avulla voit jatkossa helposti vaihtaa laajennusten lähteeksi joko oletuksena olevan Grampsin laajennusvaraston tai Isotammen laajennukset:
+Asennuksen jälkeen voit lisätä laajennuksen "Isotammen asetukset" Grampsin työpöydälle. Sen avulla voit jatkossa helposti vaihtaa laajennusten lähteeksi joko oletuksena olevan Grampsin laajennusvaraston tai Isotammen laajennukset:
 
 ![Isotammi-asetukset](Isotammi-asetukset.png)
 
@@ -40,9 +40,9 @@ or with
 
 ![Preferences](Preferences.png)
 
-Click "Check for updated addons now" and install all addons or at least "Select addon source".
+Click "Check for updated addons now" and install all addons or at least "Isotammi configuration".
 
-After installation go to Gramps Dashboard and add the gramplet "Select addon source". With that you can easily select which source to use for installing addons in the future: Gramps default or Isotammi addons:
+After installation go to Gramps Dashboard and add the gramplet "Isotammi configuration". With that you can easily select which source to use for installing addons in the future: Gramps default or Isotammi addons:
 
 ![Isotammi config](Isotammi-config.png)
 
