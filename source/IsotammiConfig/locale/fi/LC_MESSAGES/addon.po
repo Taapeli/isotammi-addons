@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-03-18 18:47+0200\n"
-"PO-Revision-Date: 2020-03-18 18:59+0200\n"
+"POT-Creation-Date: 2020-04-07 21:51+0300\n"
+"PO-Revision-Date: 2020-04-07 21:06+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: fi\n"
@@ -23,30 +23,30 @@ msgstr ""
 msgid "Isotammi configuration"
 msgstr "Isotammen asetukset"
 
-#: IsotammiConfig/isotammiconfig.py:93
+#: IsotammiConfig/isotammiconfig.py:92
 msgid "Isotammi URL"
 msgstr ""
 
-#: IsotammiConfig/isotammiconfig.py:99
+#: IsotammiConfig/isotammiconfig.py:98
 msgid "API Key"
 msgstr ""
 
-#: IsotammiConfig/isotammiconfig.py:105
+#: IsotammiConfig/isotammiconfig.py:104
 msgid "Addon source"
 msgstr "Laajennuskirjasto"
 
-#: IsotammiConfig/isotammiconfig.py:116
+#: IsotammiConfig/isotammiconfig.py:115
 msgid "Default"
-msgstr ""
+msgstr "Oletus"
 
-#: IsotammiConfig/isotammiconfig.py:123
+#: IsotammiConfig/isotammiconfig.py:122
 msgid "Isotammi"
-msgstr ""
+msgstr "Isotammi"
 
-#: IsotammiConfig/isotammiconfig.py:132
+#: IsotammiConfig/isotammiconfig.py:131
 msgid "Save"
 msgstr "Talleta"
 
-#: IsotammiConfig/isotammiconfig.py:136
+#: IsotammiConfig/isotammiconfig.py:135
 msgid "Gramps preferences"
 msgstr "Grampsin asetukset"

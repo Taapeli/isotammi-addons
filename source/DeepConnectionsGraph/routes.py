@@ -55,7 +55,6 @@ def list_persons():
             handle=person_handle,
         ))
     t2 = time.time()
-    #print("Elapsed:",t2-t1)
     return json.dumps(rsp)
 
 @app("/get_person")

@@ -57,7 +57,6 @@ def set_apiurl(apiurl):
     isotammi_config.set('options.apiurl', apiurl)
     isotammi_config.save()
 
-
 #------------------------------------------------------------------------
 #
 # SelectAddonSource

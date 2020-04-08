@@ -1,49 +1,42 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
 msgid ""
 msgstr ""
-"Project-Id-Version: Deep Connections Graph\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-04-07 14:02+0300\n"
-"PO-Revision-Date: 2020-04-03 19:41+0300\n"
+"Project-Id-Version: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: \n"
-"Language: fi\n"
+"Language: sv\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Type: text/plain; charset=ISO-8859-1\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 2.0.6\n"
-"X-Poedit-SourceCharset: UTF-8\n"
 
 #: DeepConnectionsGraph/DeepConnectionsGraph.gpr.py:5
 #: DeepConnectionsGraph/DeepConnectionsGraph.gpr.py:12
 #: DeepConnectionsGraph/DeepConnectionsGraph.py:153
 msgid "Deep Connections Graph"
-msgstr "Syväsuhteet kaaviona"
+msgstr ""
 
 #: DeepConnectionsGraph/DeepConnectionsGraph.gpr.py:6
-msgid "DeepConnectionsGraph Gramplet "
-msgstr "Syväsuhteet kaaviona -gramplet"
+msgid "DeepConnectionsGraph Gramplet"
+msgstr ""
 
 #: DeepConnectionsGraph/DeepConnectionsGraph.py:194
 msgid "Port:"
-msgstr "Portti:"
+msgstr ""
 
 #: DeepConnectionsGraph/DeepConnectionsGraph.py:209
 msgid "Start server"
-msgstr "Käynnistä web-palvelin"
+msgstr ""
 
 #: DeepConnectionsGraph/DeepConnectionsGraph.py:214
 msgid "Stop server"
-msgstr "Pysäytä web-palvelin"
+msgstr ""
 
 #: DeepConnectionsGraph/DeepConnectionsGraph.py:221
 msgid "Refresh tree"
-msgstr "Päivitä sukupuu"
+msgstr ""
 
 #: DeepConnectionsGraph/DeepConnectionsGraph.py:227
 msgid "Start browser"
-msgstr "Käynnistä selain"
+msgstr ""

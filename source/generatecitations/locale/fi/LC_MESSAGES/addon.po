@@ -6,71 +6,80 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
-"Report-Msgid-Bugs-To: kari.kujansuu@gmail.com\n"
-"POT-Creation-Date: 2018-12-03 13:32+0200\n"
-"PO-Revision-Date: 2019-01-06 20:55+0200\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-04-07 21:51+0300\n"
+"PO-Revision-Date: 2020-04-08 10:34+0300\n"
 "Last-Translator: \n"
-"Language: fi\n"
 "Language-Team: fi <LL@li.org>\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Language: fi\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "Generated-By: Babel 2.6.0\n"
-"X-Generator: Poedit 1.8.7.1\n"
+"X-Generator: Poedit 2.0.6\n"
 
-#: generatecitations.gpr.py:33 generatecitations.gpr.py:34
-msgid "Generate source citations from notes"
-msgstr "Muodosta lähdeviitteet lisätietojen perusteella"
-
-#: generatecitations.py:140
-msgid "Error occurred, please report this message:"
-msgstr "Tapahtui virhe, raportoi tämä virheilmoitus:"
-
-#: generatecitations.py:260
-msgid "Generating citations"
-msgstr "Generoidaan lainauksia"
-
-#: generatecitations.py:303
-msgid "Add citations"
-msgstr "Lisätään lainauksia"
-
-#: generatecitations.py:357
-msgid "Total objects processed: {total_objects}"
-msgstr "Objekteja käsitelty: {total_objects} kpl"
-
-#: generatecitations.py:358
-msgid "Total notes: {total_notes}"
-msgstr "Lisätietoja kaikkiaan: {total_notes}"
-
-#: generatecitations.py:359
-msgid "Matching notes: {matching_notes}"
-msgstr "Käsiteltyjä lisätietoja: {matching_notes}"
-
-#: generatecitations.py:360
-msgid "Unique matching notes: {unique_matching_notes}"
-msgstr "Erilaisia lisätietoja: {unique_matching_notes}"
-
-#: generatecitations.py:361
-msgid "Skipped notes: {skipped}"
-msgstr "Ohitettuja lisätietoja: {skipped}"
-
-#: generatecitations.py:362
-msgid "Citations added: {citations_added}"
-msgstr "Lainauksia lisätty: {citations_added}"
-
-#: generatecitations.py:363
-msgid "Sources added: {sources_added}"
-msgstr "Lähteitä lisätty: {sources_added}"
-
-#: generatecitations.py:364
-msgid "Repositories added: {repos_added}"
-msgstr "Arkistoja lisätty: {repos_added}"
-
-#: generatecitations.py:367
-msgid "All events processed"
-msgstr "Kaikki tapahtumat käsitelty"
-
+#: generatecitations/generatecitations.gpr.py:27
 msgid "Isotammi tools"
 msgstr "Isotammi-työkalut"
 
+#: generatecitations/generatecitations.gpr.py:37
+#: generatecitations/generatecitations.gpr.py:38
+msgid "Generate source citations from notes"
+msgstr "Muodosta lähdeviitteet lisätietojen perusteella"
+
+#: generatecitations/generatecitations.py:117
+msgid "Error occurred, please report this message:"
+msgstr "Tapahtui virhe, raportoi tämä virheilmoitus:"
+
+#: generatecitations/generatecitations.py:183
+msgid "Generating citations"
+msgstr "Generoidaan lainauksia"
+
+#: generatecitations/generatecitations.py:229
+msgid "Add citations"
+msgstr "Lisätään lainauksia"
+
+#: generatecitations/generatecitations.py:284
+#, python-brace-format
+msgid "Total objects processed: {total_objects}"
+msgstr "Objekteja käsitelty: {total_objects} kpl"
+
+#: generatecitations/generatecitations.py:285
+#, python-brace-format
+msgid "Total notes: {total_notes}"
+msgstr "Lisätietoja kaikkiaan: {total_notes}"
+
+#: generatecitations/generatecitations.py:286
+#, python-brace-format
+msgid "Matching notes: {matching_notes}"
+msgstr "Käsiteltyjä lisätietoja: {matching_notes}"
+
+#: generatecitations/generatecitations.py:287
+#, python-brace-format
+msgid "Unique matching notes: {unique_matching_notes}"
+msgstr "Erilaisia lisätietoja: {unique_matching_notes}"
+
+#: generatecitations/generatecitations.py:288
+#, python-brace-format
+msgid "Skipped notes: {skipped}"
+msgstr "Ohitettuja lisätietoja: {skipped}"
+
+#: generatecitations/generatecitations.py:289
+#, python-brace-format
+msgid "Citations added: {citations_added}"
+msgstr "Lainauksia lisätty: {citations_added}"
+
+#: generatecitations/generatecitations.py:290
+#, python-brace-format
+msgid "Sources added: {sources_added}"
+msgstr "Lähteitä lisätty: {sources_added}"
+
+#: generatecitations/generatecitations.py:291
+#, python-brace-format
+msgid "Repositories added: {repos_added}"
+msgstr "Arkistoja lisätty: {repos_added}"
+
+#: generatecitations/generatecitations.py:294
+msgid "All events processed"
+msgstr "Kaikki tapahtumat käsitelty"
