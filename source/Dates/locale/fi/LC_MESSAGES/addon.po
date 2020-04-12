@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Dates gramplet\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-02-02 10:31+0200\n"
-"PO-Revision-Date: 2020-04-08 10:35+0300\n"
+"PO-Revision-Date: 2020-04-12 14:35+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: fi\n"
@@ -22,54 +22,66 @@ msgstr ""
 msgid "Dates"
 msgstr "Päivämäärät"
 
-#: Dates/Dates.py:75
+#: Dates/Dates.py:78
 msgid "Correct invalid dates"
 msgstr "Korjaa virheellisiä päivämääriä"
 
-#: Dates/Dates.py:87
+#: Dates/Dates.py:90
 msgid "This gramplet helps to correct invalid dates..."
 msgstr "Tämä gramplet korjaa virheellisiä päivämääriä"
 
-#: Dates/Dates.py:92
+#: Dates/Dates.py:95
 msgid "Replace text"
 msgstr "Korvaa teksti"
 
-#: Dates/Dates.py:95
+#: Dates/Dates.py:98
 msgid "Use regex"
 msgstr "Käytä säännöllisiä lausekkeita"
 
-#: Dates/Dates.py:104
+#: Dates/Dates.py:107
 msgid "Old text:"
 msgstr "Korvattava teksti:"
 
-#: Dates/Dates.py:109
+#: Dates/Dates.py:112
 msgid "New text:"
 msgstr "Uusi teksti:"
 
-#: Dates/Dates.py:122
+#: Dates/Dates.py:125
 msgid "31.12.1888 -> 1888-12-31"
 msgstr ""
 
-#: Dates/Dates.py:125
-msgid "1888-99 -> from 1888 to 1899"
-msgstr ""
-
 #: Dates/Dates.py:128
-msgid "<1888/-1888 -> before 1888"
+msgid ".12.1888 -> 1888-12"
 msgstr ""
 
 #: Dates/Dates.py:131
+msgid "31..1888 -> 1888-00-31"
+msgstr ""
+
+#: Dates/Dates.py:134
+msgid "..1888 -> 1888"
+msgstr ""
+
+#: Dates/Dates.py:137
+msgid "1888-99 -> 1888 - 1899"
+msgstr ""
+
+#: Dates/Dates.py:143
+msgid "<1888/-1888 -> before 1888"
+msgstr ""
+
+#: Dates/Dates.py:146
 msgid ">1888/1888- -> after 1888"
 msgstr ""
 
-#: Dates/Dates.py:136
+#: Dates/Dates.py:151
 msgid "Execute"
 msgstr "_Suorita"
 
-#: Dates/Dates.py:152
+#: Dates/Dates.py:167
 msgid "Correcting invalid dates"
 msgstr "Virheellisten päivämäärien korjaus"
 
-#: Dates/Dates.py:183
+#: Dates/Dates.py:198
 msgid "Regex operation failed: {}"
 msgstr "Toiminto epäonnistui"

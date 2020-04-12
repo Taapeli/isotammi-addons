@@ -31,6 +31,7 @@ dash = r"-"
 sep = "[\.,-/]"
 gt = "\>"
 lt = "\<"
+space = r"\s"
 
 def p(**kwargs):
     assert len(kwargs) == 1
@@ -43,10 +44,12 @@ def optional(pat):
 
 def match(s,*args):    
     pat = "".join(args)
-    print(s)
-    print(pat)
+    print("match:")
+    print(" ",s)
+    print(" ",pat)
     flags = re.VERBOSE
     r = re.fullmatch(pat,s,flags)
+    print(" ",r)
     if r is None: return None
     class Ret: pass
     ret = Ret()
@@ -122,8 +125,20 @@ class Dates(Gramplet):
         self.handle_dd_mm_yyyy = Gtk.CheckButton(label=_('31.12.1888 -> 1888-12-31'))
         vbox.pack_start(self.handle_dd_mm_yyyy, False, True, 0)
 
-        self.handle_intervals = Gtk.CheckButton(label=_('1888-99 -> from 1888 to 1899'))
+        self.handle_mm_yyyy = Gtk.CheckButton(label=_('.12.1888 -> 1888-12'))
+        vbox.pack_start(self.handle_mm_yyyy, False, True, 0)
+
+        self.handle_dd_yyyy = Gtk.CheckButton(label=_('31..1888 -> 1888-00-31'))
+        vbox.pack_start(self.handle_dd_yyyy, False, True, 0)
+
+        self.handle_yyyy = Gtk.CheckButton(label=_('..1888 -> 1888'))
+        vbox.pack_start(self.handle_yyyy, False, True, 0)
+
+        self.handle_intervals = Gtk.CheckButton(label=_('1888-99 -> 1888 - 1899'))
         vbox.pack_start(self.handle_intervals, False, True, 0)
+
+        #self.handle_intervals2 = Gtk.CheckButton(label=_('1888-1899 -> 1888 - 1899'))
+        #vbox.pack_start(self.handle_intervals2, False, True, 0)
 
         self.handle_before = Gtk.CheckButton(label=_('<1888/-1888 -> before 1888'))
         vbox.pack_start(self.handle_before, False, True, 0)
@@ -191,7 +206,7 @@ class Dates(Gramplet):
         if self.handle_dd_mm_yyyy.get_active():
                 # 31.12.1888 -> 31 DEC 1888
                 # 31,12,1888 -> 31 DEC 1888
-                # 31-12-1888 -> 31 DEC 1888
+                # 31-12-1888 -> 31 DEC 1888  
                 # 31/12/1888 -> 31 DEC 1888
                 r = match(datestr,
                           p(d=oneortwodigits),sep,
@@ -203,9 +218,54 @@ class Dates(Gramplet):
                         dateobj.set(value=val,modifier=Date.MOD_NONE)
                         return 
 
+        if self.handle_mm_yyyy.get_active():
+                # .12.1888 -> 31 DEC 1888
+                r = match(datestr,
+                          sep,
+                          p(m=oneortwodigits),sep,
+                          p(y=fourdigits))
+                if r:
+                    val = dateval(r.y,r.m,1)
+                    if val:
+                        dateobj.set(value=(0,int(r.m),int(r.y),False),modifier=Date.MOD_NONE)
+                        return 
+
+        if self.handle_dd_yyyy.get_active():
+                # 31..1888 -> 1888-00-31
+                r = match(datestr,
+                          p(d=oneortwodigits),sep,sep,
+                          p(y=fourdigits))
+                if r:
+                    val = dateval(r.y,1,r.d)
+                    if val:
+                        dateobj.set(value=(int(r.d),0,int(r.y),False),modifier=Date.MOD_NONE)
+                        return 
+
+        if self.handle_yyyy.get_active():
+                # ..1888 -> 1888
+                r = match(datestr,
+                          sep,sep,
+                          p(y=fourdigits))
+                if r:
+                    if val:
+                        dateobj.set(value=(0,0,int(r.y),False),modifier=Date.MOD_NONE)
+                        return 
+
         if self.handle_intervals.get_active():
             # 1888-1899 
             r = match(datestr,p(y1=fourdigits),dash,p(y2=fourdigits))
+            if r:
+                dateobj.set(modifier=Date.MOD_SPAN,value=(0,0,int(r.y1),False,0,0,int(r.y2),False),)
+                return 
+
+            # 1888 -1899 
+            r = match(datestr,p(y1=fourdigits),space,dash,p(y2=fourdigits))
+            if r:
+                dateobj.set(modifier=Date.MOD_SPAN,value=(0,0,int(r.y1),False,0,0,int(r.y2),False),)
+                return 
+
+            # 1888- 1899 
+            r = match(datestr,p(y1=fourdigits),dash,space,p(y2=fourdigits))
             if r:
                 dateobj.set(modifier=Date.MOD_SPAN,value=(0,0,int(r.y1),False,0,0,int(r.y2),False),)
                 return 
@@ -218,6 +278,7 @@ class Dates(Gramplet):
                     #dateobj.set(modifier=Date.MOD_RANGE,value=(0,0,int(r.y1),False,0,0,int(century+r.y2),False))
                     dateobj.set(modifier=Date.MOD_SPAN,value=(0,0,int(r.y1),False,0,0,int(century+r.y2),False))
                     return 
+
 
         if self.handle_before.get_active():
             r = match(datestr,dash,p(y=fourdigits))
