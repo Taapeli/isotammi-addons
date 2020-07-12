@@ -201,16 +201,17 @@ class GenerateCitations(tool.BatchTool):
                         for type,h in obj.get_referenced_citation_handles(): # type = 'Citation'
                             citation = self.db.get_citation_from_handle(h)
                             page = citation.get_page()
-                            current_citations.add(page)
+                            current_citations.add((page,citation.source_handle))
                         
-                    if m.citationpage in current_citations: 
+                    source = sources[m.sourcetitle]
+                    source.set_title(m.sourcetitle)
+
+                    if (m.citationpage,source.handle) in current_citations: 
                         skipped += 1
                         continue # already has this citation, skip
                     repo = repos[m.reponame]
                     repo.set_name(m.reponame)
 
-                    source = sources[m.sourcetitle]
-                    source.set_title(m.sourcetitle)
                     source.repo = repo
 
                     citation = Citation()
