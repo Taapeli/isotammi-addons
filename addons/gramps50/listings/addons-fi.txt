@@ -1,6 +1,6 @@
 {'t': 'Gramplet', 'i': 'isotammiconfig', 'n': 'Isotammen asetukset', 'v': '1.0.20', 'g': '5.0', 'd': 'Isotammen asetukset', 'z': 'IsotammiConfig.addon.tgz'}
 {'t': 'Tool', 'i': 'generatecitations', 'n': 'Muodosta lähdeviitteet lisätietojen perusteella', 'v': '1.0.18', 'g': '5.0', 'd': 'Muodosta lähdeviitteet lisätietojen perusteella', 'z': 'generatecitations.addon.tgz'}
-{'t': 'Gramplet', 'i': 'PropertyEditor', 'n': 'OminaisuusMuokkain', 'v': '1.0.4', 'g': '5.0', 'd': 'Gramplet jolla voi muokata usean kohteen ominaisuuksia samalla kertaa', 'z': 'PropertyEditor.addon.tgz'}
+{'t': 'Gramplet', 'i': 'PropertyEditor', 'n': 'OminaisuusMuokkain', 'v': '1.0.5', 'g': '5.0', 'd': 'Gramplet jolla voi muokata usean kohteen ominaisuuksia samalla kertaa', 'z': 'PropertyEditor.addon.tgz'}
 {'t': 'Gramplet', 'i': 'PlaceTool', 'n': 'Paikkatyökalu', 'v': '1.0.30', 'g': '5.0', 'd': 'Gramplet, joka käsittelee useita paikkoja kerrallaan', 'z': 'PlaceTool.addon.tgz'}
 {'t': 'Gramplet', 'i': 'Dates', 'n': 'Päivämäärät', 'v': '1.0.16', 'g': '5.0', 'd': 'Päivämäärät', 'z': 'Dates.addon.tgz'}
 {'t': 'Gramplet', 'i': 'DeepConnectionsGraph', 'n': 'Syväsuhteet kaaviona', 'v': '1.0.6', 'g': '5.0', 'd': 'DeepConnectionsGraph Gramplet', 'z': 'DeepConnectionsGraph.addon.tgz'}

@@ -247,7 +247,7 @@ class PropertyEditor(Gramplet):
             if getpropfunc is None: 
                 OkDialog("failed","")
                 return
-        if self.objname == "note":
+        if self.objname == "note" and self.use_regex.get_active():
             getpropfunc, setpropfunc = self.get_propfuncs(self.objname, "text")
         with DbTxn(_("Setting properties"), self.dbstate.db) as self.trans:
             selected_handles = self.uistate.viewmanager.active_page.selected_handles()
