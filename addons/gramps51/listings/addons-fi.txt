@@ -1,8 +1,8 @@
 {'t': 'Gramplet', 'i': 'isotammiconfig', 'n': 'Isotammen asetukset', 'v': '1.0.20', 'g': '5.1', 'd': 'Isotammen asetukset', 'z': 'IsotammiConfig.addon.tgz'}
-{'t': 'Tool', 'i': 'generatecitations', 'n': 'Muodosta lähdeviitteet lisätietojen perusteella', 'v': '1.0.14', 'g': '5.1', 'd': 'Muodosta lähdeviitteet lisätietojen perusteella', 'z': 'generatecitations.addon.tgz'}
+{'t': 'Tool', 'i': 'generatecitations', 'n': 'Muodosta lähdeviitteet lisätietojen perusteella', 'v': '1.0.15', 'g': '5.1', 'd': 'Muodosta lähdeviitteet lisätietojen perusteella', 'z': 'generatecitations.addon.tgz'}
 {'t': 'Rule', 'i': 'HasValidDate', 'n': 'Events with a valid date', 'v': '1.0.6', 'g': '5.1', 'd': 'Events with a valid date', 'z': '_hasvaliddate.addon.tgz'}
 {'t': 'Rule', 'i': 'HasInValidDate', 'n': 'Events with an in valid date', 'v': '1.0.6', 'g': '5.1', 'd': 'Events with an invalid date', 'z': '_hasvaliddate.addon.tgz'}
 {'t': 'Gramplet', 'i': 'PlaceTool', 'n': 'Paikkatyökalu', 'v': '1.0.30', 'g': '5.1', 'd': 'Gramplet, joka käsittelee useita paikkoja kerrallaan', 'z': 'PlaceTool.addon.tgz'}
 {'t': 'Gramplet', 'i': 'Dates', 'n': 'Päivämäärät', 'v': '1.0.16', 'g': '5.1', 'd': 'Päivämäärät', 'z': 'Dates.addon.tgz'}
-{'t': 'Gramplet', 'i': 'DeepConnectionsGraph', 'n': 'Syväsuhteet kaaviona', 'v': '1.0.5', 'g': '5.1', 'd': 'DeepConnectionsGraph Gramplet', 'z': 'DeepConnectionsGraph.addon.tgz'}
+{'t': 'Gramplet', 'i': 'DeepConnectionsGraph', 'n': 'Syväsuhteet kaaviona', 'v': '1.0.6', 'g': '5.1', 'd': 'DeepConnectionsGraph Gramplet', 'z': 'DeepConnectionsGraph.addon.tgz'}
 {'t': 'Gramplet', 'i': 'AddSourcesGramplet', 'n': 'AddSourcesGramplet', 'v': '0.9.3', 'g': '5.1', 'd': 'Gramplet to add sources', 'z': 'AddSourcesGramplet.addon.tgz'}
