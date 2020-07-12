@@ -43,13 +43,13 @@ _ = _trans.sgettext
 
 import matcher
  
-class GenerateCitations(tool.BatchTool):
+class GenerateCitations(tool.Tool):
 
     def __init__(self, dbstate, user, options_class, name, callback=None):
         self.user = user
         self.dbstate = dbstate
         self.uistate = user.uistate
-        tool.BatchTool.__init__(self, dbstate, user, options_class, name)
+        tool.Tool.__init__(self, dbstate, options_class, name)
         self.total_notes = 0
 
 
