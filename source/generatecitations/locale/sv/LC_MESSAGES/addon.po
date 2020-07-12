@@ -80,6 +80,10 @@ msgstr ""
 msgid "Repositories added: {repos_added}"
 msgstr ""
 
-#: generatecitations/generatecitations.py:295
+#: generatecitations/generatecitations.py:294
+msgid "You can undo all changes with Ctrl-Z."
+msgstr ""
+
+#: generatecitations/generatecitations.py:296
 msgid "All events processed"
 msgstr ""

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-04-07 21:51+0300\n"
-"PO-Revision-Date: 2020-04-08 10:34+0300\n"
+"PO-Revision-Date: 2020-07-12 16:25+0300\n"
 "Last-Translator: \n"
 "Language-Team: fi <LL@li.org>\n"
 "Language: fi\n"
@@ -80,6 +80,10 @@ msgstr "Lähteitä lisätty: {sources_added}"
 msgid "Repositories added: {repos_added}"
 msgstr "Arkistoja lisätty: {repos_added}"
 
-#: generatecitations/generatecitations.py:295
+#: generatecitations/generatecitations.py:294
+msgid "You can undo all changes with Ctrl-Z."
+msgstr "Voit peruuttaa kaikki muutokset painamalla Ctrl-Z."
+
+#: generatecitations/generatecitations.py:296
 msgid "All events processed"
 msgstr "Kaikki tapahtumat käsitelty"

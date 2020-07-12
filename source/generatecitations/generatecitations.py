@@ -291,6 +291,7 @@ class GenerateCitations(tool.Tool):
             log.append("- " + _("Sources added: {sources_added}").format(sources_added=sources_added))
             log.append("- " + _("Repositories added: {repos_added}").format(repos_added=repos_added))
             msg = "\n".join(log)
+            msg += "\n\n" + _("You can undo all changes with Ctrl-Z.")
             self.log(msg)
             OkDialog(_("All events processed"),
                      msg,
