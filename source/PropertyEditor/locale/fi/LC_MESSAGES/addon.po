@@ -1,0 +1,68 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PropertyEditor\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-04-03 19:37+0300\n"
+"PO-Revision-Date: 2020-07-12 21:01+0300\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: fi\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 2.0.6\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+
+#: PropertyEditor/PropertyEditor.gpr.py:5
+#: PropertyEditor/PropertyEditor.gpr.py:16
+msgid "PropertyEditor"
+msgstr "OminaisuusMuokkain"
+
+#: PropertyEditor/PropertyEditor.gpr.py:6
+msgid "Gramplet to edit attributes of multiple objects"
+msgstr "Gramplet jolla voi muokata usean kohteen ominaisuuksia samalla kertaa"
+
+#: PropertyEditor/PropertyEditor.py:144
+#, python-format
+msgid ""
+"This gramplet allows editing attributes for multiple %s objects at the same "
+"time"
+msgstr ""
+"Tällä grampletilla voi muokata usean %s- kohteen ominaisuuksia samalla kertaa"
+
+#: PropertyEditor/PropertyEditor.py:177
+msgid "Use regex"
+msgstr "Käytä säännöllisiä lausekkeita"
+
+#: PropertyEditor/PropertyEditor.py:185
+msgid "Old text:"
+msgstr "Vanha teksti:"
+
+#: PropertyEditor/PropertyEditor.py:190
+msgid "New text:"
+msgstr "Uusi teksti:"
+
+#: PropertyEditor/PropertyEditor.py:202
+msgid "Clear"
+msgstr "Tyhjennä"
+
+#: PropertyEditor/PropertyEditor.py:206
+msgid "Apply to selected objects"
+msgstr "Suorita muokkaus valituille kohteille"
+
+#: PropertyEditor/PropertyEditor.py:211
+msgid "_Help"
+msgstr ""
+
+#: PropertyEditor/PropertyEditor.py:252
+msgid "Setting properties"
+msgstr "Ominaisuuksien asetus"
+
+#: PropertyEditor/PropertyEditor.py:270
+msgid "Regex operation failed: {}"
+msgstr "Virhe säännöllinen lausekkeen käsittelyssä: {}"

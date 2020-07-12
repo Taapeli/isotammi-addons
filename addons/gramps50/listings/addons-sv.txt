@@ -1,5 +1,6 @@
 {'t': 'Gramplet', 'i': 'isotammiconfig', 'n': 'Isotammi configuration', 'v': '1.0.20', 'g': '5.0', 'd': 'Isotammi configuration', 'z': 'IsotammiConfig.addon.tgz'}
 {'t': 'Tool', 'i': 'generatecitations', 'n': 'Generate source citations from notes', 'v': '1.0.18', 'g': '5.0', 'd': 'Generate source citations from notes', 'z': 'generatecitations.addon.tgz'}
+{'t': 'Gramplet', 'i': 'PropertyEditor', 'n': 'PropertyEditor', 'v': '1.0.4', 'g': '5.0', 'd': 'Gramplet to edit attributes of multiple objects', 'z': 'PropertyEditor.addon.tgz'}
 {'t': 'Gramplet', 'i': 'PlaceTool', 'n': 'PlaceTool', 'v': '1.0.30', 'g': '5.0', 'd': 'Gramplet to manipulate multiple places', 'z': 'PlaceTool.addon.tgz'}
 {'t': 'Gramplet', 'i': 'Dates', 'n': 'Dates', 'v': '1.0.16', 'g': '5.0', 'd': 'Dates', 'z': 'Dates.addon.tgz'}
 {'t': 'Gramplet', 'i': 'DeepConnectionsGraph', 'n': 'Deep Connections Graph', 'v': '1.0.6', 'g': '5.0', 'd': 'DeepConnectionsGraph Gramplet', 'z': 'DeepConnectionsGraph.addon.tgz'}

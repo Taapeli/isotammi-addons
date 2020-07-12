@@ -1,5 +1,6 @@
 {'t': 'Gramplet', 'i': 'isotammiconfig', 'n': 'Isotammen asetukset', 'v': '1.0.20', 'g': '5.1', 'd': 'Isotammen asetukset', 'z': 'IsotammiConfig.addon.tgz'}
 {'t': 'Tool', 'i': 'generatecitations', 'n': 'Muodosta lähdeviitteet lisätietojen perusteella', 'v': '1.0.18', 'g': '5.1', 'd': 'Muodosta lähdeviitteet lisätietojen perusteella', 'z': 'generatecitations.addon.tgz'}
+{'t': 'Gramplet', 'i': 'PropertyEditor', 'n': 'OminaisuusMuokkain', 'v': '1.0.4', 'g': '5.1', 'd': 'Gramplet jolla voi muokata usean kohteen ominaisuuksia samalla kertaa', 'z': 'PropertyEditor.addon.tgz'}
 {'t': 'Rule', 'i': 'HasValidDate', 'n': 'Events with a valid date', 'v': '1.0.6', 'g': '5.1', 'd': 'Events with a valid date', 'z': '_hasvaliddate.addon.tgz'}
 {'t': 'Rule', 'i': 'HasInValidDate', 'n': 'Events with an in valid date', 'v': '1.0.6', 'g': '5.1', 'd': 'Events with an invalid date', 'z': '_hasvaliddate.addon.tgz'}
 {'t': 'Gramplet', 'i': 'PlaceTool', 'n': 'Paikkatyökalu', 'v': '1.0.30', 'g': '5.1', 'd': 'Gramplet, joka käsittelee useita paikkoja kerrallaan', 'z': 'PlaceTool.addon.tgz'}
