@@ -10,101 +10,190 @@ msgstr ""
 "POT-Creation-Date: 2019-06-13 10:47+0300\n"
 "PO-Revision-Date: 2019-06-09 19:46+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language: en\n"
 "Language-Team: en <LL@li.org>\n"
-"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+"Language: en\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1)\n"
 "Generated-By: Babel 2.6.0\n"
 
-#: PlaceTool.gpr.py:3 PlaceTool.gpr.py:14
+#: PlaceTool/PlaceTool.gpr.py:5 PlaceTool/PlaceTool.gpr.py:16
 msgid "PlaceTool"
 msgstr ""
 
-#: PlaceTool.gpr.py:4
+#: PlaceTool/PlaceTool.gpr.py:6
 msgid "Gramplet to manipulate multiple places"
 msgstr ""
 
-#: PlaceTool.py:56
-msgid "Set properties for multiple places"
-msgstr ""
-
-#: PlaceTool.py:78 PlaceTool.py:118
+#: PlaceTool/PlaceTool.py:74 PlaceTool/PlaceTool.py:129
 msgid "None"
 msgstr ""
 
-#: PlaceTool.py:95
+#: PlaceTool/PlaceTool.py:92
 msgid ""
-"This gramplet allows setting properties for multiple places at the same "
-"time"
+"This gramplet allows setting properties for multiple places at the same time"
 msgstr ""
 
-#: PlaceTool.py:101
+#: PlaceTool/PlaceTool.py:97
 msgid "Place type:"
 msgstr ""
 
-#: PlaceTool.py:107
+#: PlaceTool/PlaceTool.py:100
+msgid "New place type for the selected places"
+msgstr ""
+
+#: PlaceTool/PlaceTool.py:103
 msgid "Tag:"
 msgstr ""
 
-#: PlaceTool.py:113
-msgid "New enclosing place"
+#: PlaceTool/PlaceTool.py:106
+msgid "New tag for the selected places"
 msgstr ""
 
-#: PlaceTool.py:132
-msgid "Set enclosing place"
+#: PlaceTool/PlaceTool.py:109
+msgid "Timespan:"
 msgstr ""
 
-#: PlaceTool.py:136
+#: PlaceTool/PlaceTool.py:113
+msgid "Set timespan for enclosing places"
+msgstr ""
+
+#: PlaceTool/PlaceTool.py:124
+msgid "New enclosing place:"
+msgstr ""
+
+#: PlaceTool/PlaceTool.py:131
+msgid "New enclosing place for the selected places"
+msgstr ""
+
+#: PlaceTool/PlaceTool.py:149
+msgid "Select enclosing place"
+msgstr ""
+
+#: PlaceTool/PlaceTool.py:151
+msgid "Select a new enclosing place for the selected places"
+msgstr ""
+
+#: PlaceTool/PlaceTool.py:154
 msgid "Clear original enclosing places"
 msgstr ""
 
-#: PlaceTool.py:139
+#: PlaceTool/PlaceTool.py:155
+msgid ""
+"If checked then any previous enclosing place will be removed from the "
+"selected places"
+msgstr ""
+
+#: PlaceTool/PlaceTool.py:158
 msgid "Clear tags"
 msgstr ""
 
-#: PlaceTool.py:142
+#: PlaceTool/PlaceTool.py:159
+msgid ""
+"If checked then any previous tag will be removed from the selected places"
+msgstr ""
+
+#: PlaceTool/PlaceTool.py:162
 msgid "Generate hierarchy"
 msgstr ""
 
-#: PlaceTool.py:148
-msgid "use spaces as separator"
+#: PlaceTool/PlaceTool.py:164
+msgid ""
+"If checked then a place hierarchy will be generated, based on the names of "
+"the original places"
 msgstr ""
 
-#: PlaceTool.py:152
+#: PlaceTool/PlaceTool.py:172
+msgid "Separator:"
+msgstr ""
+
+#: PlaceTool/PlaceTool.py:176
+msgid "Comma"
+msgstr ""
+
+#: PlaceTool/PlaceTool.py:178
+msgid ""
+"If selected then the original names will be split at commas to create the "
+"new hierarchy"
+msgstr ""
+
+#: PlaceTool/PlaceTool.py:184
+msgid "Space"
+msgstr ""
+
+#: PlaceTool/PlaceTool.py:186
+msgid ""
+"If selected then the original names will be split at blank spaces to create "
+"the new hierarchy"
+msgstr ""
+
+#: PlaceTool/PlaceTool.py:193
 msgid "reverse hierarchy"
 msgstr ""
 
-#: PlaceTool.py:158
+#: PlaceTool/PlaceTool.py:194
+msgid ""
+"If checked then the original name is assumed to start with the largest place "
+"in the hierarchy"
+msgstr ""
+
+#: PlaceTool/PlaceTool.py:200
 msgid "Replace text"
 msgstr ""
 
-#: PlaceTool.py:161
+#: PlaceTool/PlaceTool.py:201
+msgid ""
+"If checked then a specified text is replaced with a new text in the selected "
+"place names"
+msgstr ""
+
+#: PlaceTool/PlaceTool.py:204
 msgid "Use regex"
 msgstr ""
 
-#: PlaceTool.py:171
+#: PlaceTool/PlaceTool.py:205
+msgid ""
+"If checked then the old text can be a regular expression and the new text "
+"can contain substitutions (\\1, \\2 etc.)"
+msgstr ""
+
+#: PlaceTool/PlaceTool.py:214
 msgid "Old text:"
 msgstr ""
 
-#: PlaceTool.py:179
+#: PlaceTool/PlaceTool.py:217
+msgid "The original text (or regular expression) to be  replaced"
+msgstr ""
+
+#: PlaceTool/PlaceTool.py:219
 msgid "New text:"
 msgstr ""
 
-#: PlaceTool.py:194
+#: PlaceTool/PlaceTool.py:222
+msgid "The new text that will replace the old text"
+msgstr ""
+
+#: PlaceTool/PlaceTool.py:232
 msgid "Clear selections"
 msgstr ""
 
-#: PlaceTool.py:198
+#: PlaceTool/PlaceTool.py:234
+msgid "Clears all settings"
+msgstr ""
+
+#: PlaceTool/PlaceTool.py:237
 msgid "Apply to selected places"
 msgstr ""
 
-#: PlaceTool.py:217
-msgid "Please select a place that will be set as an enclosing place"
+#: PlaceTool/PlaceTool.py:239
+msgid "Executes all specified operations for selected places"
 msgstr ""
 
-#: PlaceTool.py:237
+#: PlaceTool/PlaceTool.py:280
 msgid "Setting place properties"
 msgstr ""
 
+#: PlaceTool/PlaceTool.py:318
+msgid "Regex operation failed: {}"
+msgstr ""

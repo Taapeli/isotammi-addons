@@ -10,63 +10,79 @@ msgstr ""
 "POT-Creation-Date: 2018-12-08 15:39+0200\n"
 "PO-Revision-Date: 2018-12-08 15:39+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language: en\n"
 "Language-Team: en <LL@li.org>\n"
-"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+"Language: en\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1)\n"
 "Generated-By: Babel 2.6.0\n"
 
-#: generatecitations.gpr.py:33 generatecitations.gpr.py:34
+#: generatecitations/generatecitations.gpr.py:27
+msgid "Isotammi tools"
+msgstr ""
+
+#: generatecitations/generatecitations.gpr.py:37
+#: generatecitations/generatecitations.gpr.py:38
 msgid "Generate source citations from notes"
 msgstr ""
 
-#: generatecitations.py:140
+#: generatecitations/generatecitations.py:117
 msgid "Error occurred, please report this message:"
 msgstr ""
 
-#: generatecitations.py:260
+#: generatecitations/generatecitations.py:183
 msgid "Generating citations"
 msgstr ""
 
-#: generatecitations.py:303
+#: generatecitations/generatecitations.py:230
 msgid "Add citations"
 msgstr ""
 
-#: generatecitations.py:357
+#: generatecitations/generatecitations.py:285
+#, python-brace-format
 msgid "Total objects processed: {total_objects}"
 msgstr ""
 
-#: generatecitations.py:358
+#: generatecitations/generatecitations.py:286
+#, python-brace-format
 msgid "Total notes: {total_notes}"
 msgstr ""
 
-#: generatecitations.py:359
+#: generatecitations/generatecitations.py:287
+#, python-brace-format
 msgid "Matching notes: {matching_notes}"
 msgstr ""
 
-#: generatecitations.py:360
+#: generatecitations/generatecitations.py:288
+#, python-brace-format
 msgid "Unique matching notes: {unique_matching_notes}"
 msgstr ""
 
-#: generatecitations.py:361
+#: generatecitations/generatecitations.py:289
+#, python-brace-format
 msgid "Skipped notes: {skipped}"
 msgstr ""
 
-#: generatecitations.py:362
+#: generatecitations/generatecitations.py:290
+#, python-brace-format
 msgid "Citations added: {citations_added}"
 msgstr ""
 
-#: generatecitations.py:363
+#: generatecitations/generatecitations.py:291
+#, python-brace-format
 msgid "Sources added: {sources_added}"
 msgstr ""
 
-#: generatecitations.py:364
+#: generatecitations/generatecitations.py:292
+#, python-brace-format
 msgid "Repositories added: {repos_added}"
 msgstr ""
 
-#: generatecitations.py:367
-msgid "All events processed"
+#: generatecitations/generatecitations.py:294
+msgid "You can undo all changes with Ctrl-Z."
 msgstr ""
 
+#: generatecitations/generatecitations.py:296
+msgid "All events processed"
+msgstr ""
