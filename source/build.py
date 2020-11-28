@@ -10,7 +10,7 @@ gi.require_version('Gtk', '3.0')
 from gramps.gen.const import GRAMPS_LOCALE as glocale
 from gramps.gen.plug import make_environment, PTYPE_STR
 
-grampsversions = [("5.0","gramps50"), ("5.1","gramps51")]
+grampsversions = [("5.0","gramps50"), ("5.1","gramps51"), ("5.2","gramps52")]
 languages = ["fi","sv"]
 
 def get_tgz(addon,grampsver):
