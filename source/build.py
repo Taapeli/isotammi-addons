@@ -35,7 +35,7 @@ def get_files(addon):
 def need_rebuild(addon):
     for gver, grampsver in grampsversions:
         if addon.startswith("_") and gver == "5.0": # convention: filter rules start with "_"
-            return False
+            continue
         tgz = get_tgz(addon,grampsver)
         if not os.path.exists(tgz): return True
         tgz_modtime = os.stat(tgz).st_mtime

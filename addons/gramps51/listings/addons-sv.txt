@@ -2,8 +2,8 @@
 {'t': 'Tool', 'i': 'zipinstall', 'n': 'ZipInstall', 'v': '1.0.2', 'g': '5.1', 'd': 'Install a plugin from a ZIP file', 'z': 'zipinstall.addon.tgz'}
 {'t': 'Tool', 'i': 'generatecitations', 'n': 'Generate source citations from notes', 'v': '1.0.19', 'g': '5.1', 'd': 'Generate source citations from notes', 'z': 'generatecitations.addon.tgz'}
 {'t': 'Gramplet', 'i': 'PropertyEditor', 'n': 'PropertyEditor', 'v': '1.0.7', 'g': '5.1', 'd': 'Gramplet to edit attributes of multiple objects', 'z': 'PropertyEditor.addon.tgz'}
-{'t': 'Rule', 'i': 'HasValidDate', 'n': 'Events with a valid date', 'v': '1.0.6', 'g': '5.1', 'd': 'Events with a valid date', 'z': '_hasvaliddate.addon.tgz'}
-{'t': 'Rule', 'i': 'HasInValidDate', 'n': 'Events with an in valid date', 'v': '1.0.6', 'g': '5.1', 'd': 'Events with an invalid date', 'z': '_hasvaliddate.addon.tgz'}
+{'t': 'Rule', 'i': 'HasValidDate', 'n': 'Events with a valid date', 'v': '1.0.7', 'g': '5.1', 'd': 'Events with a valid date', 'z': '_hasvaliddate.addon.tgz'}
+{'t': 'Rule', 'i': 'HasInValidDate', 'n': 'Events with an in valid date', 'v': '1.0.7', 'g': '5.1', 'd': 'Events with an invalid date', 'z': '_hasvaliddate.addon.tgz'}
 {'t': 'Gramplet', 'i': 'PlaceTool', 'n': 'PlaceTool', 'v': '1.0.31', 'g': '5.1', 'd': 'Gramplet to manipulate multiple places', 'z': 'PlaceTool.addon.tgz'}
 {'t': 'Gramplet', 'i': 'Dates', 'n': 'Dates', 'v': '1.0.17', 'g': '5.1', 'd': 'Dates', 'z': 'Dates.addon.tgz'}
 {'t': 'Gramplet', 'i': 'DeepConnectionsGraph', 'n': 'Deep Connections Graph', 'v': '1.0.8', 'g': '5.1', 'd': 'DeepConnectionsGraph Gramplet', 'z': 'DeepConnectionsGraph.addon.tgz'}
