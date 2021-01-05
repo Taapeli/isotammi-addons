@@ -14,7 +14,12 @@ Gramplet to merge multiple objects in one step. This applies to
 
 Install the gramplet in the corresponding view (people, families etc). Then select the objects to be merged and click the button "Merge selected objects". 
 
+
+![UI](MultiMerge.png)
+
 The gramplet will ask which of the selected objects should be the primary object.
+
+![Select primary object](Selectprimary.png)
 
 The gramplet executes the standard merge function pairwise for the selected objects. The user can select the primary object but otherwise the merges are performed using the defaults for each case.
 
