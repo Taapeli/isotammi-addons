@@ -1,4 +1,5 @@
 {'t': 'Gramplet', 'i': 'isotammiconfig', 'n': 'Isotammen asetukset', 'v': '1.0.23', 'g': '5.2', 'd': 'Isotammen asetukset', 'z': 'IsotammiConfig.addon.tgz'}
+{'t': 'Gramplet', 'i': 'Multimergegramplet Gramplet', 'n': 'Multimerge Gramplet', 'v': '1.0.1', 'g': '5.2', 'd': 'Gramplet ', 'z': 'multimergegramplet.addon.tgz'}
 {'t': 'Tool', 'i': 'zipinstall', 'n': 'ZipInstall', 'v': '1.0.2', 'g': '5.2', 'd': 'Install a plugin from a ZIP file', 'z': 'zipinstall.addon.tgz'}
 {'t': 'Tool', 'i': 'generatecitations', 'n': 'Muodosta lähdeviitteet lisätietojen perusteella', 'v': '1.0.20', 'g': '5.2', 'd': 'Muodosta lähdeviitteet lisätietojen perusteella', 'z': 'generatecitations.addon.tgz'}
 {'t': 'Gramplet', 'i': 'PropertyEditor', 'n': 'OminaisuusMuokkain', 'v': '1.0.7', 'g': '5.2', 'd': 'Gramplet jolla voi muokata usean kohteen ominaisuuksia samalla kertaa', 'z': 'PropertyEditor.addon.tgz'}
