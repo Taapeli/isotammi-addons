@@ -2,6 +2,45 @@
 Author: kari.kujansuu@gmail.com<br>
 1 Jan 2021
 
+- [Introduction](#introduction)
+- [User interface](#user-interface)
+- [Basic examples](#basic-examples)
+- [Pre-defined variables](#pre-defined-variables)
+- [Example](#example)
+- [Accessing Gramps objects](#accessing-gramps-objects)
+- [General variables](#general-variables)
+- [Help feature](#help-feature)
+- [Options](#options)
+- [Row limit](#row-limit)
+- [Editing objects](#editing-objects)
+- [Download as CSV](#download-as-csv)
+- [Title field](#title-field)
+- [Initialization statements](#initialization-statements)
+- [Statements executed for every object](#statements-executed-for-every-object)
+- [Modifying the database](#modifying-the-database)
+- [Saving the query as a script file](#saving-the-query-as-a-script-file)
+- [Saving the query as a custom filter](#saving-the-query-as-a-custom-filter)
+- [Using predefined custom filters](#using-predefined-custom-filters)
+- [Running from the command line](#running-from-the-command-line)
+- [Proxy objects](#proxy-objects)
+- [Date arithmetic](#date-arithmetic)
+- [More examples](#more-examples)
+- [Reference](#reference)
+  * [Variables (or attributes or properties...) supported for the various object types.](#variables--or-attributes-or-properties--supported-for-the-various-object-types)
+    + [Citations](#citations)
+    + [Events](#events)
+    + [Families](#families)
+    + [Notes](#notes)
+    + [People](#people)
+    + [Places](#places)
+    + [Repositories](#repositories)
+    + [Sources](#sources)
+    + [global variables and functions](#global-variables-and-functions)
+
+
+
+## Introduction
+
 This is a general purpose tool that can be used to do "ad-hoc" queries against a Gramps family tree. The queries are expressed in the Python programming language so the tool is most useful for programmers. But the intent is also that the tool is easy enough to allow regular Gramps users to make use of it. The queries can also be saved as script files that a user can then load into the tool without necessarily understanding the details.
 
 This tool works in the Gramps versions 5.x and later. It will be installed in the "Isotammi tools" submenu under the Tools menu.
@@ -120,7 +159,7 @@ Next are three checkboxes:
 
 ## Row limit
 
-There is a limit of 1000 rows that can be displayed. This is because Gramps seems to become unstable if an attempt is made to display greater number of rows (maybe a Gtk limitation). if the limit is exceeded then you will get a warning and only the first 1000 rows are displayed:
+There is a limit of 1000 rows that can be displayed. This is because Gramps seems to become unstable if an attempt is made to display greater number of rows (maybe a Gtk limitation). If the limit is exceeded then you will get a warning and only the first 1000 rows are displayed:
 
 ![SuperTool](Warning.png)
 
@@ -139,7 +178,7 @@ The first input field ("Title") give a name for the query. This name is saved in
 
 ## Initialization statements
 
-The second input field ("Initialization statements") can contain any Python statements that are executed only once in the beginning of the operation. Here you can create any variables needed in the later phases and also import any needed Python (or Gramps) modules. Some gfenerally useful modules are already imported by default. An example of a variable would be a counter that is updated appropriately in the "statements" field and whose final value is displayed in the "expressions" field using the "Summary only" feature.
+The second input field ("Initialization statements") can contain any Python statements that are executed only once in the beginning of the operation. Here you can create any variables needed in the later phases and also import any needed Python (or Gramps) modules. Some generally useful modules are already imported by default. An example of a variable would be a counter that is updated appropriately in the "statements" field and whose final value is displayed in the "expressions" field using the "Summary only" feature.
 
 Here a counter is used to find duplicate places in the database:
 
@@ -167,7 +206,7 @@ For example, this will set the gender of selected people to FEMALE:
 
 ## Saving the query as a script file
 
-You can save the query in a file with the "Save" button and load it from a file with the "Load" button. The file is a text file in a JSON (Javascript Object Notation) format. With this you can save useful queries and also distribute them to other Gramps users. These file are also called script files.
+You can save the query in a file with the "Save" button and load it from a file with the "Load" button. The file is a text file in a JSON (Javascript Object Notation) format. With this you can save useful queries and also distribute them to other Gramps users. These files are also called script files.
 
 ## Saving the query as a custom filter
 
@@ -205,13 +244,387 @@ SuperTool internally uses "proxy objects" to represent the Gramps internal objec
 For example, a person's birth event - the "birth" attribute - is actually an EventProxy object. If you display it you will get something like "Event[E0123]". To get the event date and place you need to append the corresponding event attributes: "birth.date" and "birth.place". And even then the "birth.place" refers to a PlaceProxy and to fetch the name of the place you need to use "birth.place.name" or "birth.place.longname".
 
 
+## Date arithmetic
 
 
-----------
+Date properties (like birth.date) return a DateProxy object. Currently the dates work like this:
 
-# Reference
+* Adding an integer to a DateProxy will add so many years to the date:
+** (2021-01-11) + 1 -> 2022-01-11
+
+* Subtracting an integer to a DateProxy will subtract so many years from the date:
+** (2021-01-11) - 1 -> 2020-01-11
+
+* But subtracting two DateProxys will yield the number of <b>days</b> between the dates:
+** (2022-01-11) - (2021-01-11) -> 365
+
+This is a bit contradictory, maybe this will change in the future...
+
+
+
+## More examples
 
 to be added
 
---------
+
+# Reference
+
+## Variables (or attributes or properties...) supported for the various object types.
+
+These lists include the variables defined in the various Proxy classes. In addition, you can naturally use all properties and methods of the Gramps objects and Python libraries.
+
+### Citations
+
+- self
+    > This CitationProxy object
+    
+- attributes
+	> Attributes as a list of tuples (name,value)
+
+- citation
+	> This Gramps Citation object (same as 'obj')
+
+- citators
+	> Objects referring to this citation
+
+- confidence
+	> Confidence value
+
+- gramps_id
+	> Gramps id, e.g. C0123
+
+- handle
+	> Gramps internal handle
+
+- notes
+	> List of notes
+
+- obj
+	> This Gramps Citation object (same as 'citation')
+
+- page
+	> Page value
+
+- source
+	> Source
+
+- tags
+	> List of tags as strings
+
+### Events
+
+- self
+	> This EventProxy object
+
+- attributes
+	> Attributes as a list of tuples (name,value)
+
+- citations
+	> List of citations
+
+- date
+	> Date of the event
+
+- description
+	> Event description
+
+- event
+	> This Gramps Event object (same as 'obj')
+
+- gramps_id
+	> Gramps id, e.g. E0123
+
+- handle
+	> Gramps internal handle
+
+- notes
+	> List of notes
+
+- obj
+	> This Gramps Event object (same as 'event')
+
+- participants
+	> Participants of the event (person objects)
+
+- place
+	> Place object of the event
+
+- placename
+	> Name of the place
+
+- refs
+	> Ref objects referring to this event
+
+- role
+	> Role of the event
+
+- tags
+	> List of tags as strings
+
+- type
+	> Type of the role as string
+
+### Families
+
+- self
+	> This FamilyProxy object
+
+- attributes
+	> Attributes as a list of tuples (name,value)
+
+- children
+	> Person objects of the family's children
+
+- citations
+	> List of citations
+
+- events
+	> List of all events attached to this person
+
+- family
+	> This Gramps Family object (same as 'obj')
+
+- father
+	> Person object of the family's father
+
+- gramps_id
+	> Gramps id, e.g. F0123
+
+- handle
+	> Gramps internal handle
+
+- mother
+	> Person object of the family's mother
+
+- notes
+	> List of notes
+
+- obj
+	> This Gramps Family object (same as 'family')
+
+- tags
+	> List of tags as strings
+
+
+### Notes
+- self
+	> This NoteProxy object
+
+- gramps_id
+	> Gramps id, e.g. N0123
+
+- handle
+	> Gramps internal handle
+
+- note
+	> This Gramps Note object (same as 'obj')
+
+- obj
+	> This Gramps Note object (same as 'note')
+
+- tags
+	> List of tags as strings
+
+- text
+	> Text of the note
+
+### People
+
+- self
+	> This PersonProxy object
+
+- attributes
+	> Attributes as a list of tuples (name,value)
+
+- birth
+	> Birth event
+
+- citations
+	> List of citations
+
+- death
+	> Death event
+
+- events
+	> List of all events attached to this person
+
+- families
+	> List of families where this person is a parent
+
+- gender
+	> Gender as as string: male, female or unknown
+
+- gramps_id
+	> Gramps id, e.g. I0123
+
+- handle
+	> Gramps internal handle
+
+- name
+	> Primary name as string
+
+- nameobjs
+	> List of Gramps internal Name objects
+
+- names
+	> List of names as strings
+
+- notes
+	> List of notes
+
+- obj
+	> This Gramps Person object (same as 'person')
+
+- parent_families
+	> List of families where this person is a child
+
+- person
+	> This Gramps Person object (same as 'obj')
+
+- tags
+	> List of tags as strings
+
+### Places
+
+- self
+	> This PlaceProxy object
+
+- citations
+	> List of citations
+
+- enclosed_by
+	> List of places that enclose this place
+
+- encloses
+	> List of places that this place encloses
+
+- gramps_id
+	> Gramps id, e.g. P0123
+
+- handle
+	> Gramps internal handle
+
+- longname
+	> Full name including enclosing places
+
+- name
+	> Name of the place
+
+- notes
+	> List of notes
+
+- obj
+	> This Gramps Place object (same as 'place')
+
+- place
+	> This Gramps Place object (same as 'obj')
+
+- tags
+	> List of tags as strings
+
+- title
+	> Title of the place
+
+- type
+	> Type of the place as string
+
+### Repositories
+
+- self
+	> This RepositoryProxy object
+
+- gramps_id
+	> Gramps id, e.g. R0123
+
+- handle
+	> Gramps internal handle
+
+- name
+	> Repository name
+
+- obj
+	> This Gramps Repository object (same as 'repository')
+
+- repository
+	> This Gramps Repository object (same as 'obj')
+
+- sources
+	> List of sources in this repository
+
+- tags
+	> List of tags as strings
+
+- type
+	> Type of repository
+
+### Sources
+
+- self
+	> This SourceProxy object
+
+- abbrev
+	> Abbreviation
+
+- attributes
+	> Attributes as a list of tuples (name,value)
+
+- author
+	> Author
+
+- citations
+	> List of citations
+
+- gramps_id
+	> Gramps id, e.g. S0123
+
+- handle
+	> Gramps internal handle
+
+- notes
+	> List of notes
+
+- obj
+	> This Gramps Source object (same as 'source')
+
+- pubinfo
+	> Publication info
+
+- repositories
+	> List of repositories
+
+- source
+	> This Gramps Source object (same as 'obj')
+
+- tags
+	> List of tags as strings
+
+- title
+	> Source title
+
+### global variables and functions
+
+- db
+	> Database object
+
+- dbstate
+	> Database state  object
+
+- makedate
+	> Function to construct a date literal; e.g. makedate(1800, 12, 31)
+
+- uniq
+	> Function that returns unique elements from a list
+
+- flatten
+	> Function that returns elements from a list of lists
+
+- today
+	> Function that returns today's date
+
+- namespace
+	> Category, e.g. 'Person'
+
+- filter
+	> Function that returns a custom filter by name
+
 

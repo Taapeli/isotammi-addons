@@ -35,6 +35,7 @@ from gramps.gen.lib.family import Family
 from gramps.gen.lib.event import Event
 from gramps.gen.lib.place import Place
 from pprint import pprint
+from gramps.gui.display import display_url
 
 try:
     from typing import Any
@@ -417,6 +418,14 @@ class HelpWindow(Gtk.Window):
         self.set_keep_above(True)
         self.box = Gtk.VBox(spacing=6)
         self.add(self.box)
+
+        readme_url = "https://github.com/Taapeli/isotammi-addons/blob/master/source/SuperTool/README.md"
+
+        label = Gtk.Label()
+        markup = '<a href="{url}">{title}</a>'.format(url=readme_url, title="Open README in a browser")
+        label.set_markup(markup)
+        self.box.pack_start(label, True, True, 0)
+
         self.box.pack_start(Gtk.Label("Available properties"), True, True, 0)
         self.box.pack_start(help_notebook, True, True, 0)
 
