@@ -1,11 +1,20 @@
-{'t': 'Gramplet', 'i': 'isotammiconfig', 'n': 'Isotammi configuration', 'v': '1.0.23', 'g': '5.2', 'd': 'Isotammi configuration', 'z': 'IsotammiConfig.addon.tgz'}
-{'t': 'Gramplet', 'i': 'Multimergegramplet Gramplet', 'n': 'Multimerge Gramplet', 'v': '1.0.1', 'g': '5.2', 'd': 'Gramplet ', 'z': 'multimergegramplet.addon.tgz'}
-{'t': 'Tool', 'i': 'zipinstall', 'n': 'ZipInstall', 'v': '1.0.2', 'g': '5.2', 'd': 'Install a plugin from a ZIP file', 'z': 'zipinstall.addon.tgz'}
-{'t': 'Tool', 'i': 'generatecitations', 'n': 'Generate source citations from notes', 'v': '1.0.20', 'g': '5.2', 'd': 'Generate source citations from notes', 'z': 'generatecitations.addon.tgz'}
-{'t': 'Gramplet', 'i': 'PropertyEditor', 'n': 'PropertyEditor', 'v': '1.0.7', 'g': '5.2', 'd': 'Gramplet to edit attributes of multiple objects', 'z': 'PropertyEditor.addon.tgz'}
-{'t': 'Rule', 'i': 'HasValidDate', 'n': 'Events with a valid date', 'v': '1.0.7', 'g': '5.2', 'd': 'Events with a valid date', 'z': '_hasvaliddate.addon.tgz'}
-{'t': 'Rule', 'i': 'HasInValidDate', 'n': 'Events with an in valid date', 'v': '1.0.7', 'g': '5.2', 'd': 'Events with an invalid date', 'z': '_hasvaliddate.addon.tgz'}
+{'t': 'Gramplet', 'i': 'isotammiconfig', 'n': 'Isotammi configuration', 'v': '1.0.24', 'g': '5.2', 'd': 'Isotammi configuration', 'z': 'IsotammiConfig.addon.tgz'}
+{'t': 'Gramplet', 'i': 'Multimergegramplet Gramplet', 'n': 'Multimerge Gramplet', 'v': '1.0.2', 'g': '5.2', 'd': 'Gramplet ', 'z': 'multimergegramplet.addon.tgz'}
+{'t': 'Tool', 'i': 'zipinstall', 'n': 'ZipInstall', 'v': '1.0.3', 'g': '5.2', 'd': 'Install a plugin from a ZIP file', 'z': 'zipinstall.addon.tgz'}
+{'t': 'Tool', 'i': 'generatecitations', 'n': 'Generate source citations from notes', 'v': '1.0.21', 'g': '5.2', 'd': 'Generate source citations from notes', 'z': 'generatecitations.addon.tgz'}
+{'t': 'Gramplet', 'i': 'PropertyEditor', 'n': 'PropertyEditor', 'v': '1.0.8', 'g': '5.2', 'd': 'Gramplet to edit attributes of multiple objects', 'z': 'PropertyEditor.addon.tgz'}
+{'t': 'Rule', 'i': 'HasValidDate', 'n': 'Events with a valid date', 'v': '1.0.8', 'g': '5.2', 'd': 'Events with a valid date', 'z': '_hasvaliddate.addon.tgz'}
+{'t': 'Rule', 'i': 'HasInValidDate', 'n': 'Events with an in valid date', 'v': '1.0.8', 'g': '5.2', 'd': 'Events with an invalid date', 'z': '_hasvaliddate.addon.tgz'}
 {'t': 'Gramplet', 'i': 'PlaceTool', 'n': 'PlaceTool', 'v': '1.0.32', 'g': '5.2', 'd': 'Gramplet to manipulate multiple places', 'z': 'PlaceTool.addon.tgz'}
-{'t': 'Gramplet', 'i': 'Dates', 'n': 'Dates', 'v': '1.0.17', 'g': '5.2', 'd': 'Dates', 'z': 'Dates.addon.tgz'}
-{'t': 'Gramplet', 'i': 'DeepConnectionsGraph', 'n': 'Deep Connections Graph', 'v': '1.0.8', 'g': '5.2', 'd': 'DeepConnectionsGraph Gramplet', 'z': 'DeepConnectionsGraph.addon.tgz'}
+{'t': 'Rule', 'i': 'family-genfilter', 'n': 'Generic filter', 'v': '0.0.2', 'g': '5.2', 'd': 'Generic filter', 'z': 'SuperTool.addon.tgz'}
+{'t': 'Rule', 'i': 'person-genfilter', 'n': 'Generic filter', 'v': '0.0.2', 'g': '5.2', 'd': 'Generic filter', 'z': 'SuperTool.addon.tgz'}
+{'t': 'Rule', 'i': 'place-genfilter', 'n': 'Generic filter', 'v': '0.0.2', 'g': '5.2', 'd': 'Generic filter', 'z': 'SuperTool.addon.tgz'}
+{'t': 'Rule', 'i': 'event-genfilter', 'n': 'Generic filter', 'v': '0.0.2', 'g': '5.2', 'd': 'Generic filter', 'z': 'SuperTool.addon.tgz'}
+{'t': 'Rule', 'i': 'citation-genfilter', 'n': 'Generic filter', 'v': '0.0.2', 'g': '5.2', 'd': 'Generic filter', 'z': 'SuperTool.addon.tgz'}
+{'t': 'Rule', 'i': 'source-genfilter', 'n': 'Generic filter', 'v': '0.0.2', 'g': '5.2', 'd': 'Generic filter', 'z': 'SuperTool.addon.tgz'}
+{'t': 'Rule', 'i': 'repository-genfilter', 'n': 'Generic filter', 'v': '0.0.2', 'g': '5.2', 'd': 'Generic filter', 'z': 'SuperTool.addon.tgz'}
+{'t': 'Rule', 'i': 'note-genfilter', 'n': 'Generic filter', 'v': '0.0.2', 'g': '5.2', 'd': 'Generic filter', 'z': 'SuperTool.addon.tgz'}
+{'t': 'Tool', 'i': 'genfilter-tester', 'n': 'genfilter-tester', 'v': '1.0.10', 'g': '5.2', 'd': 'genfilter-tester', 'z': 'SuperTool.addon.tgz'}
+{'t': 'Gramplet', 'i': 'Dates', 'n': 'Dates', 'v': '1.0.18', 'g': '5.2', 'd': 'Dates', 'z': 'Dates.addon.tgz'}
+{'t': 'Gramplet', 'i': 'DeepConnectionsGraph', 'n': 'Deep Connections Graph', 'v': '1.0.9', 'g': '5.2', 'd': 'DeepConnectionsGraph Gramplet', 'z': 'DeepConnectionsGraph.addon.tgz'}
 {'t': 'Gramplet', 'i': 'AddSourcesGramplet', 'n': 'AddSourcesGramplet', 'v': '0.9.4', 'g': '5.2', 'd': 'Gramplet to add sources', 'z': 'AddSourcesGramplet.addon.tgz'}

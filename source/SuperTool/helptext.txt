@@ -1,0 +1,472 @@
+{
+    "global": [
+        [
+            "db",
+            "Database object"
+        ],
+        [
+            "dbstate",
+            "Database state  object"
+        ],
+        [
+            "makedate",
+            "Function to construct a date literal; e.g. makedate(1800, 12, 31)"
+        ],
+        [
+            "uniq",
+            "Function that returns unique elements from a list"
+        ],
+        [
+            "flatten",
+            "Function that returns elements from a list of lists"
+        ],
+        [
+            "today",
+            "Function that returns today's date"
+        ],
+        [
+            "namespace",
+            "Category, e.g. 'Person'"
+        ],
+        [
+            "filter",
+            "Function that returns a custom filter by name"
+        ]
+    ],
+    "People": [
+        [
+            "self",
+            "This PersonProxy object"
+        ],
+        [
+            "attributes",
+            "Attributes as a list of tuples (name,value)"
+        ],
+        [
+            "birth",
+            "Birth event"
+        ],
+        [
+            "citations",
+            "List of citations"
+        ],
+        [
+            "death",
+            "Death event"
+        ],
+        [
+            "events",
+            "List of all events attached to this person"
+        ],
+        [
+            "families",
+            "List of families where this person is a parent"
+        ],
+        [
+            "gender",
+            "Gender as as string: male, female or unknown"
+        ],
+        [
+            "gramps_id",
+            "Gramps id, e.g. I0123"
+        ],
+        [
+            "handle",
+            "Gramps internal handle"
+        ],
+        [
+            "name",
+            "Primary name as string"
+        ],
+        [
+            "nameobjs",
+            "List of Gramps internal Name objects"
+        ],
+        [
+            "names",
+            "List of names as strings"
+        ],
+        [
+            "notes",
+            "List of notes"
+        ],
+        [
+            "obj",
+            "This Gramps Person object (same as 'person')"
+        ],
+        [
+            "parent_families",
+            "List of families where this person is a child"
+        ],
+        [
+            "person",
+            "This Gramps Person object (same as 'obj')"
+        ],
+        [
+            "tags",
+            "List of tags as strings"
+        ]
+    ],
+    "Families": [
+        [
+            "self",
+            "This FamilyProxy object"
+        ],
+        [
+            "attributes",
+            "Attributes as a list of tuples (name,value)"
+        ],
+        [
+            "children",
+            "Person objects of the family's children"
+        ],
+        [
+            "citations",
+            "List of citations"
+        ],
+        [
+            "events",
+            "List of all events attached to this person"
+        ],
+        [
+            "family",
+            "This Gramps Family object (same as 'obj')"
+        ],
+        [
+            "father",
+            "Person object of the family's father"
+        ],
+        [
+            "gramps_id",
+            "Gramps id, e.g. F0123"
+        ],
+        [
+            "handle",
+            "Gramps internal handle"
+        ],
+        [
+            "mother",
+            "Person object of the family's mother"
+        ],
+        [
+            "notes",
+            "List of notes"
+        ],
+        [
+            "obj",
+            "This Gramps Family object (same as 'family')"
+        ],
+        [
+            "tags",
+            "List of tags as strings"
+        ]
+    ],
+    "Events": [
+        [
+            "self",
+            "This EventProxy object"
+        ],
+        [
+            "attributes",
+            "Attributes as a list of tuples (name,value)"
+        ],
+        [
+            "citations",
+            "List of citations"
+        ],
+        [
+            "date",
+            "Date of the event"
+        ],
+        [
+            "description",
+            "Event description"
+        ],
+        [
+            "event",
+            "This Gramps Event object (same as 'obj')"
+        ],
+        [
+            "gramps_id",
+            "Gramps id, e.g. E0123"
+        ],
+        [
+            "handle",
+            "Gramps internal handle"
+        ],
+        [
+            "notes",
+            "List of notes"
+        ],
+        [
+            "obj",
+            "This Gramps Event object (same as 'event')"
+        ],
+        [
+            "participants",
+            "Participants of the event (person objects)"
+        ],
+        [
+            "place",
+            "Place object of the event"
+        ],
+        [
+            "placename",
+            "Name of the place"
+        ],
+        [
+            "refs",
+            "Ref objects referring to this event"
+        ],
+        [
+            "role",
+            "Role of the event"
+        ],
+        [
+            "tags",
+            "List of tags as strings"
+        ],
+        [
+            "type",
+            "Type of the role as string"
+        ]
+    ],
+    "Places": [
+        [
+            "self",
+            "This PlaceProxy object"
+        ],
+        [
+            "citations",
+            "List of citations"
+        ],
+        [
+            "enclosed_by",
+            "List of places that enclose this place"
+        ],
+        [
+            "encloses",
+            "List of places that this place encloses"
+        ],
+        [
+            "gramps_id",
+            "Gramps id, e.g. P0123"
+        ],
+        [
+            "handle",
+            "Gramps internal handle"
+        ],
+        [
+            "longname",
+            "Full name including enclosing places"
+        ],
+        [
+            "name",
+            "Name of the place"
+        ],
+        [
+            "notes",
+            "List of notes"
+        ],
+        [
+            "obj",
+            "This Gramps Place object (same as 'place')"
+        ],
+        [
+            "place",
+            "This Gramps Place object (same as 'obj')"
+        ],
+        [
+            "tags",
+            "List of tags as strings"
+        ],
+        [
+            "title",
+            "Title of the place"
+        ],
+        [
+            "type",
+            "Type of the place as string"
+        ]
+    ],
+    "Citations": [
+        [
+            "self",
+            "This CitationProxy object"
+        ],
+        [
+            "attributes",
+            "Attributes as a list of tuples (name,value)"
+        ],
+        [
+            "citation",
+            "This Gramps Citation object (same as 'obj')"
+        ],
+        [
+            "citators",
+            "Objects referring to this citation"
+        ],
+        [
+            "confidence",
+            "Confidence value"
+        ],
+        [
+            "gramps_id",
+            "Gramps id, e.g. C0123"
+        ],
+        [
+            "handle",
+            "Gramps internal handle"
+        ],
+        [
+            "notes",
+            "List of notes"
+        ],
+        [
+            "obj",
+            "This Gramps Citation object (same as 'citation')"
+        ],
+        [
+            "page",
+            "Page value"
+        ],
+        [
+            "source",
+            "Source"
+        ],
+        [
+            "tags",
+            "List of tags as strings"
+        ]
+    ],
+    "Sources": [
+        [
+            "self",
+            "This SourceProxy object"
+        ],
+        [
+            "abbrev",
+            "Abbreviation"
+        ],
+        [
+            "attributes",
+            "Attributes as a list of tuples (name,value)"
+        ],
+        [
+            "author",
+            "Author"
+        ],
+        [
+            "citations",
+            "List of citations"
+        ],
+        [
+            "gramps_id",
+            "Gramps id, e.g. S0123"
+        ],
+        [
+            "handle",
+            "Gramps internal handle"
+        ],
+        [
+            "notes",
+            "List of notes"
+        ],
+        [
+            "obj",
+            "This Gramps Source object (same as 'source')"
+        ],
+        [
+            "pubinfo",
+            "Publication info"
+        ],
+        [
+            "repositories",
+            "List of repositories"
+        ],
+        [
+            "source",
+            "This Gramps Source object (same as 'obj')"
+        ],
+        [
+            "tags",
+            "List of tags as strings"
+        ],
+        [
+            "title",
+            "Source title"
+        ]
+    ],
+    "Repositories": [
+        [
+            "self",
+            "This RepositoryProxy object"
+        ],
+        [
+            "gramps_id",
+            "Gramps id, e.g. R0123"
+        ],
+        [
+            "handle",
+            "Gramps internal handle"
+        ],
+        [
+            "name",
+            "Repository name"
+        ],
+        [
+            "obj",
+            "This Gramps Repository object (same as 'repository')"
+        ],
+        [
+            "repository",
+            "This Gramps Repository object (same as 'obj')"
+        ],
+        [
+            "sources",
+            "List of sources in this repository"
+        ],
+        [
+            "tags",
+            "List of tags as strings"
+        ],
+        [
+            "type",
+            "Type of repository"
+        ]
+    ],
+    "Media": [],
+    "Notes": [
+        [
+            "self",
+            "This NoteProxy object"
+        ],
+        [
+            "gramps_id",
+            "Gramps id, e.g. N0123"
+        ],
+        [
+            "handle",
+            "Gramps internal handle"
+        ],
+        [
+            "note",
+            "This Gramps Note object (same as 'obj')"
+        ],
+        [
+            "obj",
+            "This Gramps Note object (same as 'note')"
+        ],
+        [
+            "tags",
+            "List of tags as strings"
+        ],
+        [
+            "text",
+            "Text of the note"
+        ]
+    ]
+}
+
+
+
