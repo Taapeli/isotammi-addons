@@ -1,7 +1,7 @@
 #
 # Gramps - a GTK+/GNOME based genealogy program
 #
-# Copyright (C) 2021     KKu
+# Copyright (C) 2021     Kari Kujansuu
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -28,7 +28,7 @@ plug.tool.tool_categories["Isotammi"] = ("Isotammi", _("Isotammi tools"))
 
 #------------------------------------------------------------------------
 #
-# MultiPurposeTool  
+# SuperTool  
 #
 #------------------------------------------------------------------------
 
@@ -36,7 +36,7 @@ register(TOOL,
     id    = 'SuperTool',
     name  = _("SuperTool"),
     description =  _(""),
-    version = '1.0.0',
+    version = '1.0.2',
     gramps_target_version = major_version,
     status = STABLE,
     fname = 'SuperTool.py',
@@ -46,3 +46,125 @@ register(TOOL,
     optionclass = 'Options',
     tool_modes = [TOOL_MODE_GUI, TOOL_MODE_CLI]
 )
+
+register(
+    RULE,
+    id="family-genfilter",
+    name=_("Generic family filter"),
+    description=_("Generic filter"),
+    version="1.0.1",
+    authors=["Kari Kujansuu"],
+    authors_email=["kari.kujansuu@gmail.com"],
+    gramps_target_version=major_version,
+    status=STABLE,
+    fname="genfilter.py",
+    ruleclass="GenericFilterRule_Family",  # must be rule class name
+    namespace="Family",  # one of the primary object classes
+)
+
+register(
+    RULE,
+    id="person-genfilter",
+    name=_("Generic person filter"),
+    description=_("Generic filter"),
+    version="1.0.1",
+    authors=["Kari Kujansuu"],
+    authors_email=["kari.kujansuu@gmail.com"],
+    gramps_target_version=major_version,
+    status=STABLE,
+    fname="genfilter.py",
+    ruleclass="GenericFilterRule_Person",  # must be rule class name
+    namespace="Person",  # one of the primary object classes
+)
+
+register(
+    RULE,
+    id="place-genfilter",
+    name=_("Generic place filter"),
+    description=_("Generic filter"),
+    version="1.0.1",
+    authors=["Kari Kujansuu"],
+    authors_email=["kari.kujansuu@gmail.com"],
+    gramps_target_version=major_version,
+    status=STABLE,
+    fname="genfilter.py",
+    ruleclass="GenericFilterRule_Place",  # must be rule class name
+    namespace="Place",  # one of the primary object classes
+)
+
+register(
+    RULE,
+    id="event-genfilter",
+    name=_("Generic event filter"),
+    description=_("Generic filter"),
+    version="1.0.1",
+    authors=["Kari Kujansuu"],
+    authors_email=["kari.kujansuu@gmail.com"],
+    gramps_target_version=major_version,
+    status=STABLE,
+    fname="genfilter.py",
+    ruleclass="GenericFilterRule_Event",  # must be rule class name
+    namespace="Event",  # one of the primary object classes
+)
+
+register(
+    RULE,
+    id="citation-genfilter",
+    name=_("Generic citation filter"),
+    description=_("Generic filter"),
+    version="1.0.1",
+    authors=["Kari Kujansuu"],
+    authors_email=["kari.kujansuu@gmail.com"],
+    gramps_target_version=major_version,
+    status=STABLE,
+    fname="genfilter.py",
+    ruleclass="GenericFilterRule_Citation",  # must be rule class name
+    namespace="Citation",  # one of the primary object classes
+)
+
+register(
+    RULE,
+    id="source-genfilter",
+    name=_("Generic source filter"),
+    description=_("Generic filter"),
+    version="1.0.1",
+    authors=["Kari Kujansuu"],
+    authors_email=["kari.kujansuu@gmail.com"],
+    gramps_target_version=major_version,
+    status=STABLE,
+    fname="genfilter.py",
+    ruleclass="GenericFilterRule_Source",  # must be rule class name
+    namespace="Source",  # one of the primary object classes
+)
+
+register(
+    RULE,
+    id="repository-genfilter",
+    name=_("Generic repository filter"),
+    description=_("Generic filter"),
+    version="1.0.1",
+    authors=["Kari Kujansuu"],
+    authors_email=["kari.kujansuu@gmail.com"],
+    gramps_target_version=major_version,
+    status=STABLE,
+    fname="genfilter.py",
+    ruleclass="GenericFilterRule_Repository",  # must be rule class name
+    namespace="Repository",  # one of the primary object classes
+)
+
+register(
+    RULE,
+    id="note-genfilter",
+    name=_("Generic filter"),
+    description=_("Generic note filter"),
+    version="1.0.1",
+    authors=["Kari Kujansuu"],
+    authors_email=["kari.kujansuu@gmail.com"],
+    gramps_target_version=major_version,
+    status=STABLE,
+    fname="genfilter.py",
+    ruleclass="GenericFilterRule_Note",  # must be rule class name
+    namespace="Note",  # one of the primary object classes
+)
+
+
