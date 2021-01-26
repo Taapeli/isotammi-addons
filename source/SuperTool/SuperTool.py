@@ -81,35 +81,15 @@ lastmod = [0]
 config = configman.register_manager("supertool")
 config.register("defaults.encoding", "utf-8")
 config.register("defaults.delimiter", "comma")
-
+config.register("defaults.font", "")
 
 def get_text(textview):
     buf = textview.get_buffer()
     text = buf.get_text(buf.get_start_iter(), buf.get_end_iter(), True)
     return text
 
-
 def set_text(textview, text):
     textview.get_buffer().set_text(text)
-
-
-class MyTextView(Gtk.TextView):
-    def __init__(self):
-        Gtk.TextView.__init__(self)
-        self.set_size_request(600, 70)
-        font = Pango.FontDescription("Dejavu Sans Mono 14")
-        self.modify_font(font)
-
-    def get_text(self):
-        buf = self.get_buffer()
-        text = buf.get_text(buf.get_start_iter(), buf.get_end_iter(), True)
-        # text = text.replace("\n","<br>")
-        return text
-
-    def set_text(self, text):
-        # text = text.replace("<br>","\n")
-        self.get_buffer().set_text(text)
-
 
 class JSONOpenFileChooserDialog(Gtk.FileChooserDialog):
     def __init__(self, uistate):
@@ -457,6 +437,15 @@ class SuperTool(ManagedWindow):
         self.set_window(window, None, _("SuperTool"))
         self.window.set_sensitive(self.category.objclass is not None)
         self.help_loaded = False
+
+        config.load()
+        font = config.get("defaults.font")
+        if font:
+            print("font:", font)
+            self.btn_font.set_font(font)
+            font_description = self.btn_font.get_font_desc()
+            print("font_description:", font_description)
+            self.window.modify_font(font_description)
         self.show()
 
     def db_closed(self):
@@ -627,13 +616,17 @@ class SuperTool(ManagedWindow):
     def save(self, obj):
         # type: (Gtk.Widget) -> None
         choose_file_dialog = JSONSaveFileChooserDialog(self.uistate)
-        if self.title:
-            fname = self.title.get_text().strip() + ".json"
+        title = self.title.get_text().strip()
+        if title:
+            fname = title + ".json"
         else:
             fname = self.category_name + "-query.json"
         choose_file_dialog.set_current_name(fname)
         choose_file_dialog.set_do_overwrite_confirmation(True)
         if self.last_filename:
+            if self.title.get_text():
+                dirname = os.path.split(self.last_filename)[0]
+                self.last_filename = os.path.join(dirname,fname)
             choose_file_dialog.set_filename(self.last_filename)
 
         while True:
@@ -797,6 +790,7 @@ class SuperTool(ManagedWindow):
         self.btn_save_as_filter = glade.get_child_object("btn_save_as_filter")
         self.btn_clear = glade.get_child_object("btn_clear")
         self.btn_help = glade.get_child_object("btn_help")
+        self.btn_font = glade.get_child_object("btn_font")
 
         self.attributes_list = glade.get_child_object("attributes_list")
 
@@ -817,11 +811,19 @@ class SuperTool(ManagedWindow):
         self.btn_save_as_filter.connect("clicked", self.save_as_filter)
         self.btn_clear.connect("clicked", self.clear)
         self.btn_help.connect("clicked", self.help)
+        self.btn_font.connect('font-set', self.set_font)
 
         self.btn_csv.hide()
         self.listview = None
 
         return glade.toplevel
+
+    def set_font(self, widget):
+        font = widget.get_font()
+        font_description = widget.get_font_desc()
+        self.window.modify_font(font_description)
+        config.set("defaults.font", font)
+        config.save()
 
     def select_category(self):
         # type: () -> None

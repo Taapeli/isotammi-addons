@@ -75,7 +75,7 @@
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="halign">start</property>
-            <property name="label" translatable="no">Initialization statements:</property>
+            <property name="label">Initialization statements:</property>
           </object>
           <packing>
             <property name="expand">False</property>
@@ -101,7 +101,7 @@
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="halign">start</property>
-            <property name="label" translatable="no">Statements executed for each object:</property>
+            <property name="label">Statements executed for each object:</property>
           </object>
           <packing>
             <property name="expand">False</property>
@@ -126,7 +126,7 @@
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="halign">start</property>
-            <property name="label" translatable="no">Filter:</property>
+            <property name="label">Filter:</property>
           </object>
           <packing>
             <property name="expand">False</property>
@@ -151,7 +151,7 @@
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="halign">start</property>
-            <property name="label" translatable="no">Expressions to display:</property>
+            <property name="label">Expressions to display:</property>
           </object>
           <packing>
             <property name="expand">False</property>
@@ -177,7 +177,7 @@
             <property name="can_focus">False</property>
             <child>
               <object class="GtkRadioButton" id="all_objects">
-                <property name="label" translatable="no">All objects</property>
+                <property name="label">All objects</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">False</property>
@@ -191,7 +191,7 @@
             </child>
             <child>
               <object class="GtkRadioButton" id="filtered_objects">
-                <property name="label" translatable="no">Filtered objects</property>
+                <property name="label">Filtered objects</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">False</property>
@@ -207,7 +207,7 @@
             </child>
             <child>
               <object class="GtkRadioButton" id="selected_objects">
-                <property name="label" translatable="no">Selected objects</property>
+                <property name="label">Selected objects</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">False</property>
@@ -223,10 +223,33 @@
               </packing>
             </child>
             <child>
-              <placeholder/>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="halign">end</property>
+                <property name="hexpand">True</property>
+                <property name="label" translatable="yes">Select font:</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">4</property>
+              </packing>
             </child>
             <child>
-              <placeholder/>
+              <object class="GtkFontButton" id="btn_font">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="font">Sans 12</property>
+                <property name="preview_text"/>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="pack_type">end</property>
+                <property name="position">5</property>
+              </packing>
             </child>
           </object>
           <packing>
@@ -241,7 +264,7 @@
             <property name="can_focus">False</property>
             <child>
               <object class="GtkCheckButton" id="unwind_lists">
-                <property name="label" translatable="no">Unwind lists</property>
+                <property name="label">Unwind lists</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">False</property>
@@ -255,7 +278,7 @@
             </child>
             <child>
               <object class="GtkCheckButton" id="commit_checkbox">
-                <property name="label" translatable="no">Commit changes</property>
+                <property name="label">Commit changes</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">False</property>
@@ -270,7 +293,7 @@
             </child>
             <child>
               <object class="GtkCheckButton" id="summary_checkbox">
-                <property name="label" translatable="no">Summary only</property>
+                <property name="label">Summary only</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">False</property>
@@ -302,7 +325,7 @@
             <property name="can_focus">False</property>
             <child>
               <object class="GtkButton" id="btn_execute">
-                <property name="label" translatable="no">Execute</property>
+                <property name="label">Execute</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
@@ -315,7 +338,7 @@
             </child>
             <child>
               <object class="GtkButton" id="btn_csv">
-                <property name="label" translatable="no">Download CSV</property>
+                <property name="label">Download CSV</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
@@ -342,7 +365,7 @@
             </child>
             <child>
               <object class="GtkButton" id="btn_help">
-                <property name="label" translatable="no">Help</property>
+                <property name="label">Help</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
@@ -356,7 +379,7 @@
             </child>
             <child>
               <object class="GtkButton" id="btn_save_as_filter">
-                <property name="label" translatable="no">Save as filter</property>
+                <property name="label">Save as filter</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
@@ -370,7 +393,7 @@
             </child>
             <child>
               <object class="GtkButton" id="btn_save">
-                <property name="label" translatable="no">Save</property>
+                <property name="label">Save</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
@@ -409,6 +432,9 @@
                 <property name="pack_type">end</property>
                 <property name="position">7</property>
               </packing>
+            </child>
+            <child>
+              <placeholder/>
             </child>
           </object>
           <packing>

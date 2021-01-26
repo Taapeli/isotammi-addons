@@ -105,7 +105,7 @@ These are described in detail in the reference section below.
 
 Gramps_id is the ID of the person, for example I0345. Name is the person's primary name in default format. Names is a list of all names assigned to the person. Birth and death are the birth and death events of the person. Events is a list of all events attached to the person etc. You can experiment with all these by putting the variable names in the "Expressions" field.
 
-## Example
+## Examples
 
 Let's experiment with some of these:
 
@@ -120,7 +120,6 @@ Or by using a slightly different syntax:
 ![SuperTool](SuperTool-4c.png)
 
 We can order the rows by any column by clicking the column header:
-
 
 ![SuperTool](SuperTool-5.png)
 
@@ -260,7 +259,11 @@ Date properties (like birth.date) return a DateProxy object. Currently the dates
 
 This is a bit contradictory, maybe this will change in the future...
 
+Dates can also be compared: 
 
+    # died under the age of one year
+    if death.date < birth.date + 1:
+        ...
 
 ## More examples
 
@@ -610,7 +613,7 @@ These lists include the variables defined in the various Proxy classes. In addit
 	> Database state  object
 
 - makedate
-	> Function to construct a date literal; e.g. makedate(1800, 12, 31)
+	> Function to construct a date literal; e.g. makedate(1800, 12, 31) or makedate(1800)
 
 - uniq
 	> Function that returns unique elements from a list

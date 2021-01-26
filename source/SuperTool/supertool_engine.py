@@ -164,8 +164,7 @@ nullproxy = NullProxy()
 
 @functools.total_ordering
 class DateProxy:
-    def __init__(self, db, dateobj):
-        self.db = db
+    def __init__(self, dateobj):
         self.dateobj = dateobj
         self.obj = dateobj
 
@@ -184,13 +183,13 @@ class DateProxy:
             return False
 
     def __add__(self, other):
-        return DateProxy(self.db, self.dateobj + other)
+        return DateProxy(self.dateobj + other)
 
     def __sub__(self, other):
         if isinstance(other, DateProxy):
             return int(self.dateobj - other.dateobj)
         if isinstance(other, int):
-            return DateProxy(self.db, self.dateobj - other)
+            return DateProxy(self.dateobj - other)
         return NullProxy()
 
     def __repr__(self):
@@ -379,7 +378,7 @@ class EventProxy(CommonProxy, AttributeProxy):
         self.obj = self.event
         self.gramps_id = self.event.gramps_id
         self.type = self.event.get_type().xml_str()
-        self.date = DateProxy(self.db, self.event.get_date_object())
+        self.date = DateProxy(self.event.get_date_object())
         #self.desc = self.event.description
         self.description = self.event.description
         self.role = role
@@ -546,16 +545,14 @@ def makedate(year, month=0, day=0, about=False):
     d.set_yr_mon_day(year, month, day)
     if about:
         d.set_modifier(GrampsDate.MOD_ABOUT)
-    return DateProxy(None, d)
+    return DateProxy(d)
 
 
 def today():
-    return Today()
-
+    return DateProxy(Today())
 
 def size(x):
     return len(list(x))
-
 
 @gentolist
 def flatten(lists):
