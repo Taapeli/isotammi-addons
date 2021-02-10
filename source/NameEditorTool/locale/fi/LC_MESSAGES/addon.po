@@ -1,0 +1,187 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-12-16 16:48+0200\n"
+"PO-Revision-Date: 2021-02-10 09:27+0200\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: fi\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 2.0.6\n"
+
+#: NameEditorTool/NameEditorTool.gpr.py:26
+msgid "Isotammi tools"
+msgstr "Isotammi-työkalut"
+
+#: NameEditorTool/NameEditorTool.gpr.py:36
+msgid "Name Editor Tool"
+msgstr "Nimien  muokkaustyökalu"
+
+#: NameEditorTool/NameEditorTool.gpr.py:37
+msgid "Edit names"
+msgstr "Muokkaa nimiä"
+
+#: NameEditorTool/NameEditorTool.py:235
+msgid "Name editor"
+msgstr "Nimien  muokkaustyökalu"
+
+#: NameEditorTool/NameEditorTool.py:287
+msgid "Id"
+msgstr "Tunnus"
+
+#: NameEditorTool/NameEditorTool.py:288
+msgid "Gender"
+msgstr "Sukupuoli"
+
+#: NameEditorTool/NameEditorTool.py:289
+msgid "Prefix"
+msgstr "Etuliite"
+
+#: NameEditorTool/NameEditorTool.py:290
+msgid "Surname"
+msgstr "Sukunimi"
+
+#: NameEditorTool/NameEditorTool.py:291
+msgid "First name"
+msgstr "Etunimi"
+
+#: NameEditorTool/NameEditorTool.py:292
+msgid "Suffix"
+msgstr "Loppuliite"
+
+#: NameEditorTool/NameEditorTool.py:293
+msgid "Title"
+msgstr "Nimike"
+
+#: NameEditorTool/NameEditorTool.py:294
+msgid "Type"
+msgstr "Tyyppi"
+
+#: NameEditorTool/NameEditorTool.py:497
+msgid "Clear|name-editor"
+msgstr "Tyhjennä"
+
+#: NameEditorTool/NameEditorTool.py:498
+msgid "Copy from prefix"
+msgstr "Kopioi etuliite"
+
+#: NameEditorTool/NameEditorTool.py:499
+msgid "Copy from surname"
+msgstr "Kopioi sukunimi"
+
+#: NameEditorTool/NameEditorTool.py:500
+msgid "Copy from firstname"
+msgstr "Kopioi etunimi"
+
+#: NameEditorTool/NameEditorTool.py:501
+msgid "Copy from suffix"
+msgstr "Kopioi jälkiliite"
+
+#: NameEditorTool/NameEditorTool.py:502
+msgid "Copy from title"
+msgstr "Kopioi nimike"
+
+#: NameEditorTool/NameEditorTool.py:503
+msgid "Append prefix"
+msgstr "Lisää etuliite"
+
+#: NameEditorTool/NameEditorTool.py:504
+msgid "Append surname"
+msgstr "Lisää sukunimi"
+
+#: NameEditorTool/NameEditorTool.py:505
+msgid "Append firstname"
+msgstr "Lisää etunimi"
+
+#: NameEditorTool/NameEditorTool.py:506
+msgid "Append suffix"
+msgstr "Lisää jälkiliite"
+
+#: NameEditorTool/NameEditorTool.py:507
+msgid "Append from title"
+msgstr "Lisää nimike"
+
+#: NameEditorTool/NameEditorTool.py:603 NameEditorTool/NameEditorTool.py:624
+msgid "Names:"
+msgstr "Nimiä:"
+
+#: NameEditorTool/NameEditorTool.py:651
+msgid "Updating names"
+msgstr "Nimien päivitys"
+
+#~ msgid "Replace"
+#~ msgstr "Korvaa"
+
+#~ msgid "Use regex"
+#~ msgstr "Käytä säännöllisiä lausekkeita"
+
+#~ msgid "Old value"
+#~ msgstr "Vanha arvo"
+
+#~ msgid "New value"
+#~ msgstr "Uusi arvo"
+
+#~ msgid "Undo"
+#~ msgstr "Peru edellinen muutos"
+
+#~ msgid "Special operations"
+#~ msgstr "Erikoistoiminnot"
+
+#~ msgid "Clear form"
+#~ msgstr "Tyhjennä lomake"
+
+#~ msgid "Help"
+#~ msgstr "Ohjeita"
+
+#~ msgid "Find"
+#~ msgstr "Etsi"
+
+#~ msgid "List all"
+#~ msgstr "Listaa kaikki"
+
+#~ msgid "Filter"
+#~ msgstr "Suodin"
+
+#~ msgid "All"
+#~ msgstr "Kaikki"
+
+#~ msgid "Primary"
+#~ msgstr "Ensisijainen"
+
+#~ msgid "Alternate"
+#~ msgstr "Vaihtoehtoinen"
+
+#~ msgid "Name type:"
+#~ msgstr "Nimityyppi:"
+
+#~ msgid "Unknown"
+#~ msgstr "Tuntematon"
+
+#~ msgid "Female"
+#~ msgstr "Nainen"
+
+#~ msgid "Male"
+#~ msgstr "Mies"
+
+#~ msgid "Gender:"
+#~ msgstr "Sukupuoli:"
+
+#~ msgid "label"
+#~ msgstr "otsikko"
+
+#~ msgid "Names: {}"
+#~ msgstr "Nimiä: {}"
+
+#~ msgid "count"
+#~ msgstr "laskuri"
+
+#~ msgid "Clear"
+#~ msgstr "Tyhjennä lomake"
