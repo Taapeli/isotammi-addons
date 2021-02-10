@@ -3,6 +3,7 @@
 {'t': 'Tool', 'i': 'zipinstall', 'n': 'ZipInstall', 'v': '1.0.3', 'g': '5.0', 'd': 'Install a plugin from a ZIP file', 'z': 'zipinstall.addon.tgz'}
 {'t': 'Tool', 'i': 'generatecitations', 'n': 'Muodosta lähdeviitteet lisätietojen perusteella', 'v': '1.0.21', 'g': '5.0', 'd': 'Muodosta lähdeviitteet lisätietojen perusteella', 'z': 'generatecitations.addon.tgz'}
 {'t': 'Gramplet', 'i': 'PropertyEditor', 'n': 'OminaisuusMuokkain', 'v': '1.0.8', 'g': '5.0', 'd': 'Gramplet jolla voi muokata usean kohteen ominaisuuksia samalla kertaa', 'z': 'PropertyEditor.addon.tgz'}
+{'t': 'Tool', 'i': 'NameMergeTool', 'n': 'Name Merge Tool', 'v': '1.0.1', 'g': '5.0', 'd': 'Merge names', 'z': 'NameMergeTool.addon.tgz'}
 {'t': 'Gramplet', 'i': 'PlaceTool', 'n': 'Paikkatyökalu', 'v': '1.0.32', 'g': '5.0', 'd': 'Gramplet, joka käsittelee useita paikkoja kerrallaan', 'z': 'PlaceTool.addon.tgz'}
 {'t': 'Tool', 'i': 'SuperTool', 'n': 'SuperTool', 'v': '1.0.4', 'g': '5.0', 'd': '', 'z': 'SuperTool.addon.tgz'}
 {'t': 'Rule', 'i': 'family-genfilter', 'n': 'Generic family filter', 'v': '1.0.3', 'g': '5.0', 'd': 'Generic filter', 'z': 'SuperTool.addon.tgz'}
