@@ -29,91 +29,91 @@ msgstr "Nimien  muokkaustyökalu"
 msgid "Edit names"
 msgstr "Muokkaa nimiä"
 
-#: NameEditorTool/NameEditorTool.py:235
+#: NameEditorTool/NameEditorTool.py:236
 msgid "Name editor"
 msgstr "Nimien  muokkaustyökalu"
 
-#: NameEditorTool/NameEditorTool.py:287
+#: NameEditorTool/NameEditorTool.py:288
 msgid "Id"
 msgstr "Tunnus"
 
-#: NameEditorTool/NameEditorTool.py:288
+#: NameEditorTool/NameEditorTool.py:289
 msgid "Gender"
 msgstr "Sukupuoli"
 
-#: NameEditorTool/NameEditorTool.py:289
+#: NameEditorTool/NameEditorTool.py:290
 msgid "Prefix"
 msgstr "Etuliite"
 
-#: NameEditorTool/NameEditorTool.py:290
+#: NameEditorTool/NameEditorTool.py:291
 msgid "Surname"
 msgstr "Sukunimi"
 
-#: NameEditorTool/NameEditorTool.py:291
+#: NameEditorTool/NameEditorTool.py:292
 msgid "First name"
 msgstr "Etunimi"
 
-#: NameEditorTool/NameEditorTool.py:292
+#: NameEditorTool/NameEditorTool.py:293
 msgid "Suffix"
 msgstr "Loppuliite"
 
-#: NameEditorTool/NameEditorTool.py:293
+#: NameEditorTool/NameEditorTool.py:294
 msgid "Title"
 msgstr "Nimike"
 
-#: NameEditorTool/NameEditorTool.py:294
+#: NameEditorTool/NameEditorTool.py:295
 msgid "Type"
 msgstr "Tyyppi"
 
-#: NameEditorTool/NameEditorTool.py:497
+#: NameEditorTool/NameEditorTool.py:498
 msgid "Clear|name-editor"
 msgstr "Tyhjennä"
 
-#: NameEditorTool/NameEditorTool.py:498
+#: NameEditorTool/NameEditorTool.py:499
 msgid "Copy from prefix"
 msgstr "Kopioi etuliite"
 
-#: NameEditorTool/NameEditorTool.py:499
+#: NameEditorTool/NameEditorTool.py:500
 msgid "Copy from surname"
 msgstr "Kopioi sukunimi"
 
-#: NameEditorTool/NameEditorTool.py:500
+#: NameEditorTool/NameEditorTool.py:501
 msgid "Copy from firstname"
 msgstr "Kopioi etunimi"
 
-#: NameEditorTool/NameEditorTool.py:501
+#: NameEditorTool/NameEditorTool.py:502
 msgid "Copy from suffix"
 msgstr "Kopioi jälkiliite"
 
-#: NameEditorTool/NameEditorTool.py:502
+#: NameEditorTool/NameEditorTool.py:503
 msgid "Copy from title"
 msgstr "Kopioi nimike"
 
-#: NameEditorTool/NameEditorTool.py:503
+#: NameEditorTool/NameEditorTool.py:504
 msgid "Append prefix"
 msgstr "Lisää etuliite"
 
-#: NameEditorTool/NameEditorTool.py:504
+#: NameEditorTool/NameEditorTool.py:505
 msgid "Append surname"
 msgstr "Lisää sukunimi"
 
-#: NameEditorTool/NameEditorTool.py:505
+#: NameEditorTool/NameEditorTool.py:506
 msgid "Append firstname"
 msgstr "Lisää etunimi"
 
-#: NameEditorTool/NameEditorTool.py:506
+#: NameEditorTool/NameEditorTool.py:507
 msgid "Append suffix"
 msgstr "Lisää jälkiliite"
 
-#: NameEditorTool/NameEditorTool.py:507
+#: NameEditorTool/NameEditorTool.py:508
 msgid "Append from title"
 msgstr "Lisää nimike"
 
-#: NameEditorTool/NameEditorTool.py:603 NameEditorTool/NameEditorTool.py:624
+#: NameEditorTool/NameEditorTool.py:604 NameEditorTool/NameEditorTool.py:625
 msgid "Names:"
 msgstr "Nimiä:"
 
-#: NameEditorTool/NameEditorTool.py:651
+#: NameEditorTool/NameEditorTool.py:652
 msgid "Updating names"
 msgstr "Nimien päivitys"
 

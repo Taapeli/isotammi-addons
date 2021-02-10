@@ -16,7 +16,7 @@
 {'t': 'Rule', 'i': 'source-genfilter', 'n': 'Generic source filter', 'v': '1.0.3', 'g': '5.1', 'd': 'Generic filter', 'z': 'SuperTool.addon.tgz'}
 {'t': 'Rule', 'i': 'repository-genfilter', 'n': 'Generic repository filter', 'v': '1.0.3', 'g': '5.1', 'd': 'Generic filter', 'z': 'SuperTool.addon.tgz'}
 {'t': 'Rule', 'i': 'note-genfilter', 'n': 'Generic filter', 'v': '1.0.3', 'g': '5.1', 'd': 'Generic note filter', 'z': 'SuperTool.addon.tgz'}
-{'t': 'Tool', 'i': 'NameEditorTool', 'n': 'Nimien  muokkaustyökalu', 'v': '1.0.1', 'g': '5.1', 'd': 'Muokkaa nimiä', 'z': 'NameEditorTool.addon.tgz'}
+{'t': 'Tool', 'i': 'NameEditorTool', 'n': 'Nimien  muokkaustyökalu', 'v': '1.0.2', 'g': '5.1', 'd': 'Muokkaa nimiä', 'z': 'NameEditorTool.addon.tgz'}
 {'t': 'Gramplet', 'i': 'Dates', 'n': 'Päivämäärät', 'v': '1.0.18', 'g': '5.1', 'd': 'Päivämäärät', 'z': 'Dates.addon.tgz'}
 {'t': 'Gramplet', 'i': 'DeepConnectionsGraph', 'n': 'Syväsuhteet kaaviona', 'v': '1.0.9', 'g': '5.1', 'd': 'DeepConnectionsGraph Gramplet', 'z': 'DeepConnectionsGraph.addon.tgz'}
 {'t': 'Gramplet', 'i': 'AddSourcesGramplet', 'n': 'AddSourcesGramplet', 'v': '0.9.4', 'g': '5.1', 'd': 'Gramplet to add sources', 'z': 'AddSourcesGramplet.addon.tgz'}

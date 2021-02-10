@@ -109,7 +109,8 @@ def getrow(person, nameindex, rownum):
                nameindex)
         return row  # use only first surname
 
-def gender_string_to_code(gender_string:Optional[str]) -> int:
+def gender_string_to_code(gender_string):
+    # type: (Optional[str]) -> int
     if gender_string == "MALE": return Person.MALE    
     if gender_string == "FEMALE": return Person.FEMALE    
     if gender_string == "UNKNOWN": return Person.UNKNOWN    
