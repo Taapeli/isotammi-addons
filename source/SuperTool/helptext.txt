@@ -9,8 +9,12 @@
             "Database state  object"
         ],
         [
+            "trans",
+            "Current transaction"
+        ],
+        [
             "makedate",
-            "Function to construct a date literal; e.g. makedate(1800, 12, 31)"
+            "Function to construct a date literal; e.g. makedate(1800, 12, 31) or makedate(1800)"
         ],
         [
             "uniq",
@@ -435,7 +439,64 @@
             "Type of repository"
         ]
     ],
-    "Media": [],
+    "Media": [
+        [
+            "self",
+            "This MediaProxy object"
+        ],
+        [
+            "gramps_id",
+            "Gramps id, e.g. O0123"
+        ],
+        [
+            "handle",
+            "Gramps internal handle"
+        ],
+        [
+            "media",
+            "This Gramps Media object (same as 'obj')"
+        ],
+        [
+            "obj",
+            "This Gramps Media object (same as 'media')"
+        ],
+        [
+            "tags",
+            "List of tags as strings"
+        ],
+        [
+            "notes",
+            "List of notes"
+        ],
+        [
+            "attributes",
+            "Attributes"
+        ],
+        [
+            "citations",
+            "List of citations"
+        ],
+        [
+            "path",
+            "Path to the media object"
+        ],
+        [
+            "checksum",
+            "Checksum"
+        ],
+        [
+            "desc",
+            "Description"
+        ],
+        [
+            "mime",
+            "Mime type"
+        ],
+        [
+            "date",
+            "Date"
+        ]
+    ],
     "Notes": [
         [
             "self",

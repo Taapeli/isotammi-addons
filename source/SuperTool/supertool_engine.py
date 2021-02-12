@@ -55,7 +55,7 @@ from gramps.gen.lib import Source
 
 from genfilter import GenericFilterRule
 
-from genfilter import GenericFilterRule_Person 
+from genfilter import GenericFilterRule_Person
 from genfilter import GenericFilterRule_Family
 from genfilter import GenericFilterRule_Event
 from genfilter import GenericFilterRule_Place
@@ -63,15 +63,17 @@ from genfilter import GenericFilterRule_Source
 from genfilter import GenericFilterRule_Citation
 from genfilter import GenericFilterRule_Repository
 from genfilter import GenericFilterRule_Note
+from genfilter import GenericFilterRule_Media
 
 from gramps.gui.editors import EditPerson
-from gramps.gui.editors.editplace import EditPlace
-from gramps.gui.editors.editfamily import EditFamily
-from gramps.gui.editors.editrepository import EditRepository
-from gramps.gui.editors.editsource import EditSource
-from gramps.gui.editors.editevent import EditEvent
-from gramps.gui.editors.editnote import EditNote
-from gramps.gui.editors.editcitation import EditCitation
+from gramps.gui.editors import EditPlace
+from gramps.gui.editors import EditFamily
+from gramps.gui.editors import EditRepository
+from gramps.gui.editors import EditSource
+from gramps.gui.editors import EditEvent
+from gramps.gui.editors import EditNote
+from gramps.gui.editors import EditCitation
+from gramps.gui.editors import EditMedia
 
 
 from gramps.gen.lib.date import Today
@@ -83,6 +85,7 @@ gender_map = {
     Person.MALE: "M",
     Person.FEMALE: "F",
 }
+
 
 def listproperty(orig):
     @functools.wraps(orig)
@@ -123,11 +126,12 @@ class Proxy:
             tag = self.db.get_tag_from_handle(tag_handle)
             yield tag.name
 
+
 class AttributeProxy:
     @listproperty
     def attributes(self):
         for attr in self.obj.get_attribute_list():
-            yield str(attr.type),attr.value
+            yield str(attr.type), attr.value
 
 
 @functools.total_ordering
@@ -161,6 +165,7 @@ class NullProxy:
 
 
 nullproxy = NullProxy()
+
 
 @functools.total_ordering
 class DateProxy:
@@ -213,6 +218,7 @@ class CommonProxy(Proxy):
 
 class NoteProxy(Proxy):
     namespace = "Note"
+
     def __init__(self, db, handle, note=None):
         Proxy.__init__(self, db, handle)
         if note:
@@ -226,6 +232,7 @@ class NoteProxy(Proxy):
 
 class CitationProxy(Proxy, AttributeProxy):
     namespace = "Citation"
+
     def __init__(self, db, handle, citation=None):
         Proxy.__init__(self, db, handle)
         if citation:
@@ -271,6 +278,7 @@ class CitationProxy(Proxy, AttributeProxy):
 
 class SourceProxy(Proxy, AttributeProxy):
     namespace = "Source"
+
     def __init__(self, db, handle, source=None):
         Proxy.__init__(self, db, handle)
         if source:
@@ -301,8 +309,10 @@ class SourceProxy(Proxy, AttributeProxy):
         for handle in self.obj.get_note_list():
             yield NoteProxy(self.db, handle)
 
+
 class RepositoryProxy(Proxy):
     namespace = "Repository"
+
     def __init__(self, db, handle, repository=None):
         Proxy.__init__(self, db, handle)
         if repository:
@@ -324,6 +334,7 @@ class RepositoryProxy(Proxy):
 
 class PlaceProxy(CommonProxy):
     namespace = "Place"
+
     def __init__(self, db, place_handle, place=None):
         CommonProxy.__init__(self, db, place_handle)
         if place:
@@ -369,6 +380,7 @@ class PlaceProxy(CommonProxy):
 
 class EventProxy(CommonProxy, AttributeProxy):
     namespace = "Event"
+
     def __init__(self, db, event_handle, event=None, role=None):
         CommonProxy.__init__(self, db, event_handle)
         if event:
@@ -379,7 +391,6 @@ class EventProxy(CommonProxy, AttributeProxy):
         self.gramps_id = self.event.gramps_id
         self.type = self.event.get_type().xml_str()
         self.date = DateProxy(self.event.get_date_object())
-        #self.desc = self.event.description
         self.description = self.event.description
         self.role = role
 
@@ -400,22 +411,23 @@ class EventProxy(CommonProxy, AttributeProxy):
 
     @listproperty
     def refs(self):
-        for class_name,referrer_handle in self.db.find_backlink_handles(self.handle):
+        for class_name, referrer_handle in self.db.find_backlink_handles(self.handle):
             if class_name == "Person":
                 person = self.db.get_person_from_handle(referrer_handle)
                 eventref_list = person.event_ref_list
             if class_name == "Family":
                 family = self.db.get_family_from_handle(referrer_handle)
                 eventref_list = family.event_ref_list
-            #print(role,type(role),self.list[2],role != self.list[2])
             for eventref in eventref_list:
                 if eventref.ref == self.handle:
                     yield eventref
 
     @listproperty
     def participants(self):
-        for class_name,referrer_handle in self.db.find_backlink_handles(self.handle,["Person","Family"]):
-            #role = self.get_role_of_eventref(self.db, referrer_handle, self.handle)
+        for class_name, referrer_handle in self.db.find_backlink_handles(
+            self.handle, ["Person", "Family"]
+        ):
+            # role = self.get_role_of_eventref(self.db, referrer_handle, self.handle)
             if class_name == "Family":
                 family = self.db.get_family_from_handle(referrer_handle)
                 if family.father_handle:
@@ -423,19 +435,21 @@ class EventProxy(CommonProxy, AttributeProxy):
                 if family.mother_handle:
                     yield PersonProxy(self.db, family.mother_handle)
             if class_name == "Person":
-                #print(role,type(role),self.list[2],role != self.list[2])
+                # print(role,type(role),self.list[2],role != self.list[2])
                 yield PersonProxy(self.db, referrer_handle)
 
     def get_role_of_eventref(self, db, referrer_handle, event_handle):
         person = db.get_person_from_handle(referrer_handle)
         eventref_list = person.get_event_ref_list()
         for eventref in eventref_list:
-            if eventref.ref == event_handle: return eventref.role
+            if eventref.ref == event_handle:
+                return eventref.role
         return "referred"
 
 
 class PersonProxy(CommonProxy, AttributeProxy):
     namespace = "Person"
+
     def __init__(self, db, person_handle, person=None):
         CommonProxy.__init__(self, db, person_handle)
         if person:
@@ -463,7 +477,7 @@ class PersonProxy(CommonProxy, AttributeProxy):
 
     @property
     def gender(self):
-        return gender_map.get(self.person.gender,"U")
+        return gender_map.get(self.person.gender, "U")
 
     @property
     def birth(self):
@@ -502,6 +516,7 @@ class PersonProxy(CommonProxy, AttributeProxy):
 
 class FamilyProxy(CommonProxy, AttributeProxy):
     namespace = "Family"
+
     def __init__(self, db, family_handle, family=None):
         CommonProxy.__init__(self, db, family_handle)
         if family:
@@ -536,6 +551,23 @@ class FamilyProxy(CommonProxy, AttributeProxy):
             yield PersonProxy(self.db, childref.ref)
 
 
+class MediaProxy(CommonProxy, AttributeProxy):
+    namespace = "Media"
+
+    def __init__(self, db, media_handle, media=None):
+        CommonProxy.__init__(self, db, media_handle)
+        if media:
+            self.media = media
+        else:
+            self.media = self.db.get_media_from_handle(media_handle)
+        self.obj = self.media
+        self.gramps_id = self.media.gramps_id
+        self.path = self.media.path
+        self.mime = self.media.mime
+        self.desc = self.media.desc
+        self.checksum = self.media.checksum
+        self.date = DateProxy(self.media.date)
+            
 def uniq(items):
     return list(set(items))
 
@@ -551,8 +583,10 @@ def makedate(year, month=0, day=0, about=False):
 def today():
     return DateProxy(Today())
 
+
 def size(x):
     return len(list(x))
+
 
 @gentolist
 def flatten(lists):
@@ -560,11 +594,14 @@ def flatten(lists):
         for item in sublist:
             yield item
 
+
 class Filterfactory:
     filterdb = None
-    def __init__(self,db):
+
+    def __init__(self, db):
         self.db = db
-    def getfilter(self,namespace):
+
+    def getfilter(self, namespace):
         def filterfunc(filtername):
             if not Filterfactory.filterdb:
                 Filterfactory.filterdb = FilterList(CUSTOM_FILTERS)
@@ -572,30 +609,42 @@ class Filterfactory:
             filter_dict = Filterfactory.filterdb.get_filters_dict(namespace)
             filt = filter_dict[filtername]
             return lambda obj: filt.match(obj.handle, self.db)
+
         return filterfunc
 
+
 class DummyTxn:
+    "Implements nested transactions"
     def __init__(self, trans):
+        if trans is None:
+            raise RuntimeError("Need a transaction")
         self.trans = trans
+
         class _Txn:
             def __init__(self, msg, db):
                 pass
+
             def __enter__(self):
                 return trans
+
             def __exit__(self, *args):
                 return False
+
         self.txn = _Txn
 
-def mergeplaces(p1,p2):
-    import gramps.gen.merge.mergeplacequery as merge
-    merge.DbTxn = DummyTxn(trans).txn
-    places = {}
-    merges = [0]    
-    print("merge",p1.gramps_id,p2.gramps_id)
-    query = merge.MergePlaceQuery(dbstate, p1, p2)
-    query.execute()
-    
-def execute(dbstate, obj, rule, proxyclass, envvars=None, exectype=None):
+def process_includes(code):
+    newlines = []
+    for line in code.splitlines(keepends=True):
+        if line.startswith("#include "):
+            fname = line.split(maxsplit=1)[1].strip()
+            for line2 in open(fname):
+                newlines.append(line2)
+        else:
+            newlines.append(line)
+    return "".join(newlines)
+
+
+def execute(dbstate, obj, code, proxyclass, envvars=None, exectype=None):
     env = dict(
         uniq=uniq,
         makedate=makedate,
@@ -641,43 +690,43 @@ def execute(dbstate, obj, rule, proxyclass, envvars=None, exectype=None):
     env["filter"] = filterfactory.getfilter(proxyclass.namespace)
     if envvars:
         env.update(envvars)
+    env["env"] = env
     if exectype == "exec":
-        res = exec(rule, env, env)
+        code = process_includes(code)
+        res = exec(code, env, env)
     else:
-        rule = rule.replace("\n"," ")
-        res = eval(rule, env, env)
+        code = code.replace("\n", " ")
+        res = eval(code, env, env)
     return res, env
 
 
-def execute_family(dbstate, obj, rule, envvars=None, exectype=None):
-    return execute(dbstate, obj, rule, FamilyProxy, envvars, exectype)
+def execute_family(dbstate, obj, code, envvars=None, exectype=None):
+    return execute(dbstate, obj, code, FamilyProxy, envvars, exectype)
 
-def execute_person(dbstate, obj, rule, envvars=None, exectype=None):
-    return execute(dbstate, obj, rule, PersonProxy, envvars, exectype)
+def execute_person(dbstate, obj, code, envvars=None, exectype=None):
+    return execute(dbstate, obj, code, PersonProxy, envvars, exectype)
 
+def execute_place(dbstate, obj, code, envvars=None, exectype=None):
+    return execute(dbstate, obj, code, PlaceProxy, envvars, exectype)
 
-def execute_place(dbstate, obj, rule, envvars=None, exectype=None):
-    return execute(dbstate, obj, rule, PlaceProxy, envvars, exectype)
+def execute_event(dbstate, obj, code, envvars=None, exectype=None):
+    return execute(dbstate, obj, code, EventProxy, envvars, exectype)
 
+def execute_media(dbstate, obj, code, envvars=None, exectype=None):
+    return execute(dbstate, obj, code, MediaProxy, envvars, exectype)
 
-def execute_event(dbstate, obj, rule, envvars=None, exectype=None):
-    return execute(dbstate, obj, rule, EventProxy, envvars, exectype)
+def execute_note(dbstate, obj, code, envvars=None, exectype=None):
+    return execute(dbstate, obj, code, NoteProxy, envvars, exectype)
 
+def execute_citation(dbstate, obj, code, envvars=None, exectype=None):
+    return execute(dbstate, obj, code, CitationProxy, envvars, exectype)
 
-def execute_note(dbstate, obj, rule, envvars=None, exectype=None):
-    return execute(dbstate, obj, rule, NoteProxy, envvars, exectype)
+def execute_source(dbstate, obj, code, envvars=None, exectype=None):
+    return execute(dbstate, obj, code, SourceProxy, envvars, exectype)
 
+def execute_repository(dbstate, obj, code, envvars=None, exectype=None):
+    return execute(dbstate, obj, code, RepositoryProxy, envvars, exectype)
 
-def execute_citation(dbstate, obj, rule, envvars=None, exectype=None):
-    return execute(dbstate, obj, rule, CitationProxy, envvars, exectype)
-
-
-def execute_source(dbstate, obj, rule, envvars=None, exectype=None):
-    return execute(dbstate, obj, rule, SourceProxy, envvars, exectype)
-
-
-def execute_repository(dbstate, obj, rule, envvars=None, exectype=None):
-    return execute(dbstate, obj, rule, RepositoryProxy, envvars, exectype)
 
 CATEGORIES = [
     "People",
@@ -687,9 +736,10 @@ CATEGORIES = [
     "Citations",
     "Sources",
     "Repositories",
-#   "Media",
+    "Media",
     "Notes",
 ]
+
 
 def get_categories():
     return CATEGORIES
@@ -783,9 +833,13 @@ def get_category_info(db, category_name):
         info.objclass = "Note"
         info.filterrule = GenericFilterRule_Note
         info.proxyclass = NoteProxy
+    if category_name == "Media":
+        info.get_all_objects_func = db.get_media_handles
+        info.getfunc = db.get_media_from_handle
+        info.execute_func = execute_media
+        info.editfunc = EditMedia
+        info.objcls = Media
+        info.objclass = "Media"
+        info.filterrule = GenericFilterRule_Media
+        info.proxyclass = MediaProxy
     return info
-
-
-
-
-

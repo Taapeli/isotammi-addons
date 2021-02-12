@@ -71,22 +71,21 @@ from gramps.gen.db.txn import DbTxn
 
 from gramps.gui.dialog import OkDialog
 
-
 _ = glocale.translation.gettext
 
 import supertool_engine as engine
-
-lastmod = [0]
 
 config = configman.register_manager("supertool")
 config.register("defaults.encoding", "utf-8")
 config.register("defaults.delimiter", "comma")
 config.register("defaults.font", "")
 
+
 def get_text(textview):
     buf = textview.get_buffer()
     text = buf.get_text(buf.get_start_iter(), buf.get_end_iter(), True)
     return text
+
 
 def set_text(textview, text):
     textview.get_buffer().set_text(text)
@@ -402,7 +401,9 @@ class HelpWindow(Gtk.Window):
         readme_url = "https://github.com/Taapeli/isotammi-addons/blob/master/source/SuperTool/README.md"
 
         label = Gtk.Label()
-        markup = '<a href="{url}">{title}</a>'.format(url=readme_url, title="Open README in a browser")
+        markup = '<a href="{url}">{title}</a>'.format(
+            url=readme_url, title="Open README in a browser"
+        )
         label.set_markup(markup)
         self.box.pack_start(label, True, True, 0)
 
@@ -441,10 +442,8 @@ class SuperTool(ManagedWindow):
         config.load()
         font = config.get("defaults.font")
         if font:
-            print("font:", font)
             self.btn_font.set_font(font)
             font_description = self.btn_font.get_font_desc()
-            print("font_description:", font_description)
             self.window.modify_font(font_description)
         self.show()
 
@@ -575,7 +574,18 @@ class SuperTool(ManagedWindow):
     def download(self, obj):
         # type: (Gtk.Widget) -> None
         choose_file_dialog = CsvFileChooserDialog(self.uistate)
-        choose_file_dialog.set_current_name(self.category_name + ".csv")
+        title = self.title.get_text().strip()
+        if title:
+            fname = title + ".csv"
+        else:
+            fname = self.category_name + ".csv"
+
+        choose_file_dialog.set_current_name(fname)
+        if self.csv_filename:
+            if self.title.get_text():
+                dirname = os.path.split(self.csv_filename)[0]
+                self.csv_filename = os.path.join(dirname, fname)
+            choose_file_dialog.set_filename(self.csv_filename)
 
         while True:
             response = choose_file_dialog.run()
@@ -626,7 +636,7 @@ class SuperTool(ManagedWindow):
         if self.last_filename:
             if self.title.get_text():
                 dirname = os.path.split(self.last_filename)[0]
-                self.last_filename = os.path.join(dirname,fname)
+                self.last_filename = os.path.join(dirname, fname)
             choose_file_dialog.set_filename(self.last_filename)
 
         while True:
@@ -760,6 +770,8 @@ class SuperTool(ManagedWindow):
     def help(self, obj):
         self.load_help()
         self.help_win = HelpWindow(self.uistate, self.help_notebook)
+        font_description = self.btn_font.get_font_desc()
+        self.help_win.modify_font(font_description)
         self.help_win.show_all()
 
     def __create_gui(self):
@@ -790,7 +802,9 @@ class SuperTool(ManagedWindow):
         self.btn_save_as_filter = glade.get_child_object("btn_save_as_filter")
         self.btn_clear = glade.get_child_object("btn_clear")
         self.btn_help = glade.get_child_object("btn_help")
+
         self.btn_font = glade.get_child_object("btn_font")
+        self.btn_font.set_label("Select font")
 
         self.attributes_list = glade.get_child_object("attributes_list")
 
@@ -811,7 +825,7 @@ class SuperTool(ManagedWindow):
         self.btn_save_as_filter.connect("clicked", self.save_as_filter)
         self.btn_clear.connect("clicked", self.clear)
         self.btn_help.connect("clicked", self.help)
-        self.btn_font.connect('font-set', self.set_font)
+        self.btn_font.connect("font-set", self.set_font)
 
         self.btn_csv.hide()
         self.listview = None
@@ -923,7 +937,9 @@ class SuperTool(ManagedWindow):
                 n += 1
                 if n >= LIMIT:
                     OkDialog(
-                        _("Warning"), "Limit of {} rows reached".format(LIMIT), parent=self.uistate.window
+                        _("Warning"),
+                        "Limit of {} rows reached".format(LIMIT),
+                        parent=self.uistate.window,
                     )
                     break
         t2 = time.time()
@@ -1047,13 +1063,10 @@ class Tool(tool.Tool):
         self.dbstate = dbstate
         self.db = dbstate.db
         tool.Tool.__init__(self, dbstate, options_class, name)
-        #        if self.options_dialog():
-        #            self.run()
         if not self.uistate:  # CLI mode
             self.run_cli()
             return
-        if self.check_filechange():
-            self.run()
+        self.run()
 
     def run_cli(self):
         script_filename = self.options.handler.options_dict["script"]
@@ -1100,161 +1113,10 @@ class Tool(tool.Tool):
                 else:
                     print(json.dumps(values))
 
-    def check_filechange(self):
-        modtime = os.stat(__file__)
-        if lastmod[0] and lastmod[0] < modtime:
-            OkDialog("File changed", "Please reload")
-            return False
-        lastmod[0] = modtime
-        return True
-
     def run(self):
         # type: () -> None
         m = SuperTool(self.user, self.dbstate)
-        #         self.debug = self.options.handler.options_dict["debug"]
-        #         self.num_value = self.options.handler.options_dict["num_value"]
         print("run")
-
-    def __tagnames(self):
-        # type: () -> Iterator[str]
-        for handle in self.dbstate.db.get_tag_handles(sort_handles=True):
-            tag = self.dbstate.db.get_tag_from_handle(handle)
-            yield tag.get_name()
-
-    class MyWidget:
-        def __init__(self, widget):
-            # type: (Gtk.Widget) -> None
-            self.widget = widget
-
-        def set_value(self, text):
-            # type: (Any) -> None
-            self.widget.set_text(text)
-
-        def get_value(self):
-            # type: () -> Any
-            return self.widget.get_text()
-
-    class MyCheckBox(MyWidget):
-        def __init__(self):
-            # type: () -> None
-            self.widget = Gtk.CheckButton()
-
-        def set_value(self, value):
-            # type: (bool) -> None
-            self.widget.set_active(value)
-
-        def get_value(self):
-            # type: () -> bool
-            return self.widget.get_active()
-
-    class MySpin(MyWidget):
-        def __init__(self):
-            # type: () -> None
-            self.widget = Gtk.SpinButton()
-            self.widget.set_numeric(True)
-            adjustment = Gtk.Adjustment(upper=100, step_increment=1, page_increment=10)
-            self.widget.set_adjustment(adjustment)
-
-        def set_value(self, value):
-            # type: (int) -> None
-            self.widget.set_value(value)
-
-        def get_value(self):
-            # type: () -> int
-            return self.widget.get_value_as_int()
-
-    class MyCombo(MyWidget):
-        def __init__(self, entries, *, has_entry=False):
-            # type: (List[str], bool) -> None
-            self.entries = entries
-            if has_entry:
-                self.widget = Gtk.ComboBoxText.new_with_entry()
-            else:
-                self.widget = Gtk.ComboBoxText()
-                self.widget.set_entry_text_column(0)
-            self.widget.set_entry_text_column(0)
-            self.__fill_combo(self.widget, entries)
-
-        def __fill_combo(self, combo, data_list, wrap_width=1):
-            # type: (Gtk.ComboBox, List[str], int) -> None
-            for data in sorted(data_list):
-                if data:
-                    combo.append_text(data)
-
-            combo.set_popup_fixed_width(False)
-            combo.set_wrap_width(wrap_width)
-            combo.set_entry_text_column(0)
-
-        def set_value(self, value):
-            # type: (str) -> None
-            if value in self.entries:
-                i = self.entries.index(value)
-            else:
-                i = -1
-            self.widget.set_active(i)
-
-        def get_value(self):
-            # type: () -> str
-            return self.widget.get_active_text()
-
-    def get_widget(self, opttype):
-        # type: (str) -> MyWidget
-        if opttype == "=0/1":
-            return self.MyCheckBox()
-        if opttype == "=str":
-            return self.MyWidget(Gtk.Entry())
-        if opttype == "=num":
-            # return self.MyWidget(NumberEntry())
-            return self.MySpin()
-        if opttype == "=tag":
-            return self.MyCombo(list(self.__tagnames()))
-        raise RuntimeError("Unsupported type")
-
-    def options_dialog(self):
-        # type: () -> bool
-        dialog = Gtk.Dialog(
-            title=_("Options"), parent=None, flags=Gtk.DialogFlags.MODAL
-        )
-
-        hdr = Gtk.Label()
-        hdr.set_markup("<b>" + _("Options") + "</b>")
-        dialog.vbox.pack_start(hdr, False, False, 5)
-
-        ok_button = dialog.add_button(_("Ok"), Gtk.ResponseType.OK)
-        dialog.add_button(_("Cancel"), Gtk.ResponseType.CANCEL)
-        dialog.set_default_response(Gtk.ResponseType.OK)
-
-        grid = Gtk.Grid()
-        widgets = []
-        self.widgetmap = dict()
-        for row, option_name in enumerate(self.options.handler.options_dict.keys()):
-            help = self.options.options_help[option_name]
-            opttype, title = help[0:2]
-            value = self.options.handler.options_dict[option_name]
-            lbl_title = Gtk.Label(title)
-            lbl_title.set_halign(Gtk.Align.START)
-            widget = self.get_widget(opttype)
-            widget.set_value(value)
-            grid.attach(lbl_title, 0, row, 1, 1)
-            grid.attach(widget.widget, 1, row, 1, 1)
-            widgets.append((option_name, widget))
-            self.widgetmap[option_name] = widget
-
-        dialog.vbox.pack_start(grid, False, False, 5)
-        dialog.show_all()
-        result = dialog.run()
-        if result != Gtk.ResponseType.OK:
-            dialog.destroy()
-            return False
-        print("ok")
-
-        for option_name, widget in widgets:
-            value = widget.get_value()
-            self.options.handler.options_dict[option_name] = value
-        # Save options
-        self.options.handler.save_options()
-        dialog.destroy()
-        return True
 
 
 # ------------------------------------------------------------------------

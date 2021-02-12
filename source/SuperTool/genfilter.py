@@ -98,7 +98,7 @@ class GenericFilterRule(Rule):
 
     def prepare(self, db, user):
         # things we want to do just once, not for every handle
-        
+
         self.db = db
         dbstate = self  # self emulates dbstate
         self.rule = self.list[0].replace("<br>", " ").strip()
@@ -106,9 +106,12 @@ class GenericFilterRule(Rule):
         self.statements = self.list[2].replace("<br>", "\n").strip()
 
         self.init_env = {}  # type: Dict[str,Any]
+        self.init_env['trans'] = None
         s = self.initial_statements
         if s:
-            value, self.init_env = self.execute_func(dbstate, None, s, self.init_env, "exec")
+            value, self.init_env = self.execute_func(
+                dbstate, None, s, self.init_env, "exec"
+            )
 
     #         if len(self.list) == 1:
     #             self.list = ["0", self.list[0]]
@@ -150,29 +153,39 @@ class GenericFilterRule_Place(GenericFilterRule):
         GenericFilterRule.__init__(self, *args)
         self.execute_func = engine.execute_place
 
+
 class GenericFilterRule_Event(GenericFilterRule):
     def __init__(self, *args):
         GenericFilterRule.__init__(self, *args)
         self.execute_func = engine.execute_event
+
 
 class GenericFilterRule_Source(GenericFilterRule):
     def __init__(self, *args):
         GenericFilterRule.__init__(self, *args)
         self.execute_func = engine.execute_source
 
+
 class GenericFilterRule_Citation(GenericFilterRule):
     def __init__(self, *args):
         GenericFilterRule.__init__(self, *args)
         self.execute_func = engine.execute_citation
+
 
 class GenericFilterRule_Repository(GenericFilterRule):
     def __init__(self, *args):
         GenericFilterRule.__init__(self, *args)
         self.execute_func = engine.execute_repository
 
+
 class GenericFilterRule_Note(GenericFilterRule):
     def __init__(self, *args):
         GenericFilterRule.__init__(self, *args)
         self.execute_func = engine.execute_note
+
+class GenericFilterRule_Media(GenericFilterRule):
+    def __init__(self, *args):
+        GenericFilterRule.__init__(self, *args)
+        self.execute_func = engine.execute_media
 
 import supertool_engine as engine
