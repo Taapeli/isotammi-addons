@@ -79,7 +79,9 @@ config = configman.register_manager("supertool")
 config.register("defaults.encoding", "utf-8")
 config.register("defaults.delimiter", "comma")
 config.register("defaults.font", "")
+config.register("defaults.last_filename", "")
 
+SCRIPTFILE_EXTENSION = ".script"
 
 def get_text(textview):
     buf = textview.get_buffer()
@@ -90,7 +92,8 @@ def get_text(textview):
 def set_text(textview, text):
     textview.get_buffer().set_text(text)
 
-class JSONOpenFileChooserDialog(Gtk.FileChooserDialog):
+
+class ScriptOpenFileChooserDialog(Gtk.FileChooserDialog):
     def __init__(self, uistate):
         Gtk.FileChooserDialog.__init__(
             self,
@@ -103,6 +106,11 @@ class JSONOpenFileChooserDialog(Gtk.FileChooserDialog):
             _("_Cancel"), Gtk.ResponseType.CANCEL, _("Load"), Gtk.ResponseType.OK
         )
 
+        filter_scriptfile = Gtk.FileFilter()
+        filter_scriptfile.set_name("Script files")
+        filter_scriptfile.add_pattern("*"+SCRIPTFILE_EXTENSION)
+        self.add_filter(filter_scriptfile)
+
         filter_json = Gtk.FileFilter()
         filter_json.set_name("JSON files")
         filter_json.add_pattern("*.json")
@@ -114,7 +122,7 @@ class JSONOpenFileChooserDialog(Gtk.FileChooserDialog):
         self.add_filter(filter_all)
 
 
-class JSONSaveFileChooserDialog(Gtk.FileChooserDialog):
+class ScriptSaveFileChooserDialog(Gtk.FileChooserDialog):
     def __init__(self, uistate):
         Gtk.FileChooserDialog.__init__(
             self,
@@ -127,10 +135,10 @@ class JSONSaveFileChooserDialog(Gtk.FileChooserDialog):
             _("_Cancel"), Gtk.ResponseType.CANCEL, _("Save"), Gtk.ResponseType.OK
         )
 
-        filter_json = Gtk.FileFilter()
-        filter_json.set_name("JSON files")
-        filter_json.add_pattern("*.json")
-        self.add_filter(filter_json)
+        filter_scriptfile = Gtk.FileFilter()
+        filter_scriptfile.set_name("Script files")
+        filter_scriptfile.add_pattern("*"+SCRIPTFILE_EXTENSION)
+        self.add_filter(filter_scriptfile)
 
 
 class CsvFileChooserDialog(Gtk.FileChooserDialog):
@@ -335,12 +343,15 @@ class ScriptFile:
     def load(self, filename, loadtitle=True):
         # type: (str, bool) -> Query
         query = Query()
-        data = self.__readdata(filename)
+        if filename.endswith(".json"):
+            data = self.__readdata_json(filename)
+        else:
+            data = self.__readdata(filename)
         query.category = data.get("category", "")
         title = data.get("title", "")
         if not title and loadtitle:
             name = os.path.split(filename)[1]
-            title = name.replace(".json", "")
+            title = name.replace(SCRIPTFILE_EXTENSION, "")
         query.title = title
 
         query.initial_statements = data.get("initial_statements", "")
@@ -377,9 +388,34 @@ class ScriptFile:
 
     def __writedata(self, filename, data):
         # type: (str, Dict[str,str]) -> None
-        open(filename, "w").write(json.dumps(data, indent=4))
+        #open(filename, "w").write(json.dumps(data, indent=4))
+        with open(filename, "w") as f:
+            for key,value in data.items():
+                print("["+key+"]", file=f)
+                print(value, file=f)
+                if value:
+                    print(file=f) # empty line
 
     def __readdata(self, filename):
+        try:
+            data = {}
+            key = None
+            value = ""
+            for line in open(filename):
+                if line.startswith("["):
+                    if key:
+                        data[key] = value.rstrip()
+                    key = line.strip()[1:-1]
+                    value = ""
+                else:
+                    value += line
+            if key:
+                data[key] = value.rstrip()
+            return data
+        except:
+            return {}
+    
+    def __readdata_json(self, filename):
         # type: (str) -> Dict[str,str]
         try:
             data = open(filename).read()
@@ -436,7 +472,9 @@ class SuperTool(ManagedWindow):
         self.uistate.viewmanager.notebook.connect("switch-page", self.pageswitch)
         print(self.uistate.viewmanager.active_page)
         self.set_window(window, None, _("SuperTool"))
-        self.window.set_sensitive(self.category.objclass is not None)
+        #self.window.set_sensitive(self.category.objclass is not None)
+        #self.btn_help.set_sensitive(True)
+        self.check_category()
         self.help_loaded = False
 
         config.load()
@@ -445,6 +483,7 @@ class SuperTool(ManagedWindow):
             self.btn_font.set_font(font)
             font_description = self.btn_font.get_font_desc()
             self.window.modify_font(font_description)
+        self.last_filename = config.get("defaults.last_filename")
         self.show()
 
     def db_closed(self):
@@ -468,7 +507,7 @@ class SuperTool(ManagedWindow):
 
     def get_configfile(self):
         # type: () -> str
-        return __file__[:-3] + "-" + self.category_name + ".json"
+        return __file__[:-3] + "-" + self.category_name + SCRIPTFILE_EXTENSION
 
     def get_attributes(self, objclass, proxyclass):
         obj = objclass()
@@ -496,6 +535,22 @@ class SuperTool(ManagedWindow):
             # print(name, type(attr))
             yield name
 
+
+    def set_error(self, msg):
+        # type: (str) -> None
+        self.errormsg.set_markup(
+            "<span font_family='monospace' color='red' size='larger'>{}</span>".format(
+                msg.replace("<", "&lt;")
+            ))
+                
+    def check_category(self):
+        # type: () -> None
+        category_ok = self.category.objclass is not None
+        if not category_ok:
+            self.set_error("This category ({}) is not supported".format(self.category_name))
+        self.btn_execute.set_sensitive(category_ok)
+        self.btn_save_as_filter.set_sensitive(category_ok)
+
     def pageswitch(self, *args):
         # type: (Any) -> None
         self.saveconfig()
@@ -504,8 +559,7 @@ class SuperTool(ManagedWindow):
         if self.listview:
             self.output_window.remove(self.listview)
         self.statusmsg.set_text("")
-        if self.window:  # ??
-            self.window.set_sensitive(self.category.objclass is not None)
+        self.check_category()
 
     def savestate(self, filename):
         # type: (str) -> None
@@ -547,7 +601,7 @@ class SuperTool(ManagedWindow):
 
         if not query.title and loadtitle:
             name = os.path.split(filename)[1]
-            query.title = name.replace(".json", "")
+            query.title = name.replace(SCRIPTFILE_EXTENSION, "")
         self.title.set_text(query.title)
 
         set_text(self.expressions, query.expressions)
@@ -625,12 +679,12 @@ class SuperTool(ManagedWindow):
 
     def save(self, obj):
         # type: (Gtk.Widget) -> None
-        choose_file_dialog = JSONSaveFileChooserDialog(self.uistate)
+        choose_file_dialog = ScriptSaveFileChooserDialog(self.uistate)
         title = self.title.get_text().strip()
         if title:
-            fname = title + ".json"
+            fname = title + SCRIPTFILE_EXTENSION
         else:
-            fname = self.category_name + "-query.json"
+            fname = self.category_name + "-query" + SCRIPTFILE_EXTENSION
         choose_file_dialog.set_current_name(fname)
         choose_file_dialog.set_do_overwrite_confirmation(True)
         if self.last_filename:
@@ -650,6 +704,8 @@ class SuperTool(ManagedWindow):
                 print(filename)
                 self.savestate(filename)
                 self.last_filename = filename
+                config.set("defaults.last_filename", filename)
+                config.save()
                 break
 
         choose_file_dialog.destroy()
@@ -657,8 +713,8 @@ class SuperTool(ManagedWindow):
     def load(self, obj):
         # type: (Gtk.Widget) -> None
         print("load")
-        choose_file_dialog = JSONOpenFileChooserDialog(self.uistate)
-        choose_file_dialog.set_current_name(self.category_name + "-query.json")
+        choose_file_dialog = ScriptOpenFileChooserDialog(self.uistate)
+        choose_file_dialog.set_current_name(self.category_name + "-query" + SCRIPTFILE_EXTENSION)
         if self.last_filename:
             choose_file_dialog.set_filename(self.last_filename)
 
@@ -673,6 +729,8 @@ class SuperTool(ManagedWindow):
                 print(filename)
                 self.loadstate(filename)
                 self.last_filename = filename
+                config.set("defaults.last_filename", filename)
+                config.save()
                 break
 
         choose_file_dialog.destroy()
@@ -809,7 +867,7 @@ class SuperTool(ManagedWindow):
         self.attributes_list = glade.get_child_object("attributes_list")
 
         self.statusmsg = glade.get_child_object("statusmsg")
-        self.errormsg = self.statusmsg  # glade.get_child_object("errormsg")
+        self.errormsg = self.statusmsg
 
         self.output_window = glade.get_child_object("output_window")
         self.help_window = glade.get_object("help_window")
@@ -870,11 +928,7 @@ class SuperTool(ManagedWindow):
             else:
                 msglines = lines
             errortext = "\n".join(msglines)
-            self.errormsg.set_markup(
-                "<span font_family='monospace' color='red' size='larger'>{}</span>".format(
-                    errortext.replace("<", "&lt;")
-                )
-            )
+            self.set_error(errortext)
 
     def __execute1(self):
         # type: () -> None
@@ -1139,7 +1193,7 @@ class Options(tool.ToolOptions):
             category="",
         )
         self.options_help = dict(
-            script=("=str", "Script file name", "A JSON file name"),
+            script=("=str", "Script file name", "A {} file name".format(SCRIPTFILE_EXTENSION)),
             output=("=str", "Output CSV file name (optional)", "a CSV file name"),
             category=(
                 "=str",

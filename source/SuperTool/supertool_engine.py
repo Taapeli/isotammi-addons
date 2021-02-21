@@ -567,7 +567,8 @@ class MediaProxy(CommonProxy, AttributeProxy):
         self.desc = self.media.desc
         self.checksum = self.media.checksum
         self.date = DateProxy(self.media.date)
-            
+
+
 def uniq(items):
     return list(set(items))
 
@@ -615,6 +616,7 @@ class Filterfactory:
 
 class DummyTxn:
     "Implements nested transactions"
+
     def __init__(self, trans):
         if trans is None:
             raise RuntimeError("Need a transaction")
@@ -631,6 +633,7 @@ class DummyTxn:
                 return False
 
         self.txn = _Txn
+
 
 def process_includes(code):
     newlines = []
@@ -703,26 +706,34 @@ def execute(dbstate, obj, code, proxyclass, envvars=None, exectype=None):
 def execute_family(dbstate, obj, code, envvars=None, exectype=None):
     return execute(dbstate, obj, code, FamilyProxy, envvars, exectype)
 
+
 def execute_person(dbstate, obj, code, envvars=None, exectype=None):
     return execute(dbstate, obj, code, PersonProxy, envvars, exectype)
+
 
 def execute_place(dbstate, obj, code, envvars=None, exectype=None):
     return execute(dbstate, obj, code, PlaceProxy, envvars, exectype)
 
+
 def execute_event(dbstate, obj, code, envvars=None, exectype=None):
     return execute(dbstate, obj, code, EventProxy, envvars, exectype)
+
 
 def execute_media(dbstate, obj, code, envvars=None, exectype=None):
     return execute(dbstate, obj, code, MediaProxy, envvars, exectype)
 
+
 def execute_note(dbstate, obj, code, envvars=None, exectype=None):
     return execute(dbstate, obj, code, NoteProxy, envvars, exectype)
+
 
 def execute_citation(dbstate, obj, code, envvars=None, exectype=None):
     return execute(dbstate, obj, code, CitationProxy, envvars, exectype)
 
+
 def execute_source(dbstate, obj, code, envvars=None, exectype=None):
     return execute(dbstate, obj, code, SourceProxy, envvars, exectype)
+
 
 def execute_repository(dbstate, obj, code, envvars=None, exectype=None):
     return execute(dbstate, obj, code, RepositoryProxy, envvars, exectype)

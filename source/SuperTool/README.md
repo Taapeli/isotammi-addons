@@ -107,9 +107,10 @@ For example, in the Person/People category the following variables are defined f
 * attributes
 * person/obj
 
-These are described in detail in the reference section below.
 
 Gramps_id is the ID of the person, for example I0345. Name is the person's primary name in default format. Names is a list of all names assigned to the person. Birth and death are the birth and death events of the person. Events is a list of all events attached to the person etc. You can experiment with all these by putting the variable names in the "Expressions" field.
+
+These are described in more detail in the reference section below.
 
 ## Examples
 
@@ -168,6 +169,8 @@ There is a hard limit of 1000 rows that can be displayed. This is because Gramps
 
 ![SuperTool](Warning.png)
 
+The row limit does not apply when you use the tool in the [command line mode](#running-from-the-command-line).
+
 
 ## Editing objects
 
@@ -179,7 +182,7 @@ The resulting list can be downloaded as a CSV (Comma Separated Values) file by t
 
 ## Title field
 
-The first input field ("Title") give a name for the query. This name is saved in the script file (see below) and should be a short description of the operation that is performed. The name is also used as the name of the custom filter created with the "Save as filter" button (see below).
+The first input field ("Title") gives a name to the query. This title is saved in the script file (see below) and should be a short description of the operation that is performed. The title is also used as the name of the custom filter created with the "Save as filter" button (see below).
 
 ## Initialization statements
 
@@ -241,7 +244,7 @@ This is because the tool automatically commits all processed objects if the "Com
 
 ## Saving the query as a script file
 
-You can save the query in a file with the "Save" button and load it from a file with the "Load" button. The file is a text file in a JSON (Javascript Object Notation) format. With this you can save useful queries and also distribute them to other Gramps users. These files are also called script files.
+You can save the query in a file with the "Save" button and load it from a file with the "Load" button. With this you can save useful queries and also distribute them to other Gramps users. These files are also called script files. They are text files that can also be edited with an external editor.
 
 ## Saving the query as a custom filter
 
@@ -278,16 +281,24 @@ SuperTool internally uses "proxy objects" to represent the Gramps internal objec
 
 For example, a person's birth event - the "birth" attribute - is actually an EventProxy object. If you display it you will get something like "Event[E0123]". To get the event date and place you need to append the corresponding event attributes: "birth.date" and "birth.place". And even then the "birth.place" refers to a PlaceProxy and to fetch the name of the place you need to use "birth.place.name" or "birth.place.longname".
 
+Proxy objects are created when they are needed. This means also that identical expressions do not always refer to the same objects. For example, in People category, the expression <i>birth.place.obj</i> refers to a Gramps internal Place object. But if you use the same expression multiple times in the same query then each one will refer to a different Place object. This matters only if you intend to update the object - changes in one object will not be seen in the other and calling db.commit_place() would not have any effect. Solution is to save the object reference in a local variable, e.g.
+
+    birth.place.obj.set_latitude(90)
+    db.commit_place(birth.place.obj, trans)  # does not work
+
+    placeobj = birth.place.obj
+    placeobj.set_latitude(90)
+    db.commit_place(placeobj, trans) # ok
 
 ## Date arithmetic
 
 
 Date properties (like birth.date) return a DateProxy object. Currently the dates work like this:
 
-* Adding an integer to a DateProxy will add so many years to the date:
+* Adding an integer to a DateProxy will add that many years to the date:
 ** (2021-01-11) + 1 -> 2022-01-11
 
-* Subtracting an integer to a DateProxy will subtract so many years from the date:
+* Subtracting an integer to a DateProxy will subtract that many years from the date:
 ** (2021-01-11) - 1 -> 2020-01-11
 
 * But subtracting two DateProxys will yield the number of <b>days</b> between the dates:
@@ -307,11 +318,11 @@ The Python statements can include code from a file with the syntax
 
     #include file-name
     
-This code must be the only text on a line and it must start from the first column and contains exactly the text "#include" (with the hash sign included). The file name is resolved using the Gramps defaults so in practice it should probably be fully qualified (i.e an absolute path).
+This code must be the only text on a line and it must start from the first column and contain exactly the text "#include" (with the hash sign included). The file name is resolved using the Gramps defaults so in practice it should probably be fully qualified (i.e an absolute path).
 
-The text from the specified file is included 'as-is' to the point where the include command was found.
+The text from the specified file is included 'as-is' to the point where the include command was found. The included code cannot contain #include statements.
 
-This is intended to allow including possibly complex auxiliary functions without cluttering the user interface. 
+This is intended to allow including possibly complex auxiliary functions without cluttering the user interface. The included code naturally has access to all pre-defined variables.
 
 ## Changing font
 
