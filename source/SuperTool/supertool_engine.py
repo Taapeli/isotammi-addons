@@ -87,6 +87,10 @@ gender_map = {
 }
 
 
+class SupertoolException(RuntimeError):
+    pass
+
+
 def listproperty(orig):
     @functools.wraps(orig)
     def f(*args):
@@ -343,6 +347,9 @@ class PlaceProxy(CommonProxy):
             self.place = self.db.get_place_from_handle(place_handle)
         self.obj = self.place
         self.gramps_id = self.obj.gramps_id
+        self.code = self.obj.code
+        self.lat = self.obj.lat
+        self.long = self.obj.long
 
     @property
     def name(self):
@@ -619,7 +626,7 @@ class DummyTxn:
 
     def __init__(self, trans):
         if trans is None:
-            raise RuntimeError("Need a transaction")
+            raise SupertoolException("Need a transaction (check 'Commit changes')")
         self.trans = trans
 
         class _Txn:
@@ -635,12 +642,41 @@ class DummyTxn:
         self.txn = _Txn
 
 
+def find_fullname(fname):
+    TOOL_DIR = "supertool"
+    from gramps.gen.const import USER_HOME
+
+    mydir = os.path.split(__file__)[0]
+    userdir = os.path.join(USER_HOME, TOOL_DIR)
+    fullnames = []
+    for dirname in [userdir, mydir]:
+        fullname = os.path.join(dirname, fname)
+        fullname = os.path.abspath(fullname)
+        if fullname not in fullnames:
+            fullnames.append(fullname)
+        if os.path.exists(fullname):
+            return fullname
+    fullname = os.path.abspath(fname)
+    if fullname not in fullnames:
+        fullnames.append(fullname)
+    if os.path.exists(fullname):
+        return fullname
+
+    msg = "Include file '{}' not found; looked at\n".format(fname)
+    msg += "\n".join(["- " + name for name in fullnames])
+    raise SupertoolException(msg)
+
+
 def process_includes(code):
     newlines = []
     for line in code.splitlines(keepends=True):
-        if line.startswith("#include "):
-            fname = line.split(maxsplit=1)[1].strip()
-            for line2 in open(fname):
+        parts = line.split(maxsplit=1)
+        if len(parts) > 0 and parts[0] == "#include":
+            if len(parts) == 1:
+                raise SupertoolException("Include file name missing")
+            fname = parts[1].strip()
+            fullname = find_fullname(fname)
+            for line2 in open(fullname):
                 newlines.append(line2)
         else:
             newlines.append(line)
@@ -690,7 +726,8 @@ def execute(dbstate, obj, code, proxyclass, envvars=None, exectype=None):
             value = getattr(p, name)
             env[name] = value
     filterfactory = Filterfactory(dbstate.db)
-    env["filter"] = filterfactory.getfilter(proxyclass.namespace)
+    if proxyclass:
+        env["filter"] = filterfactory.getfilter(proxyclass.namespace)
     if envvars:
         env.update(envvars)
     env["env"] = env
@@ -701,6 +738,10 @@ def execute(dbstate, obj, code, proxyclass, envvars=None, exectype=None):
         code = code.replace("\n", " ")
         res = eval(code, env, env)
     return res, env
+
+
+def execute_no_category(dbstate, obj, code, envvars=None, exectype=None):
+    return execute(dbstate, None, code, None, envvars, exectype)
 
 
 def execute_family(dbstate, obj, code, envvars=None, exectype=None):
@@ -764,7 +805,7 @@ def get_category_info(db, category_name):
     info = Category()
 
     info.objclass = None
-    info.execute_func = None
+    info.execute_func = execute_no_category
     if category_name == "People":
         info.get_all_objects_func = db.get_person_handles
         info.getfunc = db.get_person_from_handle

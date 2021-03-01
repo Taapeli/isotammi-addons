@@ -31,7 +31,7 @@ Author: kari.kujansuu@gmail.com<br>
 
 - [More examples](#more-examples)
 - [Reference](#reference)
-  * [Variables (or attributes or properties...) supported for the various object types.](#variables--or-attributes-or-properties--supported-for-the-various-object-types)
+  * [Properties supported by the various object types.](#variables--or-attributes-or-properties--supported-for-the-various-object-types)
     + [Citations](#citations)
     + [Events](#events)
     + [Families](#families)
@@ -41,6 +41,9 @@ Author: kari.kujansuu@gmail.com<br>
     + [Repositories](#repositories)
     + [Sources](#sources)
     + [global variables and functions](#global-variables-and-functions)
+
+  * [Command line options](#command-line-options)
+  * [Supplied include files](#supplied-include-files)
 
 
 
@@ -244,11 +247,11 @@ This is because the tool automatically commits all processed objects if the "Com
 
 ## Saving the query as a script file
 
-You can save the query in a file with the "Save" button and load it from a file with the "Load" button. With this you can save useful queries and also distribute them to other Gramps users. These files are also called script files. They are text files that can also be edited with an external editor.
+You can save the query in a file with the "Save" button and load it from a file with the "Load" button. With this you can save useful queries and also distribute them to other Gramps users. These files are also called script files. They are text files that can also be edited with an external editor. Be careful not to mix spaces and tabs though.
 
 ## Saving the query as a custom filter
 
-You can also save the query as a Gramps custom filter that is then immediately available to use in the Filter gramplet on the Gramps sidebar. The supplied title will be used as the filter name. Naturally the filter does not include the display list (Expressions to display) but is does inlude the initialization statements, the statements to execute for every object and of course the filter expression itself. 
+You can also save the query as a Gramps custom filter that is then immediately available to use in the Filter gramplet on the Gramps sidebar. The supplied title will be used as the filter name. Naturally the filter does not include the display list (Expressions to display) but it does include the initialization statements, the statements to execute for every object and of course the filter expression itself. 
 
 This can be used to create more complicated filters than is possible with the regular filter editor and built-in rules.
 
@@ -318,11 +321,16 @@ The Python statements can include code from a file with the syntax
 
     #include file-name
     
-This code must be the only text on a line and it must start from the first column and contain exactly the text "#include" (with the hash sign included). The file name is resolved using the Gramps defaults so in practice it should probably be fully qualified (i.e an absolute path).
+This code must be the only text on a line and it must start from the first column and contain exactly the text "#include" (with the hash sign included). If the file name is not fully qualified (i.e an absolute path) then SuperTool will look at three places:
+* in a folder/directory called "supertool" under the user's home directory
+* in the place where SuperTool is installed (i.e. $HOME/.gramps/gramps51/plugins/SuperTool)
+* the current directory for the Gramps process (usually the user's home directory)
+
+So it is intended that the user can store often used include files in her own "supertool" folder.
 
 The text from the specified file is included 'as-is' to the point where the include command was found. The included code cannot contain #include statements.
 
-This is intended to allow including possibly complex auxiliary functions without cluttering the user interface. The included code naturally has access to all pre-defined variables.
+This is intended to allow including possibly complex auxiliary functions without cluttering the user interface. The included code naturally has access to all pre-defined variables. The SuperTool installation will contain a few include files with generally useful functions. They will be documented in the reference section below.
 
 ## Changing font
 
@@ -738,4 +746,10 @@ These lists include the variables defined in the various Proxy classes. In addit
 - filter
 	> Function that returns a custom filter by name
 
+## Command line options
 
+to be added
+
+## Supplied include files
+
+to be added

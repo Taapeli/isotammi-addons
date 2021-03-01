@@ -106,7 +106,7 @@ class GenericFilterRule(Rule):
         self.statements = self.list[2].replace("<br>", "\n").strip()
 
         self.init_env = {}  # type: Dict[str,Any]
-        self.init_env['trans'] = None
+        self.init_env["trans"] = None
         s = self.initial_statements
         if s:
             value, self.init_env = self.execute_func(
@@ -183,9 +183,27 @@ class GenericFilterRule_Note(GenericFilterRule):
         GenericFilterRule.__init__(self, *args)
         self.execute_func = engine.execute_note
 
+
 class GenericFilterRule_Media(GenericFilterRule):
     def __init__(self, *args):
         GenericFilterRule.__init__(self, *args)
         self.execute_func = engine.execute_media
 
+
+def importfile(fname):
+    import os
+
+    dirname = os.path.split(__file__)[0]
+    fullname = os.path.join(dirname, fname)
+    from types import SimpleNamespace
+
+    code = open(fullname).read()
+    globals_dict = {}
+    exec(code, globals_dict)
+    return SimpleNamespace(**globals_dict)
+
+
+# Regular import would put "supertool_engine" in the global module namespace (sys.modules).
+# This could clash with other addons.
+# engine = importfile("supertool_engine.py")
 import supertool_engine as engine

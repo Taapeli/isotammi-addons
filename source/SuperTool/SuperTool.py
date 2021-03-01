@@ -36,6 +36,8 @@ from gramps.gen.lib.event import Event
 from gramps.gen.lib.place import Place
 from pprint import pprint
 from gramps.gui.display import display_url
+from gramps.gui.utils import ProgressMeter
+from contextlib import contextmanager
 
 try:
     from typing import Any
@@ -73,7 +75,6 @@ from gramps.gui.dialog import OkDialog
 
 _ = glocale.translation.gettext
 
-import supertool_engine as engine
 
 config = configman.register_manager("supertool")
 config.register("defaults.encoding", "utf-8")
@@ -83,6 +84,7 @@ config.register("defaults.last_filename", "")
 
 SCRIPTFILE_EXTENSION = ".script"
 
+
 def get_text(textview):
     buf = textview.get_buffer()
     text = buf.get_text(buf.get_start_iter(), buf.get_end_iter(), True)
@@ -91,6 +93,23 @@ def get_text(textview):
 
 def set_text(textview, text):
     textview.get_buffer().set_text(text)
+
+
+def importfile(fname):
+    dirname = os.path.split(__file__)[0]
+    fullname = os.path.join(dirname, fname)
+    from types import SimpleNamespace
+
+    code = open(fullname).read()
+    globals_dict = {}
+    exec(code, globals_dict)
+    return SimpleNamespace(**globals_dict)
+
+
+# Regular import would put "supertool_engine" in the global module namespace (sys.modules).
+# This could clash with other addons.
+# engine = importfile("supertool_engine.py")
+import supertool_engine as engine
 
 
 class ScriptOpenFileChooserDialog(Gtk.FileChooserDialog):
@@ -108,7 +127,7 @@ class ScriptOpenFileChooserDialog(Gtk.FileChooserDialog):
 
         filter_scriptfile = Gtk.FileFilter()
         filter_scriptfile.set_name("Script files")
-        filter_scriptfile.add_pattern("*"+SCRIPTFILE_EXTENSION)
+        filter_scriptfile.add_pattern("*" + SCRIPTFILE_EXTENSION)
         self.add_filter(filter_scriptfile)
 
         filter_json = Gtk.FileFilter()
@@ -137,7 +156,7 @@ class ScriptSaveFileChooserDialog(Gtk.FileChooserDialog):
 
         filter_scriptfile = Gtk.FileFilter()
         filter_scriptfile.set_name("Script files")
-        filter_scriptfile.add_pattern("*"+SCRIPTFILE_EXTENSION)
+        filter_scriptfile.add_pattern("*" + SCRIPTFILE_EXTENSION)
         self.add_filter(filter_scriptfile)
 
 
@@ -204,6 +223,7 @@ class GrampsEngine:
     def __init__(
         self,
         dbstate,
+        uistate,
         category,
         selected_handles,
         initial_statements,
@@ -217,6 +237,7 @@ class GrampsEngine:
     ):
         self.dbstate = dbstate
         self.db = dbstate.db
+        self.uistate = uistate
         self.category = category
         self.selected_handles = selected_handles
         self.initial_statements = initial_statements
@@ -258,7 +279,8 @@ class GrampsEngine:
         self.total_objects = len(self.selected_handles)
         for handle in self.selected_handles:
             if self.step:
-                self.step()
+                if self.step():
+                    raise StopIteration()
             env = {}
             env.update(init_env)
             obj = self.category.getfunc(handle)
@@ -292,13 +314,12 @@ class GrampsEngine:
         print("executing")
         self.trans = trans
 
-        if not self.category.execute_func:
-            return
-        n = 0
-        LIMIT = 1000
+        #         if not self.category.execute_func:
+        #             return
         self.object_count = 0
         init_env = {}  # type: Dict[str,Any]
         init_env["trans"] = trans
+        init_env["uistate"] = self.uistate
         if self.initial_statements:
             value, init_env = self.category.execute_func(
                 self.dbstate, None, self.initial_statements, init_env, "exec"
@@ -307,9 +328,6 @@ class GrampsEngine:
         for obj, env, values in self.generate_values(init_env):
             if not self.summary_only:
                 yield values
-                n += 1
-                if n >= LIMIT:
-                    break
 
         if self.summary_only:
             if self.expressions:
@@ -320,9 +338,6 @@ class GrampsEngine:
                     res = (res,)
                 for values in self.generate_rows(res):
                     yield [None] + values + [None]
-                    n += 1
-                    if n >= LIMIT:
-                        break
 
 
 class Query:
@@ -388,13 +403,13 @@ class ScriptFile:
 
     def __writedata(self, filename, data):
         # type: (str, Dict[str,str]) -> None
-        #open(filename, "w").write(json.dumps(data, indent=4))
+        # open(filename, "w").write(json.dumps(data, indent=4))
         with open(filename, "w") as f:
-            for key,value in data.items():
-                print("["+key+"]", file=f)
+            for key, value in data.items():
+                print("[" + key + "]", file=f)
                 print(value, file=f)
                 if value:
-                    print(file=f) # empty line
+                    print(file=f)  # empty line
 
     def __readdata(self, filename):
         try:
@@ -414,7 +429,7 @@ class ScriptFile:
             return data
         except:
             return {}
-    
+
     def __readdata_json(self, filename):
         # type: (str) -> Dict[str,str]
         try:
@@ -472,9 +487,8 @@ class SuperTool(ManagedWindow):
         self.uistate.viewmanager.notebook.connect("switch-page", self.pageswitch)
         print(self.uistate.viewmanager.active_page)
         self.set_window(window, None, _("SuperTool"))
-        #self.window.set_sensitive(self.category.objclass is not None)
-        #self.btn_help.set_sensitive(True)
-        self.check_category()
+        # self.window.set_sensitive(self.category.objclass is not None)
+        # self.btn_help.set_sensitive(True)
         self.help_loaded = False
 
         config.load()
@@ -485,6 +499,7 @@ class SuperTool(ManagedWindow):
             self.window.modify_font(font_description)
         self.last_filename = config.get("defaults.last_filename")
         self.show()
+        self.check_category()
 
     def db_closed(self):
         # type: () -> None
@@ -535,21 +550,42 @@ class SuperTool(ManagedWindow):
             # print(name, type(attr))
             yield name
 
-
     def set_error(self, msg):
         # type: (str) -> None
         self.errormsg.set_markup(
             "<span font_family='monospace' color='red' size='larger'>{}</span>".format(
                 msg.replace("<", "&lt;")
-            ))
-                
+            )
+        )
+
     def check_category(self):
         # type: () -> None
         category_ok = self.category.objclass is not None
-        if not category_ok:
-            self.set_error("This category ({}) is not supported".format(self.category_name))
-        self.btn_execute.set_sensitive(category_ok)
+        if category_ok:
+            self.label_filter.show()
+            self.label_statements.show()
+            self.statements.show()
+            self.filter.show()
+        else:
+            # self.set_error("This category ({}) is not supported".format(self.category_name))
+            self.label_filter.hide()
+            self.label_statements.hide()
+            self.statements.hide()
+            self.filter.hide()
+            self.summary_checkbox.set_active(True)
+
+        #         set_text(self.filter, "disabled")
+        #         set_text(self.statements, "disabled")
+        #         self.filter.set_sensitive(category_ok)
+        #         self.statements.set_sensitive(category_ok)
+
         self.btn_save_as_filter.set_sensitive(category_ok)
+
+        self.all_objects.set_sensitive(category_ok)
+        self.filtered_objects.set_sensitive(category_ok)
+        self.selected_objects.set_sensitive(category_ok)
+
+        self.summary_checkbox.set_sensitive(category_ok)
 
     def pageswitch(self, *args):
         # type: (Any) -> None
@@ -558,6 +594,8 @@ class SuperTool(ManagedWindow):
         self.loadconfig()
         if self.listview:
             self.output_window.remove(self.listview)
+            self.btn_csv.hide()
+            self.btn_copy.hide()
         self.statusmsg.set_text("")
         self.check_category()
 
@@ -666,16 +704,29 @@ class SuperTool(ManagedWindow):
                 config.save()
 
                 writer = csv.writer(
-                    open(self.csv_filename, "w", encoding=encoding), delimiter=delimiter
+                    open(self.csv_filename, "w", encoding=encoding, newline=""),
+                    delimiter=delimiter,
                 )
                 for row in self.store:
-                    print("row", row)
                     for col in row:
                         print("- col", col)
                     writer.writerow(row)
                 break
 
         choose_file_dialog.destroy()
+
+    def copy(self, obj):
+        # type: (Gtk.Widget) -> None
+        clipboard = Gtk.Clipboard.get(Gdk.SELECTION_CLIPBOARD)
+
+        import io
+
+        stringio = io.StringIO()
+        writer = csv.writer(stringio)
+        for row in self.store:
+            writer.writerow(row)
+        clipboard.set_text(stringio.getvalue(), -1)
+        OkDialog("Info", "Result list copied to clipboard")
 
     def save(self, obj):
         # type: (Gtk.Widget) -> None
@@ -714,7 +765,9 @@ class SuperTool(ManagedWindow):
         # type: (Gtk.Widget) -> None
         print("load")
         choose_file_dialog = ScriptOpenFileChooserDialog(self.uistate)
-        choose_file_dialog.set_current_name(self.category_name + "-query" + SCRIPTFILE_EXTENSION)
+        choose_file_dialog.set_current_name(
+            self.category_name + "-query" + SCRIPTFILE_EXTENSION
+        )
         if self.last_filename:
             choose_file_dialog.set_filename(self.last_filename)
 
@@ -834,10 +887,13 @@ class SuperTool(ManagedWindow):
 
     def __create_gui(self):
         # type: () -> Gtk.Widget
-        glade = Glade(toplevel="main", also_load=["help_window"])
+        glade = Glade(toplevel="main", also_load=["help_window", "adjustment1"])
         glade.set_translation_domain(None)
 
         self.title = glade.get_child_object("title")
+
+        self.label_filter = glade.get_child_object("label_filter")
+        self.label_statements = glade.get_child_object("label_statements")
 
         self.initial_statements = glade.get_child_object("initial_statements")
         self.statements = glade.get_child_object("statements")
@@ -854,6 +910,7 @@ class SuperTool(ManagedWindow):
 
         self.btn_execute = glade.get_child_object("btn_execute")
         self.btn_csv = glade.get_child_object("btn_csv")
+        self.btn_copy = glade.get_child_object("btn_copy")
         self.btn_close = glade.get_child_object("btn_close")
         self.btn_load = glade.get_child_object("btn_load")
         self.btn_save = glade.get_child_object("btn_save")
@@ -877,6 +934,7 @@ class SuperTool(ManagedWindow):
         self.selected_objects.set_active(True)
         self.btn_execute.connect("clicked", self.__execute)
         self.btn_csv.connect("clicked", self.download)
+        self.btn_copy.connect("clicked", self.copy)
         self.btn_close.connect("clicked", self.__close)
         self.btn_load.connect("clicked", self.load)
         self.btn_save.connect("clicked", self.save)
@@ -908,25 +966,32 @@ class SuperTool(ManagedWindow):
         self.statusmsg.set_text("")
         self.output_window.hide()
         self.btn_csv.hide()
+        self.btn_copy.hide()
         self.trans = None
         try:
             self.commit_changes = self.commit_checkbox.get_active()
+            txtitle = "Executing SuperTool".format(self.title.get_text())
+            if self.title.get_text():
+                txtitle += " ({})".format(self.title.get_text())
+
             if self.commit_changes:
-                with DbTxn("Executing SuperTool", self.dbstate.db) as self.trans:
+                with DbTxn(txtitle, self.dbstate.db) as self.trans:
                     self.__execute1()
             else:  # no need for a transaction
                 self.__execute1()
-        except:
+        except Exception as e:
             traceback.print_exc()
+            if isinstance(e, engine.SupertoolException):
+                self.set_error(str(e))
+                return
             lines = traceback.format_exc().splitlines()
-            print(lines)
             lastline = lines[-1]
             if lastline.startswith("SyntaxError:"):
                 msglines = lines[-3:]
             elif lastline.startswith("NameError:"):
                 msglines = lines[-1:]
             else:
-                msglines = lines
+                msglines = [str(e)]
             errortext = "\n".join(msglines)
             self.set_error(errortext)
 
@@ -939,24 +1004,29 @@ class SuperTool(ManagedWindow):
         if not self.uistate.viewmanager.active_page:
             return
         self.saveconfig()
-        if not self.category.execute_func:
-            return
+        #         if not self.category.execute_func:
+        #             return
         if self.listview:
             self.output_window.remove(self.listview)
         self.listview = None
         n = 0
         LIMIT = 1000
 
-        if self.selected_objects.get_active():
-            selected_handles = self.uistate.viewmanager.active_page.selected_handles()
-        elif self.all_objects.get_active():
-            selected_handles = self.category.get_all_objects_func()
-        elif self.filtered_objects.get_active():
-            selected_handles = []  # ???
-            store = self.uistate.viewmanager.active_page.model
-            for row in store:
-                handle = store.get_handle_from_iter(row.iter)
-                selected_handles.append(handle)
+        if self.category.objclass:
+            if self.selected_objects.get_active():
+                selected_handles = (
+                    self.uistate.viewmanager.active_page.selected_handles()
+                )
+            elif self.all_objects.get_active():
+                selected_handles = self.category.get_all_objects_func()
+            elif self.filtered_objects.get_active():
+                selected_handles = []  # ???
+                store = self.uistate.viewmanager.active_page.model
+                for row in store:
+                    handle = store.get_handle_from_iter(row.iter)
+                    selected_handles.append(handle)
+        else:
+            selected_handles = []
 
         unwind_lists = self.unwind_lists.get_active()
         summary_only = self.summary_checkbox.get_active()
@@ -965,11 +1035,12 @@ class SuperTool(ManagedWindow):
         statements = get_text(self.statements).strip()
         filtertext = get_text(self.filter).strip()
         expressions = get_text(self.expressions).strip()
-        with self.user.progress(
+        with self.progress(
             "SuperTool", "Executing " + self.title.get_text(), len(selected_handles)
         ) as step:
             gramps_engine = GrampsEngine(
                 self.dbstate,
+                self.uistate,
                 self.category,
                 selected_handles,
                 initial_statements,
@@ -1005,9 +1076,20 @@ class SuperTool(ManagedWindow):
         self.statusmsg.set_text(msg)
         if n > 0:
             self.btn_csv.show()
+            self.btn_copy.show()
         else:
             self.btn_csv.hide()
+            self.btn_copy.hide()
         self.output_window.show()
+
+    @contextmanager
+    def progress(self, title1, title2, count):
+        self._progress = ProgressMeter(title1, can_cancel=True)
+        self._progress.set_pass(title2, count, ProgressMeter.MODE_FRACTION)
+        try:
+            yield self._progress.step
+        finally:
+            self._progress.close()
 
     def build_listview(self, res):
         # type: (Tuple[Union[int,str,float],...]) -> None
@@ -1148,6 +1230,7 @@ class Tool(tool.Tool):
         selected_handles = category.get_all_objects_func()
         gramps_engine = GrampsEngine(
             self.dbstate,
+            self.uistate,
             category,
             selected_handles,
             query.initial_statements,
@@ -1193,7 +1276,11 @@ class Options(tool.ToolOptions):
             category="",
         )
         self.options_help = dict(
-            script=("=str", "Script file name", "A {} file name".format(SCRIPTFILE_EXTENSION)),
+            script=(
+                "=str",
+                "Script file name",
+                "A {} file name".format(SCRIPTFILE_EXTENSION),
+            ),
             output=("=str", "Output CSV file name (optional)", "a CSV file name"),
             category=(
                 "=str",

@@ -68,7 +68,7 @@
         ],
         [
             "gender",
-            "Gender as as string: male, female or unknown"
+            "Gender as as string: M, F or U"
         ],
         [
             "gramps_id",
@@ -287,6 +287,18 @@
         [
             "title",
             "Title of the place"
+        ],
+        [
+            "code",
+            "Code of the place"
+        ],
+        [
+            "lat",
+            "Latitude"
+        ],
+        [
+            "long",
+            "Longitude"
         ],
         [
             "type",
