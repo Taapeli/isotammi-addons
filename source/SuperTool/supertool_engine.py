@@ -671,7 +671,7 @@ def process_includes(code):
     newlines = []
     for line in code.splitlines(keepends=True):
         parts = line.split(maxsplit=1)
-        if len(parts) > 0 and parts[0] == "#include":
+        if len(parts) > 0 and parts[0] == "@include":
             if len(parts) == 1:
                 raise SupertoolException("Include file name missing")
             fname = parts[1].strip()

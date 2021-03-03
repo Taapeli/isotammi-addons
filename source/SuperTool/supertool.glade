@@ -50,6 +50,7 @@
                   <object class="GtkEntry" id="title">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
+                    <property name="tooltip_text" translatable="yes">Title for the script</property>
                     <property name="hexpand">True</property>
                   </object>
                   <packing>
@@ -66,20 +67,20 @@
               </packing>
             </child>
             <child>
-              <object class="GtkRevealer">
+              <object class="GtkLabel">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="transition_type">none</property>
-                <property name="reveal_child">True</property>
-                <child>
-                  <placeholder/>
-                </child>
+                <property name="halign">start</property>
+                <property name="label">Initialization statements:</property>
               </object>
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">True</property>
                 <property name="position">2</property>
               </packing>
+            </child>
+            <child>
+              <placeholder/>
             </child>
           </object>
           <packing>
@@ -89,37 +90,26 @@
           </packing>
         </child>
         <child>
-          <object class="GtkLabel">
+          <object class="GtkScrolledWindow" id="initial_statements_window">
+            <property name="height_request">80</property>
             <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="halign">start</property>
-            <property name="label">Initialization statements:</property>
+            <property name="can_focus">True</property>
+            <property name="shadow_type">in</property>
+            <child>
+              <object class="GtkTextView" id="initial_statements">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="tooltip_text" translatable="yes">Python statements to be executed once in the beginning of the operation</property>
+                <property name="vadjustment">adjustment1</property>
+                <property name="vscroll_policy">natural</property>
+              </object>
+            </child>
           </object>
           <packing>
             <property name="expand">False</property>
             <property name="fill">True</property>
             <property name="position">1</property>
           </packing>
-        </child>
-        <child>
-          <object class="GtkTextView" id="initial_statements">
-            <property name="width_request">600</property>
-            <property name="visible">True</property>
-            <property name="can_focus">True</property>
-            <property name="vadjustment">adjustment1</property>
-            <property name="vscroll_policy">natural</property>
-          </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="position">2</property>
-          </packing>
-        </child>
-        <child>
-          <placeholder/>
-        </child>
-        <child>
-          <placeholder/>
         </child>
         <child>
           <object class="GtkLabel" id="label_statements">
@@ -131,19 +121,27 @@
           <packing>
             <property name="expand">False</property>
             <property name="fill">True</property>
-            <property name="position">5</property>
+            <property name="position">2</property>
           </packing>
         </child>
         <child>
-          <object class="GtkTextView" id="statements">
-            <property name="height_request">50</property>
+          <object class="GtkScrolledWindow" id="statements_window">
+            <property name="height_request">80</property>
             <property name="visible">True</property>
             <property name="can_focus">True</property>
+            <property name="shadow_type">in</property>
+            <child>
+              <object class="GtkTextView" id="statements">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="tooltip_text" translatable="yes">Python statements to be executed for each selected object</property>
+              </object>
+            </child>
           </object>
           <packing>
             <property name="expand">False</property>
             <property name="fill">True</property>
-            <property name="position">6</property>
+            <property name="position">3</property>
           </packing>
         </child>
         <child>
@@ -156,7 +154,7 @@
           <packing>
             <property name="expand">False</property>
             <property name="fill">True</property>
-            <property name="position">7</property>
+            <property name="position">4</property>
           </packing>
         </child>
         <child>
@@ -164,11 +162,12 @@
             <property name="height_request">50</property>
             <property name="visible">True</property>
             <property name="can_focus">True</property>
+            <property name="tooltip_text" translatable="yes">Python expression that determines if the expressions are displayed</property>
           </object>
           <packing>
             <property name="expand">False</property>
             <property name="fill">True</property>
-            <property name="position">8</property>
+            <property name="position">5</property>
           </packing>
         </child>
         <child>
@@ -181,7 +180,7 @@
           <packing>
             <property name="expand">False</property>
             <property name="fill">True</property>
-            <property name="position">9</property>
+            <property name="position">6</property>
           </packing>
         </child>
         <child>
@@ -189,11 +188,12 @@
             <property name="height_request">50</property>
             <property name="visible">True</property>
             <property name="can_focus">True</property>
+            <property name="tooltip_text" translatable="yes">Comma separated Python expressions to be displayed in the table below</property>
           </object>
           <packing>
             <property name="expand">False</property>
             <property name="fill">True</property>
-            <property name="position">10</property>
+            <property name="position">7</property>
           </packing>
         </child>
         <child>
@@ -206,6 +206,7 @@
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">False</property>
+                <property name="tooltip_text" translatable="yes">Perform the operations for all objects</property>
                 <property name="draw_indicator">True</property>
               </object>
               <packing>
@@ -220,6 +221,7 @@
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">False</property>
+                <property name="tooltip_text" translatable="yes">Perform the operations for all objects displayed in the current view</property>
                 <property name="margin_left">10</property>
                 <property name="draw_indicator">True</property>
                 <property name="group">all_objects</property>
@@ -236,6 +238,7 @@
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">False</property>
+                <property name="tooltip_text" translatable="yes">Perform the operations for all selected objects</property>
                 <property name="margin_left">10</property>
                 <property name="active">True</property>
                 <property name="draw_indicator">True</property>
@@ -255,6 +258,7 @@
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
+                <property name="tooltip_text" translatable="yes">Change the font</property>
                 <property name="font">Sans 12</property>
                 <property name="preview_text"/>
                 <property name="show_style">False</property>
@@ -271,7 +275,7 @@
           <packing>
             <property name="expand">False</property>
             <property name="fill">True</property>
-            <property name="position">11</property>
+            <property name="position">8</property>
           </packing>
         </child>
         <child>
@@ -284,6 +288,7 @@
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">False</property>
+                <property name="tooltip_text" translatable="yes">Display any list items in separate rows</property>
                 <property name="draw_indicator">True</property>
               </object>
               <packing>
@@ -298,6 +303,7 @@
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">False</property>
+                <property name="tooltip_text" translatable="yes">Start a transaction and commit the changes for each object</property>
                 <property name="margin_left">10</property>
                 <property name="draw_indicator">True</property>
               </object>
@@ -313,6 +319,7 @@
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">False</property>
+                <property name="tooltip_text" translatable="yes">Expressions to display are evaluated only at the end of the operation</property>
                 <property name="margin_left">10</property>
                 <property name="draw_indicator">True</property>
               </object>
@@ -332,7 +339,7 @@
           <packing>
             <property name="expand">False</property>
             <property name="fill">True</property>
-            <property name="position">12</property>
+            <property name="position">9</property>
           </packing>
         </child>
         <child>
@@ -345,6 +352,7 @@
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
+                <property name="tooltip_text" translatable="yes">Execute the operation</property>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -358,6 +366,7 @@
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
                 <property name="no_show_all">True</property>
+                <property name="tooltip_text" translatable="yes">Copy the result list to a CSV file</property>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -371,6 +380,7 @@
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
+                <property name="tooltip_text" translatable="yes">Close the tool window</property>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -385,6 +395,7 @@
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
+                <property name="tooltip_text" translatable="yes">Display help text</property>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -399,6 +410,7 @@
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
+                <property name="tooltip_text" translatable="yes">Save the filter as a custom filter</property>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -413,6 +425,7 @@
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
+                <property name="tooltip_text" translatable="yes">Save to a script file</property>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -427,6 +440,7 @@
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
+                <property name="tooltip_text" translatable="yes">Load a script file</property>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -441,6 +455,7 @@
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
+                <property name="tooltip_text" translatable="yes">Clear the input fields</property>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -456,6 +471,7 @@
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
                 <property name="no_show_all">True</property>
+                <property name="tooltip_text" translatable="yes">Copy the result list to clipboard</property>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -467,7 +483,7 @@
           <packing>
             <property name="expand">False</property>
             <property name="fill">True</property>
-            <property name="position">13</property>
+            <property name="position">10</property>
           </packing>
         </child>
         <child>
@@ -479,7 +495,7 @@
           <packing>
             <property name="expand">False</property>
             <property name="fill">True</property>
-            <property name="position">14</property>
+            <property name="position">11</property>
           </packing>
         </child>
         <child>
@@ -494,7 +510,7 @@
           <packing>
             <property name="expand">False</property>
             <property name="fill">True</property>
-            <property name="position">15</property>
+            <property name="position">12</property>
           </packing>
         </child>
       </object>

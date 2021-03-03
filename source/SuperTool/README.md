@@ -73,6 +73,8 @@ The tool has five input text fields:
 
 * Expressions to display
 
+However, if the current category is Dashboard, Relationships, Charts or Geography then the fields "Statements executed for each object" and "Filter" are hidden because they don't make sense.
+
 ## Basic examples
 
 All the input fields (except Title) will be in Python syntax. All fields are optional but if you want to see any results then the last field, "Expressions to display" must contain something (comma separated Python expressions). For example, if the People category is selected you can simply write "name" in the field, select one or more people from the person list and click "Execute"
@@ -209,7 +211,9 @@ This example sets the variable "number_of_names" and then uses it in the filter 
 
 ## Supported object types
 
-The tools supports all object types (categories) that have list view in the Gramps user interface: People, Families, Events, Places, Citations, Sources, Repositories, Media and Notes. The user interface of SuperTool will be disabled while a non-supported view is selected (Dashboard, Relationships, Charts or Geography).
+The tools supports all object types (categories) that have list view in the Gramps user interface: People, Families, Events, Places, Citations, Sources, Repositories, Media and Notes. 
+
+For other categories (Dashboard, Relationships, Charts or Geography) the tool only has the input fields "Initialization statements" and "Expressions to display". The "Summary only" mode is always used.
 
 The tool will remember the script last executed for each object type. Therefore, when you switch to another view, the contents of the input fields will change.
 
@@ -319,16 +323,16 @@ Dates can also be compared:
 
 The Python statements can include code from a file with the syntax
 
-    #include file-name
+    @include file-name
     
-This code must be the only text on a line and it must start from the first column and contain exactly the text "#include" (with the hash sign included). If the file name is not fully qualified (i.e an absolute path) then SuperTool will look at three places:
+This code must be the only text on a line and it must start from the first column and contain exactly the text "@include" (with the at sign included). If the file name is not fully qualified (i.e an absolute path) then SuperTool will look at three places:
 * in a folder/directory called "supertool" under the user's home directory
-* in the place where SuperTool is installed (i.e. $HOME/.gramps/gramps51/plugins/SuperTool)
+* in the place where SuperTool is installed (i.e. $HOME/.gramps/gramps51/plugins/SuperTool on Linux)
 * the current directory for the Gramps process (usually the user's home directory)
 
 So it is intended that the user can store often used include files in her own "supertool" folder.
 
-The text from the specified file is included 'as-is' to the point where the include command was found. The included code cannot contain #include statements.
+The text from the specified file is included 'as-is' to the point where the include command was found. The included code cannot contain @include statements.
 
 This is intended to allow including possibly complex auxiliary functions without cluttering the user interface. The included code naturally has access to all pre-defined variables. The SuperTool installation will contain a few include files with generally useful functions. They will be documented in the reference section below.
 

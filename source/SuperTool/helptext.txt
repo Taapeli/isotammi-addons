@@ -1,6 +1,10 @@
 {
     "global": [
         [
+            "uistate",
+            "UI state  object"
+        ],
+        [
             "db",
             "Database object"
         ],

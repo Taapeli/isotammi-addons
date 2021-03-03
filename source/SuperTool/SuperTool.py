@@ -116,7 +116,7 @@ class ScriptOpenFileChooserDialog(Gtk.FileChooserDialog):
     def __init__(self, uistate):
         Gtk.FileChooserDialog.__init__(
             self,
-            title="Load query from a JSON file",
+            title="Load query from a .script file",
             transient_for=uistate.window,
             action=Gtk.FileChooserAction.OPEN,
         )
@@ -145,7 +145,7 @@ class ScriptSaveFileChooserDialog(Gtk.FileChooserDialog):
     def __init__(self, uistate):
         Gtk.FileChooserDialog.__init__(
             self,
-            title="Save query to a JSON file",
+            title="Save query to a .script file",
             transient_for=uistate.window,
             action=Gtk.FileChooserAction.SAVE,
         )
@@ -945,6 +945,15 @@ class SuperTool(ManagedWindow):
 
         self.btn_csv.hide()
         self.listview = None
+
+        ver = (Gtk.get_major_version(),Gtk.get_minor_version())
+        if ver >= (3, 22):
+            self.initial_statements_window = glade.get_child_object("initial_statements_window")
+            self.statements_window = glade.get_child_object("statements_window")
+            self.initial_statements_window.set_max_content_height(200)             
+            self.initial_statements_window.set_propagate_natural_height(True)             
+            self.statements_window.set_propagate_natural_height(True)             
+            self.statements_window.set_max_content_height(200)             
 
         return glade.toplevel
 
