@@ -23,24 +23,32 @@
 # Standard Python modules
 #
 # -------------------------------------------------------------------------
+import sys
 import traceback
-
-
-from gi.repository import Gtk
-
 
 # -------------------------------------------------------------------------
 #
 # Gramps modules
 #
 # -------------------------------------------------------------------------
+from gi.repository import Gtk
 from gramps.gen.filters.rules import Rule
-
 from gramps.gen.const import GRAMPS_LOCALE as glocale
-
 _ = glocale.translation.gettext
 
 
+# -------------------------------------------------------------------------
+#
+# Local modules
+#
+# -------------------------------------------------------------------------
+import supertool_engine as engine
+
+# -------------------------------------------------------------------------
+#
+# Helper classes
+#
+# -------------------------------------------------------------------------
 class MyTextView(Gtk.TextView):
     def __init__(self, db):
         Gtk.TextView.__init__(self)
@@ -80,7 +88,9 @@ class MyBoolean(Gtk.CheckButton):
 
 
 # -------------------------------------------------------------------------
-# Generic filter rule
+#
+# GenericFilterRules
+#
 # -------------------------------------------------------------------------
 class GenericFilterRule(Rule):
     "Generic filter rule"
@@ -112,13 +122,6 @@ class GenericFilterRule(Rule):
             value, self.init_env = self.execute_func(
                 dbstate, None, s, self.init_env, "exec"
             )
-
-    #         if len(self.list) == 1:
-    #             self.list = ["0", self.list[0]]
-    #         self.rule = self.list[1]
-    #         print("Rule:", self.rule)
-    #         if int(self.list[0]):
-    #             OkDialog("Rule",self.rule)
 
     def apply(self, db, obj):
         self.db = db
@@ -188,22 +191,3 @@ class GenericFilterRule_Media(GenericFilterRule):
     def __init__(self, *args):
         GenericFilterRule.__init__(self, *args)
         self.execute_func = engine.execute_media
-
-
-def importfile(fname):
-    import os
-
-    dirname = os.path.split(__file__)[0]
-    fullname = os.path.join(dirname, fname)
-    from types import SimpleNamespace
-
-    code = open(fullname).read()
-    globals_dict = {}
-    exec(code, globals_dict)
-    return SimpleNamespace(**globals_dict)
-
-
-# Regular import would put "supertool_engine" in the global module namespace (sys.modules).
-# This could clash with other addons.
-# engine = importfile("supertool_engine.py")
-import supertool_engine as engine

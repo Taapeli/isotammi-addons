@@ -18,6 +18,11 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
 
+# -------------------------------------------------------------------------
+#
+# Standard Python modules
+#
+# -------------------------------------------------------------------------
 
 import csv
 import json
@@ -25,18 +30,8 @@ import os
 import sys
 import time
 import traceback
-from types import GeneratorType
-from gramps.gen.filters._genericfilter import GenericFilterFactory
-from gramps.gen.filters._filterlist import FilterList
-from gramps.gen.filters import reload_custom_filters
-from gramps.gen.lib.person import Person
 import types
-from gramps.gen.lib.family import Family
-from gramps.gen.lib.event import Event
-from gramps.gen.lib.place import Place
-from pprint import pprint
-from gramps.gui.display import display_url
-from gramps.gui.utils import ProgressMeter
+
 from contextlib import contextmanager
 
 try:
@@ -53,15 +48,26 @@ try:
 except:
     pass
 
+# -------------------------------------------------------------------------
+#
+# Gramps modules
+#
+# -------------------------------------------------------------------------
+
 from gi.repository import Gtk, Gdk, GObject, Gio
 
+from gramps.gen.config import config as configman
+from gramps.gen.const import GRAMPS_LOCALE as glocale, CUSTOM_FILTERS
+from gramps.gen.db.txn import DbTxn
+from gramps.gen.filters._genericfilter import GenericFilterFactory
+from gramps.gen.filters._filterlist import FilterList
+from gramps.gen.filters import reload_custom_filters
+
+from gramps.gui.dialog import OkDialog
 from gramps.gui.glade import Glade
 from gramps.gui.managedwindow import ManagedWindow
 from gramps.gui.plug import tool
-
-from gramps.gen.config import config as configman
-
-from gramps.gen.const import GRAMPS_LOCALE as glocale, CUSTOM_FILTERS
+from gramps.gui.utils import ProgressMeter
 
 try:
     _trans = glocale.get_addon_translator(__file__)
@@ -69,12 +75,13 @@ except ValueError:
     _trans = glocale.translation
 _ = _trans.gettext
 
-from gramps.gen.db.txn import DbTxn
-
-from gramps.gui.dialog import OkDialog
-
-_ = glocale.translation.gettext
-
+# -------------------------------------------------------------------------
+#
+# Local modules
+#
+# -------------------------------------------------------------------------
+import supertool_categories as categories
+import supertool_engine as engine
 
 config = configman.register_manager("supertool")
 config.register("defaults.encoding", "utf-8")
@@ -83,7 +90,6 @@ config.register("defaults.font", "")
 config.register("defaults.last_filename", "")
 
 SCRIPTFILE_EXTENSION = ".script"
-
 
 def get_text(textview):
     buf = textview.get_buffer()
@@ -95,7 +101,7 @@ def set_text(textview, text):
     textview.get_buffer().set_text(text)
 
 
-def importfile(fname):
+def importfile(fname):  # not used
     dirname = os.path.split(__file__)[0]
     fullname = os.path.join(dirname, fname)
     from types import SimpleNamespace
@@ -104,12 +110,6 @@ def importfile(fname):
     globals_dict = {}
     exec(code, globals_dict)
     return SimpleNamespace(**globals_dict)
-
-
-# Regular import would put "supertool_engine" in the global module namespace (sys.modules).
-# This could clash with other addons.
-# engine = importfile("supertool_engine.py")
-import supertool_engine as engine
 
 
 class ScriptOpenFileChooserDialog(Gtk.FileChooserDialog):
@@ -262,7 +262,7 @@ class GrampsEngine:
             return
         value = res[0]
         for values in self.generate_rows(res[1:]):
-            if type(value) is GeneratorType:
+            if type(value) is types.GeneratorType:
                 value = list(value)
             if self.unwind_lists and type(value) is list:
                 for v in value:
@@ -816,10 +816,10 @@ class SuperTool(ManagedWindow):
         self.help_notebook = Gtk.Notebook()
         page = 0
         data = {}
-        for cat_name in engine.get_categories():
+        for cat_name in categories.get_categories():
             print(cat_name)
             data[cat_name] = []
-            info = engine.get_category_info(self.db, cat_name)
+            info = categories.get_category_info(self.db, cat_name)
             if not info.objclass:
                 continue
             box = Gtk.VBox()
@@ -856,7 +856,7 @@ class SuperTool(ManagedWindow):
         data = json.loads(open(fname).read())
         self.help_notebook = Gtk.Notebook()
         page = 0
-        for cat_name in ["global"] + engine.get_categories():
+        for cat_name in ["global"] + categories.get_categories():
             grid = Gtk.Grid()
             grid.set_column_spacing(10)
             row = 0
@@ -946,14 +946,16 @@ class SuperTool(ManagedWindow):
         self.btn_csv.hide()
         self.listview = None
 
-        ver = (Gtk.get_major_version(),Gtk.get_minor_version())
+        ver = (Gtk.get_major_version(), Gtk.get_minor_version())
         if ver >= (3, 22):
-            self.initial_statements_window = glade.get_child_object("initial_statements_window")
+            self.initial_statements_window = glade.get_child_object(
+                "initial_statements_window"
+            )
             self.statements_window = glade.get_child_object("statements_window")
-            self.initial_statements_window.set_max_content_height(200)             
-            self.initial_statements_window.set_propagate_natural_height(True)             
-            self.statements_window.set_propagate_natural_height(True)             
-            self.statements_window.set_max_content_height(200)             
+            # self.initial_statements_window.set_max_content_height(200)
+            self.initial_statements_window.set_propagate_natural_height(True)
+            self.statements_window.set_propagate_natural_height(True)
+            # self.statements_window.set_max_content_height(200)
 
         return glade.toplevel
 
@@ -968,7 +970,7 @@ class SuperTool(ManagedWindow):
         # type: () -> None
         self.execute_func = None
         self.category_name = self.uistate.viewmanager.active_page.get_category()
-        self.category = engine.get_category_info(self.db, self.category_name)
+        self.category = categories.get_category_info(self.db, self.category_name)
 
     def __execute(self, obj):
         # type: (Gtk.Widget) -> None
@@ -1222,21 +1224,25 @@ class Tool(tool.Tool):
             print("Script file '{}' does not exist".format(script_filename))
             return
         output_filename = self.options.handler.options_dict.get("output")
-        print("script_filename:", script_filename)
+        #print("script_filename:", script_filename)
         scriptfile = ScriptFile()
-        print("scriptfile:", scriptfile)
+        #print("scriptfile:", scriptfile)
         query = scriptfile.load(script_filename)
-        print("query:", query)
-        print(self.options.handler.options_dict)
+        #print("query:", query)
+        #print(self.options.handler.options_dict)
         category_name = self.options.handler.options_dict.get("category")
-        print("category_name:", category_name)
         if not category_name:
             category_name = query.category
         if not category_name:
             print("No category name specified")
             return
-        category = engine.get_category_info(self.db, category_name)
-        selected_handles = category.get_all_objects_func()
+        print("category_name:", category_name)
+        t1 = time.time()
+        category = categories.get_category_info(self.db, category_name)
+        if category.objclass:
+            selected_handles = category.get_all_objects_func()
+        else:
+            selected_handles = []
         gramps_engine = GrampsEngine(
             self.dbstate,
             self.uistate,
@@ -1258,6 +1264,12 @@ class Tool(tool.Tool):
                     f.writerow(values)
                 else:
                     print(json.dumps(values))
+        t2 = time.time()
+        
+        msg = "Objects: {}/{} ({:.2f}s)".format(
+            gramps_engine.object_count, gramps_engine.total_objects, t2 - t1
+        )
+        print(msg)
 
     def run(self):
         # type: () -> None

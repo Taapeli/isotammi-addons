@@ -72,7 +72,7 @@
         ],
         [
             "gender",
-            "Gender as as string: M, F or U"
+            "Gender as a string: M, F or U"
         ],
         [
             "gramps_id",
@@ -159,6 +159,10 @@
         [
             "notes",
             "List of notes"
+        ],
+        [
+            "reltype",
+            "Relationship type"
         ],
         [
             "obj",

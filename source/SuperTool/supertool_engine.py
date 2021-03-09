@@ -53,29 +53,6 @@ from gramps.gen.lib import PlaceType
 from gramps.gen.lib import Repository
 from gramps.gen.lib import Source
 
-from genfilter import GenericFilterRule
-
-from genfilter import GenericFilterRule_Person
-from genfilter import GenericFilterRule_Family
-from genfilter import GenericFilterRule_Event
-from genfilter import GenericFilterRule_Place
-from genfilter import GenericFilterRule_Source
-from genfilter import GenericFilterRule_Citation
-from genfilter import GenericFilterRule_Repository
-from genfilter import GenericFilterRule_Note
-from genfilter import GenericFilterRule_Media
-
-from gramps.gui.editors import EditPerson
-from gramps.gui.editors import EditPlace
-from gramps.gui.editors import EditFamily
-from gramps.gui.editors import EditRepository
-from gramps.gui.editors import EditSource
-from gramps.gui.editors import EditEvent
-from gramps.gui.editors import EditNote
-from gramps.gui.editors import EditCitation
-from gramps.gui.editors import EditMedia
-
-
 from gramps.gen.lib.date import Today
 from gramps.gen.filters import FilterList
 
@@ -135,7 +112,7 @@ class AttributeProxy:
     @listproperty
     def attributes(self):
         for attr in self.obj.get_attribute_list():
-            yield str(attr.type), attr.value
+            yield attr.type.xml_str(), attr.value
 
 
 @functools.total_ordering
@@ -326,7 +303,7 @@ class RepositoryProxy(Proxy):
         self.obj = self.repository
         self.gramps_id = self.obj.gramps_id
         self.name = self.obj.name
-        self.type = self.obj.type
+        self.type = self.obj.type.xml_str()
 
     @listproperty
     def sources(self):
@@ -334,6 +311,11 @@ class RepositoryProxy(Proxy):
             self.handle, include_classes=["Source"]
         ):
             yield SourceProxy(self.db, handle)
+
+    @listproperty
+    def notes(self):
+        for handle in self.obj.get_note_list():
+            yield NoteProxy(self.db, handle)
 
 
 class PlaceProxy(CommonProxy):
@@ -532,6 +514,7 @@ class FamilyProxy(CommonProxy, AttributeProxy):
             self.family = self.db.get_family_from_handle(family_handle)
         self.obj = self.family
         self.gramps_id = self.family.gramps_id
+        self.reltype = self.family.get_relationship().xml_str()
 
     @listproperty
     def events(self):
@@ -779,119 +762,3 @@ def execute_source(dbstate, obj, code, envvars=None, exectype=None):
 def execute_repository(dbstate, obj, code, envvars=None, exectype=None):
     return execute(dbstate, obj, code, RepositoryProxy, envvars, exectype)
 
-
-CATEGORIES = [
-    "People",
-    "Families",
-    "Events",
-    "Places",
-    "Citations",
-    "Sources",
-    "Repositories",
-    "Media",
-    "Notes",
-]
-
-
-def get_categories():
-    return CATEGORIES
-
-
-def get_category_info(db, category_name):
-    # type: () -> None
-    class Category:
-        pass
-
-    info = Category()
-
-    info.objclass = None
-    info.execute_func = execute_no_category
-    if category_name == "People":
-        info.get_all_objects_func = db.get_person_handles
-        info.getfunc = db.get_person_from_handle
-        info.commitfunc = db.commit_person
-        info.execute_func = execute_person
-        info.editfunc = EditPerson
-        info.objcls = Person
-        info.objclass = "Person"
-        info.filterrule = GenericFilterRule_Person
-        info.proxyclass = PersonProxy
-    if category_name == "Families":
-        info.get_all_objects_func = db.get_family_handles
-        info.getfunc = db.get_family_from_handle
-        info.commitfunc = db.commit_family
-        info.execute_func = execute_family
-        info.editfunc = EditFamily
-        info.objcls = Family
-        info.objclass = "Family"
-        info.filterrule = GenericFilterRule_Family
-        info.proxyclass = FamilyProxy
-    if category_name == "Places":
-        info.get_all_objects_func = db.get_place_handles
-        info.getfunc = db.get_place_from_handle
-        info.commitfunc = db.commit_place
-        info.execute_func = execute_place
-        info.editfunc = EditPlace
-        info.objcls = Place
-        info.objclass = "Place"
-        info.filterrule = GenericFilterRule_Place
-        info.proxyclass = PlaceProxy
-    if category_name == "Events":
-        info.get_all_objects_func = db.get_event_handles
-        info.getfunc = db.get_event_from_handle
-        info.commitfunc = db.commit_event
-        info.execute_func = execute_event
-        info.editfunc = EditEvent
-        info.objcls = Event
-        info.objclass = "Event"
-        info.filterrule = GenericFilterRule_Event
-        info.proxyclass = EventProxy
-    if category_name == "Citations":
-        info.get_all_objects_func = db.get_citation_handles
-        info.getfunc = db.get_citation_from_handle
-        info.commitfunc = db.commit_citation
-        info.execute_func = execute_citation
-        info.editfunc = EditCitation
-        info.objcls = Citation
-        info.objclass = "Citation"
-        info.filterrule = GenericFilterRule_Citation
-        info.proxyclass = CitationProxy
-    if category_name == "Sources":
-        info.get_all_objects_func = db.get_source_handles
-        info.getfunc = db.get_source_from_handle
-        info.commitfunc = db.commit_source
-        info.execute_func = execute_source
-        info.editfunc = EditSource
-        info.objcls = Source
-        info.objclass = "Source"
-        info.filterrule = GenericFilterRule_Source
-        info.proxyclass = SourceProxy
-    if category_name == "Repositories":
-        info.get_all_objects_func = db.get_repository_handles
-        info.getfunc = db.get_repository_from_handle
-        info.commitfunc = db.commit_repository
-        info.execute_func = execute_repository
-        info.editfunc = EditRepository
-        info.objcls = Repository
-        info.objclass = "Repository"
-        info.filterrule = GenericFilterRule_Repository
-        info.proxyclass = RepositoryProxy
-    if category_name == "Notes":
-        info.get_all_objects_func = db.get_note_handles
-        info.getfunc = db.get_note_from_handle
-        info.execute_func = execute_note
-        info.editfunc = EditNote
-        info.objcls = Note
-        info.objclass = "Note"
-        info.filterrule = GenericFilterRule_Note
-        info.proxyclass = NoteProxy
-    if category_name == "Media":
-        info.get_all_objects_func = db.get_media_handles
-        info.getfunc = db.get_media_from_handle
-        info.execute_func = execute_media
-        info.editfunc = EditMedia
-        info.objcls = Media
-        info.objclass = "Media"
-        info.filterrule = GenericFilterRule_Media
-        info.proxyclass = MediaProxy
-    return info

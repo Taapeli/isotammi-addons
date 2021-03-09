@@ -43,7 +43,7 @@ Author: kari.kujansuu@gmail.com<br>
     + [global variables and functions](#global-variables-and-functions)
 
   * [Command line options](#command-line-options)
-  * [Supplied include files](#supplied-include-files)
+  * [Sample files](#sample-files)
 
 
 
@@ -73,7 +73,7 @@ The tool has five input text fields:
 
 * Expressions to display
 
-However, if the current category is Dashboard, Relationships, Charts or Geography then the fields "Statements executed for each object" and "Filter" are hidden because they don't make sense.
+However, if the current category is Dashboard, Relationships, Charts or Geography then the fields "Statements executed for each object" and "Filter" are hidden because they don't make sense in those cases.
 
 ## Basic examples
 
@@ -83,7 +83,7 @@ You will get the names of the selected person in tabular format in the lower par
 
 ![SuperTool](SuperTool-2.png)
 
-Multiple values are displayed in separate columns:
+Multiple values are displayed in separate columns and the filter expression can be used to select the rows to be displayed:
 
 ![SuperTool](SuperTool-3.png)
 
@@ -152,25 +152,31 @@ In addition to the variables mentioned above, the following general variables an
 
 ## Help feature
 
-The "Help" button opens a small window that displays variables (or "attributes") available globally or for each object type.
+The "Help" button opens a small window that displays variables (or "attributes") available globally or for each object type. There is also a link to this document.
 
 ![SuperTool](Help-Window.png)
 
 ## Options
 
 Under the text input fields there is a set of three radio buttons that determine which objects are processed:
-* All objects - all objects in the database of the selected type
+
+![SuperTool-scopes](SuperTool-scopes.png)
+
+* All objects - all objects in the database of the current type/category
 * Filtered objects - all displayed objects (applicable if a Gramps regular filter is used)
 * Selected objects - only the objects selected by the user (the default)
 
 Next are three checkboxes:
+
+![SuperTool-options](SuperTool-options.png)
+
 * Unwind lists - if any value in the "Expressions to display" is a list then each member of the list will be shown on a separate row
 * Commit changes - any changes to the database are committed only if this is checked
 * Summary only - do not display values for every object, only a summary after processing all objects
 
 ## Row limit
 
-There is a hard limit of 1000 rows that can be displayed. This is because Gramps seems to become unstable if an attempt is made to display greater number of rows (maybe a Gtk limitation). If the limit is exceeded then you will get a warning and only the first 1000 rows are displayed:
+There is a hard limit of 1000 rows that can be displayed. This is because Gramps seems to become unstable if an attempt is made to display greater number of rows (maybe a Gtk limitation). If the limit is exceeded then you will get a warning and only the first 1000 rows are processed and displayed:
 
 ![SuperTool](Warning.png)
 
@@ -183,7 +189,7 @@ Double clicking a row in the result list will open the corresponding object for 
 
 ## Download as CSV
 
-The resulting list can be downloaded as a CSV (Comma Separated Values) file by the "Download CSV" button. There will be a choice of text encoding (utf-8 or iso8859-1/latin1) and value delimiter (comma or semicolon).
+The result list can be downloaded as a CSV (Comma Separated Values) file by the "Download CSV" button. There will be a choice of text encoding (utf-8 or iso8859-1/latin1) and value delimiter (comma or semicolon).
 
 ## Title field
 
@@ -191,11 +197,11 @@ The first input field ("Title") gives a name to the query. This title is saved i
 
 ## Initialization statements
 
-The second input field ("Initialization statements") can contain any Python statements that are executed only once in the beginning of the operation. Here you can create any variables needed in the later phases and also import any needed Python (or Gramps) modules. Some generally useful modules are already imported by default. An example of a variable would be a counter that is updated appropriately in the "statements" field and whose final value is displayed in the "expressions" field using the "Summary only" feature.
+The second input field ("Initialization statements") can contain any Python statements that are executed only once in the beginning of the operation. Here you can create any variables or functions needed in the later phases and also import any needed Python (or Gramps) modules. Some generally useful modules are already imported by default. An example of a variable would be a counter that is updated appropriately in the "statements" field and whose final value is displayed in the "expressions" field using the "Summary only" feature.
 
 This field can contain regular Python comments (lines starting with a hash sign: #).
 
-Here a counter is used to find duplicate places in the database:
+In this example a counter is used to find duplicate places in the database. The city of Philadelphia appears twice in the database, using Gramps IDs P1313 and P1413.
 
 ![SuperTool](SuperTool-duplicate-places.png)
 
@@ -211,7 +217,7 @@ This example sets the variable "number_of_names" and then uses it in the filter 
 
 ## Supported object types
 
-The tools supports all object types (categories) that have list view in the Gramps user interface: People, Families, Events, Places, Citations, Sources, Repositories, Media and Notes. 
+The tools supports all object types (categories) that have a list view in the Gramps user interface: People, Families, Events, Places, Citations, Sources, Repositories, Media and Notes. 
 
 For other categories (Dashboard, Relationships, Charts or Geography) the tool only has the input fields "Initialization statements" and "Expressions to display". The "Summary only" mode is always used.
 
@@ -223,7 +229,7 @@ The tool will remember the script last executed for each object type. Therefore,
 You can modify the database by supplying suitable Python statements in the "Statements executed for each object" section. To be able to do that you of course have to know which Gramps functions to call to make the modifications correctly. That is, you need to know something about Gramps internals. 
 
 
-Note also that the "Commit changes" checkbox MUST be checked if any modifications are to be made (if the called functions do not do the commits themselves). This acts also as a safeguard to protect for any inadvertent modifications. All changes are done under a transaction and they can be undone from the Gramps menu (Edit > Undo).
+Note also that the "Commit changes" checkbox MUST be checked if any modifications are to be made (if the called functions do not start a transaction and do the commits themselves). This acts also as a safeguard to protect for any inadvertent modifications. All changes are done under a transaction and they can be undone from the Gramps menu (Edit > Undo).
 
 For example, this will set the gender of selected people to FEMALE:
 
@@ -231,21 +237,29 @@ For example, this will set the gender of selected people to FEMALE:
 
 Note that you cannot change the properties of the objects by simply assigning new values to properties of *Proxy* objects. For example, in the People category, this does not work:
 
-    gender = Person.FEMALE
+```python
+gender = Person.FEMALE
+```
     
 But this works:
 
-    person.gender = Person.FEMALE
+```python
+person.gender = Person.FEMALE
+```
     
 However, the recommended way would be to use the corresponding setter method as in the example above:
 
-    person.set_gender(Person.FEMALE)
+```python
+person.set_gender(Person.FEMALE)
+```
 
 ## Deleting objects
 
 If you delete an object from the database then you should set the object's "commit_ok" attribute to False:
 
-    obj.commit_ok = False
+```python
+obj.commit_ok = False
+```
 
 This is because the tool automatically commits all processed objects if the "Commit changes" checkbox is marked. However, if a deleted object is committed, then it will be re-inserted in the database (this is how Gramps works). Setting <i>commit_ok</i> to False will prevent this.
 
@@ -267,18 +281,22 @@ For each object type the Gramps user can define "custom filters" by using a set 
 
 In the "Initialization statements" section obtain  reference to a filter by its name:
 
+```python
     my_ancestors = filter("my ancestors")
+```
     
 Then in the subsequent sections you can use the filter for example like:
 
+```python
     if my_ancestors(obj) and ...
+```
 
 
 ## Running from the command line
 
-The tool can also be run from the command line. In that case you have to first save a query in a script file with the "Save" command. That file is used as input file for the tool. Output will go to a CSV file. Of course you also have to supply a family tree (database) name. For example this command will process the family tree named "example_tree", use the script file "old_people.json" and the output will go to a csv file names old_people.csv:
+The tool can also be run from the command line. In that case you have to first save a query in a script file with the "Save" command. That file is used as input file for the tool. Output will go to a CSV file. Of course you also have to supply a family tree (database) name. For example this command will process the family tree named "example_tree", use the script file "old_people.script" and the output will go to a csv file named old_people.csv:
 
-    gramps -O example_tree -a tool -p name=SuperTool,script=old_people.json,output=old_people.csv
+    gramps -O example_tree -a tool -p name=SuperTool,script=old_people.script,output=old_people.csv
 
 The reference section will list all parameters that can be used in the command line mode. In this mode the tool always processes all objects of the given type. The type is read from the script file where it was stored when the file was saved.
 
@@ -290,22 +308,26 @@ For example, a person's birth event - the "birth" attribute - is actually an Eve
 
 Proxy objects are created when they are needed. This means also that identical expressions do not always refer to the same objects. For example, in People category, the expression <i>birth.place.obj</i> refers to a Gramps internal Place object. But if you use the same expression multiple times in the same query then each one will refer to a different Place object. This matters only if you intend to update the object - changes in one object will not be seen in the other and calling db.commit_place() would not have any effect. Solution is to save the object reference in a local variable, e.g.
 
-    birth.place.obj.set_latitude(90)
-    db.commit_place(birth.place.obj, trans)  # does not work
+```python
+# does not work:
+birth.place.obj.set_latitude(90)
+db.commit_place(birth.place.obj, trans)
 
-    placeobj = birth.place.obj
-    placeobj.set_latitude(90)
-    db.commit_place(placeobj, trans) # ok
+# ok:
+placeobj = birth.place.obj
+placeobj.set_latitude(90)
+db.commit_place(placeobj, trans)
+```
 
 ## Date arithmetic
 
 
 Date properties (like birth.date) return a DateProxy object. Currently the dates work like this:
 
-* Adding an integer to a DateProxy will add that many years to the date:
+* Adding an integer to a DateProxy will add that many <b>years</b> to the date:
 ** (2021-01-11) + 1 -> 2022-01-11
 
-* Subtracting an integer to a DateProxy will subtract that many years from the date:
+* Subtracting an integer from a DateProxy will subtract that many <b>years</b> from the date:
 ** (2021-01-11) - 1 -> 2020-01-11
 
 * But subtracting two DateProxys will yield the number of <b>days</b> between the dates:
@@ -332,14 +354,15 @@ This code must be the only text on a line and it must start from the first colum
 
 So it is intended that the user can store often used include files in her own "supertool" folder.
 
-The text from the specified file is included 'as-is' to the point where the include command was found. The included code cannot contain @include statements.
+The text from the specified file is included 'as-is' to the point where the include command was found. So this is not the same as importing the module - although the include file contains Python code and usually has the .py extension.
+
+The included code cannot contain @include statements.
 
 This is intended to allow including possibly complex auxiliary functions without cluttering the user interface. The included code naturally has access to all pre-defined variables. The SuperTool installation will contain a few include files with generally useful functions. They will be documented in the reference section below.
 
 ## Changing font
 
-The tool has a button that can be used to change the display font for the tool's user interface.
-
+The tool has a button that can be used to change the display font for the tool's user interface. The screenshots above were taken before the addition of the font button.
 
 ## More examples
 
@@ -354,406 +377,203 @@ These lists include the variables defined in the various Proxy classes. In addit
 
 ### Citations
 
-- self
-    > This CitationProxy object
-    
-- attributes
-	> Attributes as a list of tuples (name,value)
-
-- citation
-	> This Gramps Citation object (same as 'obj')
-
-- citators
-	> Objects referring to this citation
-
-- confidence
-	> Confidence value
-
-- gramps_id
-	> Gramps id, e.g. C0123
-
-- handle
-	> Gramps internal handle
-
-- notes
-	> List of notes
-
-- obj
-	> This Gramps Citation object (same as 'citation')
-
-- page
-	> Page value
-
-- source
-	> Source
-
-- tags
-	> List of tags as strings
+property             | description                                        | type
+-------------------- | ------------------------------------------------   | --------------------
+attributes           | Attributes as a list of tuples (name,value)        | list of (string,string)
+citation             | This Gramps Citation object (same as 'obj')        | Citation
+citators             | Objects referring to this citation                 | 
+confidence           | Confidence value (0-4)                             | integer
+gramps_id            | Gramps id, e.g. C0123                              | string
+handle               | Gramps internal handle                             | string
+notes                | List of notes                                      | list of NoteProxy objects
+obj                  | This Gramps Citation object (same as 'citation')   | Citation
+page                 | Page value                                         | string
+self                 | This CitationProxy object                          | CitationProxy
+source               | Source                                             | SourceProxy
+tags                 | List of tags as strings                            | list of strings
 
 ### Events
 
-- self
-	> This EventProxy object
-
-- attributes
-	> Attributes as a list of tuples (name,value)
-
-- citations
-	> List of citations
-
-- date
-	> Date of the event
-
-- description
-	> Event description
-
-- event
-	> This Gramps Event object (same as 'obj')
-
-- gramps_id
-	> Gramps id, e.g. E0123
-
-- handle
-	> Gramps internal handle
-
-- notes
-	> List of notes
-
-- obj
-	> This Gramps Event object (same as 'event')
-
-- participants
-	> Participants of the event (person objects)
-
-- place
-	> Place object of the event
-
-- placename
-	> Name of the place of the event, taking into account the event date
-
-- refs
-	> Ref objects referring to this event
-
-- role
-	> Role of the event
-
-- tags
-	> List of tags as strings
-
-- type
-	> Type of the role as string
+property             | description                                                          | type
+-------------------- | ------------------------------------------------------------------   | --------------------
+attributes           | Attributes as a list of tuples (name,value)                          | list of (string,string)
+citations            | List of citations                                                    | list of CitationProxy objects
+date                 | Date of the event                                                    | DateProxy
+description          | Event description                                                    | string
+event                | This Gramps Event object (same as 'obj')                             | Event
+gramps_id            | Gramps id, e.g. E0123                                                | string
+handle               | Gramps internal handle                                               | string
+notes                | List of notes                                                        | list of NoteProxy objects
+obj                  | This Gramps Event object (same as 'event')                           | Event
+participants         | Participants of the event (person objects)                           | list of PersonProxy objects
+place                | Place object of the event                                            | PlaceProxy
+placename            | Name of the place of the event, taking into account the event date   | string
+refs                 | Ref objects referring to this event                                  | list of Ref objects
+role                 | Role of the event                                                    | string
+self                 | This EventProxy object                                               | EventProxy
+tags                 | List of tags as strings                                              | list of strings
+type                 | Type of the role as string                                           | string
 
 ### Families
 
-- self
-	> This FamilyProxy object
+property             | description                                    | type
+-------------------- | --------------------------------------------   | --------------------
+attributes           | Attributes as a list of tuples (name,value)    | list of (string,string)
+children             | Person objects of the family's children        | list of PersonProxy objects
+citations            | List of citations                              | list of CitationProxy objects
+events               | List of all events attached to this family     | list of EventProxy objects
+family               | This Gramps Family object (same as 'obj')      | Family
+father               | Person object of the family's father           | PersonProxy
+gramps_id            | Gramps id, e.g. F0123                          | string
+handle               | Gramps internal handle                         | string
+mother               | Person object of the family's mother           | PersonProxy
+notes                | List of notes                                  | list of NoteProxy objects
+obj                  | This Gramps Family object (same as 'family')   | Family
+reltype              | Relationship type                              | string
+self                 | This FamilyProxy object                        | FamilyProxy
+tags                 | List of tags as strings                        | list of strings
 
-- attributes
-	> Attributes as a list of tuples (name,value)
-
-- children
-	> Person objects of the family's children
-
-- citations
-	> List of citations
-
-- events
-	> List of all events attached to this person
-
-- family
-	> This Gramps Family object (same as 'obj')
-
-- father
-	> Person object of the family's father
-
-- gramps_id
-	> Gramps id, e.g. F0123
-
-- handle
-	> Gramps internal handle
-
-- mother
-	> Person object of the family's mother
-
-- notes
-	> List of notes
-
-- obj
-	> This Gramps Family object (same as 'family')
-
-- tags
-	> List of tags as strings
 
 ### Media
 
-- self
-	> This MediaProxy object
-
-- attributes
-	> Attributes as a list of tuples (name,value)
-
-- checksum
-	> Checksum for the media object
-
-- citations
-	> List of citations
-
-- date
-	> Date for the media object
-
-- desc
-	> Description for the media object
-
-- gramps_id
-	> Gramps id, e.g. O0123
-
-- handle
-	> Gramps internal handle
-
-- media
-	> This Gramps Media object (same as 'obj')
-
-- mime
-	> Mime type
-
-- notes
-	> List of notes
-
-- obj
-	> This Gramps Media object (same as 'media')
-
-- path
-	> Path to the media object
-
-- tags
-	> List of tags as strings
+property             | description                                   | type
+-------------------- | -------------------------------------------   | --------------------
+attributes           | Attributes as a list of tuples (name,value)   | list of (string,string)
+checksum             | Checksum for the media object                 | string
+citations            | List of citations                             | list of CitationProxy objects
+date                 | Date for the media object                     | DateProxy
+desc                 | Description for the media object              | string
+gramps_id            | Gramps id, e.g. O0123                         | string
+handle               | Gramps internal handle                        | string
+media                | This Gramps Media object (same as 'obj')      | Media
+mime                 | Mime type                                     | string
+notes                | List of notes                                 | list of NoteProxy objects
+obj                  | This Gramps Media object (same as 'media')    | Media
+path                 | Path to the media object                      | string
+self                 | This MediaProxy object                        | MediaProxy
+tags                 | List of tags as strings                       | list of strings
 
 
 ### Notes
-- self
-	> This NoteProxy object
 
-- gramps_id
-	> Gramps id, e.g. N0123
+property             | description                                | type
+-------------------- | ----------------------------------------   | --------------------
+gramps_id            | Gramps id, e.g. N0123                      | string
+handle               | Gramps internal handle                     | string
+note                 | This Gramps Note object (same as 'obj')    | Note
+obj                  | This Gramps Note object (same as 'note')   | Note
+self                 | This NoteProxy object                      | NoteProxy
+tags                 | List of tags as strings                    | list of strings
+text                 | Text of the note                           | string
 
-- handle
-	> Gramps internal handle
-
-- note
-	> This Gramps Note object (same as 'obj')
-
-- obj
-	> This Gramps Note object (same as 'note')
-
-- tags
-	> List of tags as strings
-
-- text
-	> Text of the note
 
 ### People
 
-- self
-	> This PersonProxy object
+property             | description                                      | type
+---------------------|------------------------------------------------- | ----------------------
+attributes           | Attributes as a list of tuples (name,value)      | list of (string,string)
+birth                | Birth event                                      | EventProxy
+citations            | List of citations                                | list of CitationProxy objects
+death                | Death event                                      | EventProxy
+events               | List of all events attached to this person       | list of EventProxy objects
+families             | List of families where this person is a parent   | list of FamilyProxy objects
+gender               | Gender as as string: male, female or unknown     | string
+gramps_id            | Gramps id, e.g. I0123                            | string
+handle               | Gramps internal handle                           | string
+name                 | Primary name as string                           | string
+nameobjs             | List of Gramps internal Name objects             | list of Name objects
+names                | List of names as strings                         | list of strings
+notes                | List of notes                                    | list of NoteProxy objects
+obj                  | This Gramps Person object (same as 'person')     | Person object
+parent_families      | List of families where this person is a child    | list of FamilyProxy objects
+person               | This Gramps Person object (same as 'obj')        | Person object
+self                 | This PersonProxy object                          | PersonProxy
+tags                 | List of tags as strings                          | list of strings
 
-- attributes
-	> Attributes as a list of tuples (name,value)
-
-- birth
-	> Birth event
-
-- citations
-	> List of citations
-
-- death
-	> Death event
-
-- events
-	> List of all events attached to this person
-
-- families
-	> List of families where this person is a parent
-
-- gender
-	> Gender as as string: male, female or unknown
-
-- gramps_id
-	> Gramps id, e.g. I0123
-
-- handle
-	> Gramps internal handle
-
-- name
-	> Primary name as string
-
-- nameobjs
-	> List of Gramps internal Name objects
-
-- names
-	> List of names as strings
-
-- notes
-	> List of notes
-
-- obj
-	> This Gramps Person object (same as 'person')
-
-- parent_families
-	> List of families where this person is a child
-
-- person
-	> This Gramps Person object (same as 'obj')
-
-- tags
-	> List of tags as strings
 
 ### Places
 
-- self
-	> This PlaceProxy object
-
-- citations
-	> List of citations
-
-- enclosed_by
-	> List of places that enclose this place
-
-- encloses
-	> List of places that this place encloses
-
-- gramps_id
-	> Gramps id, e.g. P0123
-
-- handle
-	> Gramps internal handle
-
-- longname
-	> Full name including enclosing places
-
-- name
-	> Name of the place
-
-- notes
-	> List of notes
-
-- obj
-	> This Gramps Place object (same as 'place')
-
-- place
-	> This Gramps Place object (same as 'obj')
-
-- tags
-	> List of tags as strings
-
-- title
-	> Title of the place
-
-- type
-	> Type of the place as string
+property             | description                                  | type
+-------------------- | ------------------------------------------   | --------------------
+citations            | List of citations                            | list of CitationProxy objects
+enclosed_by          | List of places that enclose this place       | list of PlaceProxy objects
+encloses             | List of places that this place encloses      | list of PlaceProxy objects
+gramps_id            | Gramps id, e.g. P0123                        | string
+handle               | Gramps internal handle                       | string
+longname             | Full name including enclosing places         | string
+name                 | Name of the place                            | string
+notes                | List of notes                                | list of NoteProxy objects
+obj                  | This Gramps Place object (same as 'place')   | Place
+place                | This Gramps Place object (same as 'obj')     | Place
+self                 | This PlaceProxy object                       | PlaceProxy
+tags                 | List of tags as strings                      | list of strings
+title                | Title of the place                           | string
+type                 | Type of the place as string                  | string
 
 ### Repositories
 
-- self
-	> This RepositoryProxy object
-
-- gramps_id
-	> Gramps id, e.g. R0123
-
-- handle
-	> Gramps internal handle
-
-- name
-	> Repository name
-
-- obj
-	> This Gramps Repository object (same as 'repository')
-
-- repository
-	> This Gramps Repository object (same as 'obj')
-
-- sources
-	> List of sources in this repository
-
-- tags
-	> List of tags as strings
-
-- type
-	> Type of repository
+property             | description                                            | type
+-------------------- | ----------------------------------------------------   | --------------------
+gramps_id            | Gramps id, e.g. R0123                                  | string
+handle               | Gramps internal handle                                 | string
+name                 | Repository name                                        | string
+notes                | List of notes                                          | list of NoteProxy objects
+obj                  | This Gramps Repository object (same as 'repository')   | Repository
+repository           | This Gramps Repository object (same as 'obj')          | Repository
+self                 | This RepositoryProxy object                            | RepositoryProxy
+sources              | List of sources in this repository                     | list of SourceProxy objects
+tags                 | List of tags as strings                                | list of strings
+type                 | Type of repository                                     | string
 
 ### Sources
 
-- self
-	> This SourceProxy object
-
-- abbrev
-	> Abbreviation
-
-- attributes
-	> Attributes as a list of tuples (name,value)
-
-- author
-	> Author
-
-- citations
-	> List of citations
-
-- gramps_id
-	> Gramps id, e.g. S0123
-
-- handle
-	> Gramps internal handle
-
-- notes
-	> List of notes
-
-- obj
-	> This Gramps Source object (same as 'source')
-
-- pubinfo
-	> Publication info
-
-- repositories
-	> List of repositories
-
-- source
-	> This Gramps Source object (same as 'obj')
-
-- tags
-	> List of tags as strings
-
-- title
-	> Source title
+property             | description                                    | type
+-------------------- | --------------------------------------------   | --------------------
+abbrev               | Abbreviation                                   | string
+attributes           | Attributes as a list of tuples (name,value)    | list of (string,string)
+author               | Author                                         | string
+citations            | List of citations                              | list of CitationProxy objects
+gramps_id            | Gramps id, e.g. S0123                          | string
+handle               | Gramps internal handle                         | string
+namespace            | Category, e.g. 'Person'                                                               | 
+notes                | List of notes                                  | list of NoteProxy objects
+obj                  | This Gramps Source object (same as 'source')   | Source
+pubinfo              | Publication info                               | string
+repositories         | List of repositories                           | list of RepositoryProxy objects
+self                 | This SourceProxy object                        | SourceProxy
+source               | This Gramps Source object (same as 'obj')      | Source
+tags                 | List of tags as strings                        | list of strings
+title                | Source title                                   | string
 
 ### global variables and functions
 
-- db
-	> Database object
+property             | description                                                                           | 
+-------------------- | -----------------------------------------------------------------------------------   | 
+db                   | Database object                                                                       | 
+dbstate              | Database state  object                                                                | 
+makedate             | Function to construct a date literal; e.g. makedate(1800, 12, 31) or makedate(1800)   | 
+uniq                 | Function that returns unique elements from a list                                     | 
+flatten              | Function that returns elements from a list of lists                                   | 
+today                | Function that returns today's date                                                    |
+filter               | Function that returns a custom filter by name                                         | 
 
-- dbstate
-	> Database state  object
-
-- makedate
-	> Function to construct a date literal; e.g. makedate(1800, 12, 31) or makedate(1800)
-
-- uniq
-	> Function that returns unique elements from a list
-
-- flatten
-	> Function that returns elements from a list of lists
-
-- today
-	> Function that returns today's date
-
-- namespace
-	> Category, e.g. 'Person'
-
-- filter
-	> Function that returns a custom filter by name
+### --
 
 ## Command line options
 
 to be added
 
-## Supplied include files
+## Sample files
+
+### Sample script files
+
+### Sample include files
 
 to be added
+
+## Script file format
+
+to be added
+
+
+
