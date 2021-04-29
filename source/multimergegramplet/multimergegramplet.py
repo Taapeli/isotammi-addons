@@ -242,6 +242,7 @@ class MultiMergeGramplet(Gramplet):
         return new_handles
 
     def build_context(self):
+        gethandlesfunc = None
         if self.category == "People":
             import gramps.gen.merge.mergepersonquery as mergemodule
             mergeclass = mergemodule.MergePersonQuery
