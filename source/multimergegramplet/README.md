@@ -1,8 +1,7 @@
 MultiMergeGramplet
 ------------------
 Author: kari.kujansuu@gmail.com
-7 Jun 2020
-Updated 29 April 2021
+7 Jun 2020 (updated 29 April 2021)
 
 Gramplet to merge multiple objects in one step. This applies to
 
@@ -17,7 +16,7 @@ Gramplet to merge multiple objects in one step. This applies to
 
 Install the add-on either manually (https://gramps-project.org/wiki/index.php/5.1_Addons#Manually_installed_Addons) or using the instructions here: https://github.com/Taapeli/isotammi-addons
 
-Use the Gramps user interface to add the gramplet in the corresponding view (people, families etc). 
+Use the Gramps user interface to add the gramplet in the sidebar or bottombar of the corresponding view (people, families etc). 
 
 This gramplet works in the Gramps versions 5.x
 
@@ -33,7 +32,7 @@ The gramplet will ask which of the selected objects should be the primary object
 
 The gramplet executes the standard merge function pairwise for the selected objects. The user can select the primary object but otherwise the merges are performed using the defaults for each case.
 
-All changes are done under a single transaction and they can be undone from the Gramps menu (Edit > Undo).
+All changes are done under a single transaction and they can be undone from the Gramps menu (Edit > Undo) or with Ctrl-Z.
 
 ### Special handling for families 
 
