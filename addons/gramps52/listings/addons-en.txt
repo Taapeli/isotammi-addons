@@ -1,5 +1,5 @@
 {'t': 'Gramplet', 'i': 'isotammiconfig', 'n': 'Isotammi configuration', 'v': '1.0.24', 'g': '5.2', 'd': 'Isotammi configuration', 'z': 'IsotammiConfig.addon.tgz'}
-{'t': 'Gramplet', 'i': 'Multimergegramplet Gramplet', 'n': 'Multimerge Gramplet', 'v': '1.0.2', 'g': '5.2', 'd': 'Gramplet ', 'z': 'multimergegramplet.addon.tgz'}
+{'t': 'Gramplet', 'i': 'Multimergegramplet Gramplet', 'n': 'Multimerge Gramplet', 'v': '1.0.3', 'g': '5.2', 'd': 'Gramplet ', 'z': 'multimergegramplet.addon.tgz'}
 {'t': 'Tool', 'i': 'zipinstall', 'n': 'ZipInstall', 'v': '1.0.3', 'g': '5.2', 'd': 'Install a plugin from a ZIP file', 'z': 'zipinstall.addon.tgz'}
 {'t': 'Tool', 'i': 'generatecitations', 'n': 'Generate source citations from notes', 'v': '1.0.21', 'g': '5.2', 'd': 'Generate source citations from notes', 'z': 'generatecitations.addon.tgz'}
 {'t': 'Gramplet', 'i': 'PropertyEditor', 'n': 'PropertyEditor', 'v': '1.0.8', 'g': '5.2', 'd': 'Gramplet to edit attributes of multiple objects', 'z': 'PropertyEditor.addon.tgz'}
