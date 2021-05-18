@@ -1,9 +1,10 @@
 {'t': 'Gramplet', 'i': 'isotammiconfig', 'n': 'Isotammi configuration', 'v': '1.0.24', 'g': '5.0', 'd': 'Isotammi configuration', 'z': 'IsotammiConfig.addon.tgz'}
-{'t': 'Gramplet', 'i': 'Multimergegramplet Gramplet', 'n': 'Multimerge Gramplet', 'v': '1.0.4', 'g': '5.0', 'd': 'Gramplet ', 'z': 'multimergegramplet.addon.tgz'}
+{'t': 'Gramplet', 'i': 'Multimergegramplet Gramplet', 'n': 'Multimerge Gramplet', 'v': '1.0.5', 'g': '5.0', 'd': 'Gramplet ', 'z': 'multimergegramplet.addon.tgz'}
 {'t': 'Tool', 'i': 'zipinstall', 'n': 'ZipInstall', 'v': '1.0.3', 'g': '5.0', 'd': 'Install a plugin from a ZIP file', 'z': 'zipinstall.addon.tgz'}
 {'t': 'Tool', 'i': 'generatecitations', 'n': 'Generate source citations from notes', 'v': '1.0.21', 'g': '5.0', 'd': 'Generate source citations from notes', 'z': 'generatecitations.addon.tgz'}
 {'t': 'Gramplet', 'i': 'PropertyEditor', 'n': 'PropertyEditor', 'v': '1.0.8', 'g': '5.0', 'd': 'Gramplet to edit attributes of multiple objects', 'z': 'PropertyEditor.addon.tgz'}
 {'t': 'Tool', 'i': 'NameMergeTool', 'n': 'Name Merge Tool', 'v': '1.0.1', 'g': '5.0', 'd': 'Merge names', 'z': 'NameMergeTool.addon.tgz'}
+{'t': 'Exporter', 'i': 'isotammiexportxml', 'n': 'Isotammi XML export', 'v': '1.0.1', 'g': '5.0', 'd': 'Isotammi XML export', 'z': 'isotammiexportxml.addon.tgz'}
 {'t': 'Gramplet', 'i': 'PlaceTool', 'n': 'PlaceTool', 'v': '1.0.32', 'g': '5.0', 'd': 'Gramplet to manipulate multiple places', 'z': 'PlaceTool.addon.tgz'}
 {'t': 'Tool', 'i': 'SuperTool', 'n': 'SuperTool', 'v': '1.0.11', 'g': '5.0', 'd': '', 'z': 'SuperTool.addon.tgz'}
 {'t': 'Rule', 'i': 'person-genfilter', 'n': 'Generic person filter', 'v': '1.0.11', 'g': '5.0', 'd': 'Generic person filter', 'z': 'SuperTool.addon.tgz'}
