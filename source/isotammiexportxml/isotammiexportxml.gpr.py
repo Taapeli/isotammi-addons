@@ -1,7 +1,7 @@
 #
 # Gramps - a GTK+/GNOME based genealogy program
 #
-# Copyright (C) 2021     Kari Kujansuu
+# Copyright (C) 2021 Gramps developers, Kari Kujansuu
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -33,7 +33,7 @@ register(EXPORT,
     id    = 'isotammiexportxml',
     name  = _("Isotammi XML export"),
     description =  _("Isotammi XML export"),
-    version = '1.0.1',
+    version = '1.0.2',
     gramps_target_version = major_version,
     status = STABLE,
     fname = 'isotammiexportxml.py',

@@ -1,7 +1,7 @@
 #
 # Gramps - a GTK+/GNOME based genealogy program
 #
-# Copyright (C) 2015-2016 Nick Hall
+# Copyright (C) 2021 Gramps developers, Kari Kujansuu
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -30,10 +30,6 @@ try:
 except:
     _gzip_ok = 0
 
-
-"""
-    Set genders for all people with unknown gender - if the gender can be determined based on first names
-"""
 from gi.repository import Gtk, Gdk, GObject
 #import gtk
 

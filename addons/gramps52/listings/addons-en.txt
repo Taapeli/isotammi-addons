@@ -4,7 +4,7 @@
 {'t': 'Tool', 'i': 'generatecitations', 'n': 'Generate source citations from notes', 'v': '1.0.21', 'g': '5.2', 'd': 'Generate source citations from notes', 'z': 'generatecitations.addon.tgz'}
 {'t': 'Gramplet', 'i': 'PropertyEditor', 'n': 'PropertyEditor', 'v': '1.0.8', 'g': '5.2', 'd': 'Gramplet to edit attributes of multiple objects', 'z': 'PropertyEditor.addon.tgz'}
 {'t': 'Tool', 'i': 'NameMergeTool', 'n': 'Name Merge Tool', 'v': '1.0.1', 'g': '5.2', 'd': 'Merge names', 'z': 'NameMergeTool.addon.tgz'}
-{'t': 'Exporter', 'i': 'isotammiexportxml', 'n': 'Isotammi XML export', 'v': '1.0.1', 'g': '5.2', 'd': 'Isotammi XML export', 'z': 'isotammiexportxml.addon.tgz'}
+{'t': 'Exporter', 'i': 'isotammiexportxml', 'n': 'Isotammi XML export', 'v': '1.0.2', 'g': '5.2', 'd': 'Isotammi XML export', 'z': 'isotammiexportxml.addon.tgz'}
 {'t': 'Rule', 'i': 'HasValidDate', 'n': 'Events with a valid date', 'v': '1.0.8', 'g': '5.2', 'd': 'Events with a valid date', 'z': '_hasvaliddate.addon.tgz'}
 {'t': 'Rule', 'i': 'HasInValidDate', 'n': 'Events with an in valid date', 'v': '1.0.8', 'g': '5.2', 'd': 'Events with an invalid date', 'z': '_hasvaliddate.addon.tgz'}
 {'t': 'Gramplet', 'i': 'PlaceTool', 'n': 'PlaceTool', 'v': '1.0.32', 'g': '5.2', 'd': 'Gramplet to manipulate multiple places', 'z': 'PlaceTool.addon.tgz'}

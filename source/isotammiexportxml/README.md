@@ -27,9 +27,11 @@ These settings will be saved in the XML file. See below for details.
 
 ### File format
 
-The resulting file has the default extension ".isotammi.gpkg" (yes, it is a "double extension"). The file format is the same as in Gramps .gpkg files. Even when you don't include the media - in that case the media is simply not included but the file is still a gpkg file. The file format is compatible with Gramps - i.e. Gramps can still read the file normally and it will ignore the new metadata. Using the extension .isotammi.gpkg is not mandatory - you can use plain .gpkg but including "isotammi" will make it clearer that it contains Isotammi metadata.
+The resulting file has the default extension ".isotammi.gpkg" (yes, it is a "double extension"). The file format is the same as in Gramps .gpkg files. Even when you don't include the media - in that case the media is simply not included but the file is still a gpkg file. The file format is compatible with Gramps - i.e. Gramps can still read the file normally and it will ignore the new metadata. 
 
-Referring to thei file as an "XML file" is a bit misleading. Actually it is a gzipped tar file with an embedded XML file.
+Using the extension .isotammi.gpkg is not mandatory - you can use plain .gpkg but including "isotammi" will make it clearer that it contains Isotammi metadata.
+
+Referring to the file as an "XML file" is actually a bit misleading. Actually it is a gzipped tar file with an embedded XML file.
 
 ### Include media
 
