@@ -43,6 +43,7 @@ _ = glocale.translation.gettext
 #
 # -------------------------------------------------------------------------
 import supertool_engine as engine
+import supertool_utils
 
 # -------------------------------------------------------------------------
 #
@@ -112,11 +113,18 @@ class GenericFilterRule(Rule):
         self.db = db
         dbstate = self  # self emulates dbstate
         self.rule = self.list[0].replace("<br>", " ").strip()
+
         self.initial_statements = self.list[1].replace("<br>", "\n").strip()
+        self.initial_statements = supertool_utils.process_includes(self.initial_statements)
+        self.initial_statements = compile(self.initial_statements, "initial_statements", 'exec')
+
         self.statements = self.list[2].replace("<br>", "\n").strip()
+        self.statements = supertool_utils.process_includes(self.statements)
+        self.statements = compile(self.statements, "statements", 'exec')
 
         self.init_env = {}  # type: Dict[str,Any]
         self.init_env["trans"] = None
+        self.init_env["uistate"] = user.uistate
         s = self.initial_statements
         if s:
             value, self.init_env = self.execute_func(

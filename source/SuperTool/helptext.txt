@@ -26,7 +26,7 @@
         ],
         [
             "flatten",
-            "Function that returns elements from a list of lists"
+            "Function that returns elements from nested lists"
         ],
         [
             "today",
@@ -39,6 +39,10 @@
         [
             "filter",
             "Function that returns a custom filter by name"
+        ],
+        [
+            "getargs",
+            "Function that asks the user for parameters to be used in the query"
         ]
     ],
     "People": [
@@ -545,6 +549,10 @@
         [
             "text",
             "Text of the note"
+        ],
+        [
+            "type",
+            "Type of the note as string"
         ]
     ]
 }

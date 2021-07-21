@@ -58,6 +58,10 @@ def bump_version(addon):
     #    version = '1.0.14',
     # ->
     #    version = '1.0.15',
+    # or
+    #    version = '1.2',
+    # ->
+    #    version = '1.2.0',
 
     gprfile = find_gprfile(addon)
     if not gprfile:
@@ -65,21 +69,29 @@ def bump_version(addon):
         return None
     found = False
     lines = []
+    QUOTES = ["'",'"']
     for line in open(gprfile):
         parts = line.split("=")
-        if len(parts) == 2 and parts[0].strip() == 'version':
+        if len(parts) == 2 and parts[0].upper().strip() == 'VERSION':
             ver = parts[1].strip()
             if ver.endswith(','): ver = ver[:-1].strip()
             # ver: '1.0.14'
-            ver = ver[1:-1] # remove quotes
-            verparts = ver.split(".")
-            if len(verparts) != 3:
-                print(f"{addon}: invalid version line: '{line}'")
-                return None
-            verparts[2] = str(int(verparts[2])+1)
-            newver = ".".join(verparts)
-            line = line.replace(ver,newver)
-            found = True
+            if ver[0] in QUOTES and ver[-1] == ver[0]:
+                ver = ver[1:-1] # remove quotes
+                verparts = ver.split(".")
+                if len(verparts) == 2:
+                    verparts.append("-1")  # 1.2 -> 1.2.0
+                if len(verparts) != 3:
+                    print(f"{addon}: invalid version line: '{line}'")
+                    return None
+                if int(verparts[2]) >= 9:
+                    verparts[1] = str(int(verparts[1])+1)
+                    verparts[2] = "0"
+                else:
+                    verparts[2] = str(int(verparts[2])+1)
+                newver = ".".join(verparts)
+                line = line.replace(ver,newver)
+                found = True
         lines.append(line)
     if found:
         open(gprfile,"w").writelines(lines)

@@ -28,6 +28,7 @@ import csv
 import json
 import os
 import sys
+import textwrap
 import time
 import traceback
 import types
@@ -80,14 +81,16 @@ _ = _trans.gettext
 # Local modules
 #
 # -------------------------------------------------------------------------
-import supertool_categories as categories
+import supertool_utils
 import supertool_engine as engine
+from supertool_utils import compile_statements, compile_expression
 
 config = configman.register_manager("supertool")
 config.register("defaults.encoding", "utf-8")
 config.register("defaults.delimiter", "comma")
 config.register("defaults.font", "")
 config.register("defaults.last_filename", "")
+config.register("defaults.include_location","")
 
 SCRIPTFILE_EXTENSION = ".script"
 
@@ -226,13 +229,7 @@ class GrampsEngine:
         uistate,
         category,
         selected_handles,
-        initial_statements,
-        statements,
-        filter,
-        expressions,
-        unwind_lists,
-        commit_changes,
-        summary_only,
+        query,
         step=None,
     ):
         self.dbstate = dbstate
@@ -240,14 +237,20 @@ class GrampsEngine:
         self.uistate = uistate
         self.category = category
         self.selected_handles = selected_handles
-        self.initial_statements = initial_statements
-        self.statements = statements
-        self.filter = filter
-        self.expressions = expressions
-        self.unwind_lists = unwind_lists
-        self.commit_changes = commit_changes
-        self.summary_only = summary_only
+        self.query = query
         self.step = step
+        compile_code = True
+        if compile_code:
+            self.initial_statements_x = compile_statements(self.query.initial_statements,"initial_statements")
+            self.statements_x = compile_statements(self.query.statements,"statements")
+            self.filter_x = compile_expression(self.query.filter,"filter")
+            self.expressions_x = compile_expression(self.query.expressions,"expressions")
+        else:
+            self.initial_statements_x = self.query.initial_statements
+            self.statements_x = self.query.statements
+            self.filter_x = self.query.filter.replace("\n"," ")
+            self.expressions_x = self.query.expressions.replace("\n"," ")
+            
 
     def generate_rows(self, res):
         # type: (Tuple[Any,...]) -> Iterator[List[Any]]
@@ -264,7 +267,7 @@ class GrampsEngine:
         for values in self.generate_rows(res[1:]):
             if type(value) is types.GeneratorType:
                 value = list(value)
-            if self.unwind_lists and type(value) is list:
+            if self.query.unwind_lists and type(value) is list:
                 for v in value:
                     yield [cast(v)] + values
             else:
@@ -285,23 +288,26 @@ class GrampsEngine:
             env.update(init_env)
             obj = self.category.getfunc(handle)
             obj.commit_ok = True
-            if self.statements:
+            if self.statements_x:
                 value, env = self.category.execute_func(
-                    self.dbstate, obj, self.statements, env, "exec"
+                    #self.dbstate, obj, self.query.statements, env, "exec"
+                    self.dbstate, obj, self.statements_x, env, "exec"
                 )
 
-            if self.filter:
-                ok, env = self.evaluate_condition(obj, self.filter, env)
+            if self.filter_x:
+                #ok, env = self.evaluate_condition(obj, self.query.filter, env)
+                ok, env = self.evaluate_condition(obj, self.filter_x, env)
                 if not ok:
                     continue
 
-            if self.commit_changes and obj.commit_ok:
+            if self.query.commit_changes and obj.commit_ok:
                 self.category.commitfunc(obj, self.trans)
 
             self.object_count += 1
-            if self.expressions:
+            if self.expressions_x:
                 res, env = self.category.execute_func(
-                    self.dbstate, obj, self.expressions, env
+#                   self.dbstate, obj, self.query.expressions, env
+                    self.dbstate, obj, self.expressions_x, env
                 )
                 if type(res) != tuple:
                     res = (res,)
@@ -310,8 +316,7 @@ class GrampsEngine:
                     yield obj, env, [obj.gramps_id] + values
 
     def get_values(self, trans):
-        # type: () -> None
-        print("executing")
+        # type: (dict) -> Generator
         self.trans = trans
 
         #         if not self.category.execute_func:
@@ -320,19 +325,19 @@ class GrampsEngine:
         init_env = {}  # type: Dict[str,Any]
         init_env["trans"] = trans
         init_env["uistate"] = self.uistate
-        if self.initial_statements:
+        if self.initial_statements_x:
             value, init_env = self.category.execute_func(
-                self.dbstate, None, self.initial_statements, init_env, "exec"
+                self.dbstate, None, self.initial_statements_x, init_env, "exec"
             )
 
         for obj, env, values in self.generate_values(init_env):
-            if not self.summary_only:
+            if not self.query.summary_only:
                 yield values
 
-        if self.summary_only:
-            if self.expressions:
+        if self.query.summary_only:
+            if self.expressions_x:
                 res, env = self.category.execute_func(
-                    self.dbstate, None, self.expressions, init_env
+                    self.dbstate, None, self.expressions_x, init_env
                 )
                 if type(res) != tuple:
                     res = (res,)
@@ -355,6 +360,9 @@ class Query:
 
 
 class ScriptFile:
+    # when saving, lines starting with [ or \ are prefixed with a \
+    ESCAPE = "\\" # one backslash
+    
     def load(self, filename, loadtitle=True):
         # type: (str, bool) -> Query
         query = Query()
@@ -405,11 +413,17 @@ class ScriptFile:
         # type: (str, Dict[str,str]) -> None
         # open(filename, "w").write(json.dumps(data, indent=4))
         with open(filename, "w") as f:
+            print("[Gramps SuperTool script file]", file=f)
+            print("version=1", file=f)
+            print("",file=f)
             for key, value in data.items():
                 print("[" + key + "]", file=f)
-                print(value, file=f)
-                if value:
-                    print(file=f)  # empty line
+                lines = value.splitlines()
+                for line in lines:
+                    if line.startswith("[") or line.startswith(self.ESCAPE):
+                        line = self.ESCAPE + line
+                    print(line, file=f)
+                print(file=f)  # empty line
 
     def __readdata(self, filename):
         try:
@@ -422,6 +436,8 @@ class ScriptFile:
                         data[key] = value.rstrip()
                     key = line.strip()[1:-1]
                     value = ""
+                elif line.startswith(self.ESCAPE):
+                    value += line[1:]
                 else:
                     value += line
             if key:
@@ -462,6 +478,10 @@ class HelpWindow(Gtk.Window):
         self.box.pack_start(help_notebook, True, True, 0)
 
 
+class NullTrans:
+    pass
+
+
 class SuperTool(ManagedWindow):
     def __init__(self, user, dbstate):
         ManagedWindow.__init__(self, user.uistate, [], self.__class__, modal=False)
@@ -485,7 +505,6 @@ class SuperTool(ManagedWindow):
         self.dbstate.connect("no-database", self.db_closed)
         self.dbstate.connect("database-changed", self.db_changed)
         self.uistate.viewmanager.notebook.connect("switch-page", self.pageswitch)
-        print(self.uistate.viewmanager.active_page)
         self.set_window(window, None, _("SuperTool"))
         # self.window.set_sensitive(self.category.objclass is not None)
         # self.btn_help.set_sensitive(True)
@@ -503,7 +522,6 @@ class SuperTool(ManagedWindow):
 
     def db_closed(self):
         # type: () -> None
-        print("db_closed")
         if self.listview:
             self.output_window.remove(self.listview)
         self.listview = None  # type: Optional[Gtk.TreeView]
@@ -512,9 +530,6 @@ class SuperTool(ManagedWindow):
     def db_changed(self, db):
         # type: (Any) -> None
         self.db = self.dbstate.db
-        print("db_changed", db, db.db_is_open)
-        print("db:", self.dbstate.db)
-        print("db is_open:", self.dbstate.db.db_is_open)
         if db.db_is_open:
             self.btn_execute.set_sensitive(True)
         self.statusmsg.set_text("")
@@ -533,8 +548,6 @@ class SuperTool(ManagedWindow):
             #             if type(attr) == types.FunctionType: continue
             if type(attr) == types.MethodType:
                 continue
-            # print(name, type(attr))
-            # self.attributes_list.append_text(name)
         from unittest import mock
 
         db = mock.Mock()
@@ -546,8 +559,6 @@ class SuperTool(ManagedWindow):
         ):  # this contains the @property methods
             if name.startswith("_"):
                 continue
-            # print(">>",name)
-            # print(name, type(attr))
             yield name
 
     def set_error(self, msg):
@@ -574,13 +585,6 @@ class SuperTool(ManagedWindow):
             self.filter.hide()
             self.summary_checkbox.set_active(True)
 
-        #         set_text(self.filter, "disabled")
-        #         set_text(self.statements, "disabled")
-        #         self.filter.set_sensitive(category_ok)
-        #         self.statements.set_sensitive(category_ok)
-
-        self.btn_save_as_filter.set_sensitive(category_ok)
-
         self.all_objects.set_sensitive(category_ok)
         self.filtered_objects.set_sensitive(category_ok)
         self.selected_objects.set_sensitive(category_ok)
@@ -600,7 +604,7 @@ class SuperTool(ManagedWindow):
         self.check_category()
 
     def savestate(self, filename):
-        # type: (str) -> None
+        # type: (str) -> Query
         query = Query()
         query.category = self.category_name
         query.title = self.title.get_text()
@@ -622,10 +626,11 @@ class SuperTool(ManagedWindow):
 
         scriptfile = ScriptFile()
         scriptfile.save(filename, query)
+        return query
         # self.writedata(filename, data)
 
     def loadstate(self, filename, loadtitle=True):
-        # type: (str) -> None
+        # type: (str, bool) -> None
         scriptfile = ScriptFile()
         query = scriptfile.load(filename)
         if query.category and query.category != self.category_name:
@@ -656,8 +661,8 @@ class SuperTool(ManagedWindow):
         self.summary_checkbox.set_active(query.summary_only)
 
     def saveconfig(self):
-        # type: () -> None
-        self.savestate(self.get_configfile())
+        # type: () -> Query
+        return self.savestate(self.get_configfile())
 
     def loadconfig(self):
         # type: () -> None
@@ -687,7 +692,6 @@ class SuperTool(ManagedWindow):
                 break
             elif response == Gtk.ResponseType.OK:
                 self.csv_filename = choose_file_dialog.get_filename()
-                print(self.csv_filename)
                 delimiter = ","
                 if choose_file_dialog.cb_comma.get_active():
                     delimiter = ","
@@ -708,9 +712,7 @@ class SuperTool(ManagedWindow):
                     delimiter=delimiter,
                 )
                 for row in self.store:
-                    for col in row:
-                        print("- col", col)
-                    writer.writerow(row)
+                    writer.writerow(row[0:-1]) # don't write the handle
                 break
 
         choose_file_dialog.destroy()
@@ -724,7 +726,7 @@ class SuperTool(ManagedWindow):
         stringio = io.StringIO()
         writer = csv.writer(stringio)
         for row in self.store:
-            writer.writerow(row)
+            writer.writerow(row[0:-1]) # don't write the handle
         clipboard.set_text(stringio.getvalue(), -1)
         OkDialog("Info", "Result list copied to clipboard")
 
@@ -752,7 +754,6 @@ class SuperTool(ManagedWindow):
                 break
             elif response == Gtk.ResponseType.OK:
                 filename = choose_file_dialog.get_filename()
-                print(filename)
                 self.savestate(filename)
                 self.last_filename = filename
                 config.set("defaults.last_filename", filename)
@@ -763,7 +764,6 @@ class SuperTool(ManagedWindow):
 
     def load(self, obj):
         # type: (Gtk.Widget) -> None
-        print("load")
         choose_file_dialog = ScriptOpenFileChooserDialog(self.uistate)
         choose_file_dialog.set_current_name(
             self.category_name + "-query" + SCRIPTFILE_EXTENSION
@@ -779,7 +779,6 @@ class SuperTool(ManagedWindow):
                 break
             elif response == Gtk.ResponseType.OK:
                 filename = choose_file_dialog.get_filename()
-                print(filename)
                 self.loadstate(filename)
                 self.last_filename = filename
                 config.set("defaults.last_filename", filename)
@@ -816,16 +815,14 @@ class SuperTool(ManagedWindow):
         self.help_notebook = Gtk.Notebook()
         page = 0
         data = {}
-        for cat_name in categories.get_categories():
+        for cat_name in supertool_utils.get_categories():
             print(cat_name)
             data[cat_name] = []
-            info = categories.get_category_info(self.db, cat_name)
+            info = supertool_utils.get_category_info(self.db, cat_name)
             if not info.objclass:
                 continue
             box = Gtk.VBox()
             box.set_border_width(10)
-            # box.add(Gtk.Label(label=objclass.__name__))
-            # self.help_notebook.append_page(box, Gtk.Label(label=info.objclass))
             grid = Gtk.Grid()
             row = 0
             col = 0
@@ -856,7 +853,7 @@ class SuperTool(ManagedWindow):
         data = json.loads(open(fname).read())
         self.help_notebook = Gtk.Notebook()
         page = 0
-        for cat_name in ["global"] + categories.get_categories():
+        for cat_name in ["global"] + supertool_utils.get_categories():
             grid = Gtk.Grid()
             grid.set_column_spacing(10)
             row = 0
@@ -864,12 +861,10 @@ class SuperTool(ManagedWindow):
             for name, desc in sorted(data[cat_name]):
                 label = Gtk.Label(label=name)
                 label.set_halign(Gtk.Align.START)
-                # box.add(label)
                 grid.attach(label, col, row, 1, 1)
 
                 label = Gtk.Label(label=desc)
                 label.set_halign(Gtk.Align.START)
-                # box.add(label)
                 grid.attach(label, col + 1, row, 1, 1)
                 row += 1
             self.help_notebook.append_page(grid, Gtk.Label(label=cat_name))
@@ -885,12 +880,21 @@ class SuperTool(ManagedWindow):
         self.help_win.modify_font(font_description)
         self.help_win.show_all()
 
+    def find_version(self):
+        from gramps.gen.plug import PluginRegister
+        preg = PluginRegister.get_instance()
+        pd = preg.get_plugin("SuperTool")
+        return pd.version
+
     def __create_gui(self):
         # type: () -> Gtk.Widget
-        glade = Glade(toplevel="main", also_load=["help_window", "adjustment1"])
+        glade = Glade(toplevel="main", also_load=["help_window", "adjustment1","save-as"])
         glade.set_translation_domain(None)
 
         self.title = glade.get_child_object("title")
+        self.version = glade.get_child_object("version")
+        version = self.find_version()
+        self.version.set_text("v"+version)
 
         self.label_filter = glade.get_child_object("label_filter")
         self.label_statements = glade.get_child_object("label_statements")
@@ -911,15 +915,6 @@ class SuperTool(ManagedWindow):
         self.btn_execute = glade.get_child_object("btn_execute")
         self.btn_csv = glade.get_child_object("btn_csv")
         self.btn_copy = glade.get_child_object("btn_copy")
-        self.btn_close = glade.get_child_object("btn_close")
-        self.btn_load = glade.get_child_object("btn_load")
-        self.btn_save = glade.get_child_object("btn_save")
-        self.btn_save_as_filter = glade.get_child_object("btn_save_as_filter")
-        self.btn_clear = glade.get_child_object("btn_clear")
-        self.btn_help = glade.get_child_object("btn_help")
-
-        self.btn_font = glade.get_child_object("btn_font")
-        self.btn_font.set_label("Select font")
 
         self.attributes_list = glade.get_child_object("attributes_list")
 
@@ -935,16 +930,44 @@ class SuperTool(ManagedWindow):
         self.btn_execute.connect("clicked", self.__execute)
         self.btn_csv.connect("clicked", self.download)
         self.btn_copy.connect("clicked", self.copy)
-        self.btn_close.connect("clicked", self.__close)
-        self.btn_load.connect("clicked", self.load)
-        self.btn_save.connect("clicked", self.save)
-        self.btn_save_as_filter.connect("clicked", self.save_as_filter)
-        self.btn_clear.connect("clicked", self.clear)
-        self.btn_help.connect("clicked", self.help)
+
+        colorh = "#22dd22"
+        color = Gdk.RGBA()
+        color.parse(colorh)
+        color.to_string()
+        self.btn_execute.override_background_color(Gtk.StateFlags.NORMAL, color)
+
+        glade.connect_signals({
+            "new"               : self.clear,
+            "load"              : self.load,
+            "save"              : self.save,
+            "save_as_filter"    : self.save_as_filter,
+            "settings"          : self.settings_dialog,
+            "help"              : self.help,
+            "close"             : self.__close,
+            "about"             : self.show_about_dialog,
+        })
+        
+        self.settings = Glade(toplevel='settings')
+        self.btn_font = glade.get_child_object('btn_font', self.settings.toplevel)
         self.btn_font.connect("font-set", self.set_font)
+        self.settings.connect_signals({
+            "ok"   : self.save_settings,
+            "cancel"  : self.cancel_settings,
+            #"close"  : self.close_settings,
+        })
+
+        self.about_dialog = Glade(toplevel='about').toplevel
+
+        TOOL_DIR = "supertool"
+        from gramps.gen.const import USER_HOME
+        userdir = os.path.join(USER_HOME, TOOL_DIR)
+        include_location_dialog = glade.get_child_object('include_location', self.settings.toplevel)
+        include_location_dialog.add_shortcut_folder(userdir)
 
         self.btn_csv.hide()
         self.listview = None
+
 
         ver = (Gtk.get_major_version(), Gtk.get_minor_version())
         if ver >= (3, 22):
@@ -959,6 +982,29 @@ class SuperTool(ManagedWindow):
 
         return glade.toplevel
 
+    def show_about_dialog(self, widget):
+        rsp = self.about_dialog.run()
+        self.about_dialog.hide()
+        
+    def settings_dialog(self, widget):
+        dialog = self.settings.toplevel
+        config.load()
+        loc = config.get("defaults.include_location")
+        loc_entry = self.settings.get_child_object('include_location')
+        loc_entry.set_filename(loc)
+        dialog.run()
+        self.settings.toplevel.hide()
+        
+    def save_settings(self, widget):
+        loc_entry = self.settings.get_child_object('include_location')
+        loc = loc_entry.get_filename()
+        config.set("defaults.include_location",loc)
+        config.save()
+        self.settings.toplevel.hide()
+    
+    def cancel_settings(self, widget):
+        self.settings.toplevel.hide()
+
     def set_font(self, widget):
         font = widget.get_font()
         font_description = widget.get_font_desc()
@@ -970,51 +1016,46 @@ class SuperTool(ManagedWindow):
         # type: () -> None
         self.execute_func = None
         self.category_name = self.uistate.viewmanager.active_page.get_category()
-        self.category = categories.get_category_info(self.db, self.category_name)
+        self.category = supertool_utils.get_category_info(self.db, self.category_name)
 
     def __execute(self, obj):
         # type: (Gtk.Widget) -> None
+        from gramps.gen.utils.debug import profile
         self.statusmsg.set_text("")
         self.output_window.hide()
         self.btn_csv.hide()
         self.btn_copy.hide()
         self.trans = None
+        if not self.uistate.viewmanager.active_page:
+            return
+        query = self.saveconfig()
         try:
             self.commit_changes = self.commit_checkbox.get_active()
-            txtitle = "Executing SuperTool".format(self.title.get_text())
+            txtitle = "Executing SuperTool"
             if self.title.get_text():
                 txtitle += " ({})".format(self.title.get_text())
 
-            if self.commit_changes:
-                with DbTxn(txtitle, self.dbstate.db) as self.trans:
-                    self.__execute1()
-            else:  # no need for a transaction
-                self.__execute1()
+            with DbTxn(txtitle, self.dbstate.db) as self.trans:
+                self.__execute1(query)
+                #profile(self.__execute1, query)
         except Exception as e:
             traceback.print_exc()
             if isinstance(e, engine.SupertoolException):
                 self.set_error(str(e))
                 return
             lines = traceback.format_exc().splitlines()
-            lastline = lines[-1]
-            if lastline.startswith("SyntaxError:"):
+            if len(lines) >= 3 and lines[-2].strip() == "^":
                 msglines = lines[-3:]
-            elif lastline.startswith("NameError:"):
-                msglines = lines[-1:]
             else:
                 msglines = [str(e)]
             errortext = "\n".join(msglines)
             self.set_error(errortext)
 
-    def __execute1(self):
-        # type: () -> None
-        print("executing")
+    def __execute1(self, query):
+        # type: (Query) -> None
         self.errormsg.set_text("")
         t1 = time.time()
 
-        if not self.uistate.viewmanager.active_page:
-            return
-        self.saveconfig()
         #         if not self.category.execute_func:
         #             return
         if self.listview:
@@ -1039,13 +1080,6 @@ class SuperTool(ManagedWindow):
         else:
             selected_handles = []
 
-        unwind_lists = self.unwind_lists.get_active()
-        summary_only = self.summary_checkbox.get_active()
-        commit_changes = self.commit_checkbox.get_active()
-        initial_statements = get_text(self.initial_statements).strip()
-        statements = get_text(self.statements).strip()
-        filtertext = get_text(self.filter).strip()
-        expressions = get_text(self.expressions).strip()
         with self.progress(
             "SuperTool", "Executing " + self.title.get_text(), len(selected_handles)
         ) as step:
@@ -1054,13 +1088,7 @@ class SuperTool(ManagedWindow):
                 self.uistate,
                 self.category,
                 selected_handles,
-                initial_statements,
-                statements,
-                filtertext,
-                expressions,
-                unwind_lists,
-                commit_changes,
-                summary_only,
+                query,
                 step,
             )
             for values in gramps_engine.get_values(self.trans):
@@ -1083,7 +1111,7 @@ class SuperTool(ManagedWindow):
         msg = "Objects: {}/{}; rows: {} ({:.2f}s)".format(
             gramps_engine.object_count, gramps_engine.total_objects, n, t2 - t1
         )
-        print(msg)
+        #print(msg)
         self.statusmsg.set_text(msg)
         if n > 0:
             self.btn_csv.show()
@@ -1108,7 +1136,7 @@ class SuperTool(ManagedWindow):
         numcols = len(res)
         renderer = Gtk.CellRendererText()
         coltypes = []  # type: List[Union[Type[int],Type[str],Type[float]]]
-        for colnum in range(numcols - 1):
+        for colnum in range(numcols-1):
             if colnum == 0:
                 title = "ID"
                 coltypes.append(str)
@@ -1129,7 +1157,6 @@ class SuperTool(ManagedWindow):
         self.output_window.set_size_request(600, 400)
         self.output_window.add(self.listview)
 
-        # self.store = Gtk.TreeStore(*([str]*(numcols)))
         self.store = Gtk.TreeStore(*coltypes)
         self.listview.set_model(self.store)
         self.listview.connect("button-press-event", self.__button_press)
@@ -1154,8 +1181,9 @@ class SuperTool(ManagedWindow):
         filtername = self.title.get_text().strip()
         filtertext = get_text(self.filter).strip()
         initial_statements = get_text(self.initial_statements).strip()
-        statements = get_text(self.statements).strip()
         initial_statements = initial_statements.replace("\n", "<br>")
+
+        statements = get_text(self.statements).strip()
         statements = statements.replace("\n", "<br>")
         self.makefilter(
             self.category, filtername, filtertext, initial_statements, statements
@@ -1188,7 +1216,7 @@ class SuperTool(ManagedWindow):
             OkDialog(_("Error"), msg, parent=self.uistate.window)
             return
         filterdb.add(category.objclass, the_filter)
-        print("added filter", the_filter)
+        #print("added filter", the_filter)
         filterdb.save()
         reload_custom_filters()
         self.uistate.emit("filters-changed", (category.objclass,))
@@ -1238,7 +1266,7 @@ class Tool(tool.Tool):
             return
         print("category_name:", category_name)
         t1 = time.time()
-        category = categories.get_category_info(self.db, category_name)
+        category = supertool_utils.get_category_info(self.db, category_name)
         if category.objclass:
             selected_handles = category.get_all_objects_func()
         else:
@@ -1248,13 +1276,7 @@ class Tool(tool.Tool):
             self.uistate,
             category,
             selected_handles,
-            query.initial_statements,
-            query.statements,
-            query.filter,
-            query.expressions,
-            query.unwind_lists,
-            query.commit_changes,
-            query.summary_only,
+            query,
         )
         if output_filename:
             f = csv.writer(open(output_filename, "w"))
@@ -1274,7 +1296,6 @@ class Tool(tool.Tool):
     def run(self):
         # type: () -> None
         m = SuperTool(self.user, self.dbstate)
-        print("run")
 
 
 # ------------------------------------------------------------------------

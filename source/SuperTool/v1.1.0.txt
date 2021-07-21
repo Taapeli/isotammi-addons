@@ -1,0 +1,140 @@
+Save when n loading 
+caching of objects
+metadata - list of attributes, objtypes etc.
+database/family tree name
+database type/id/...
+researcher()
+metodit aakkosjärjestykseen, __ pois?
+nullproxyexception
+cache 
+saved script files in a separate directory
+examples:
+- people with duplicate names
+- dup birth events...
+
+menus, Gtk.ApplicationWindow
+
+csv: tab separator
+
+seq()
+version()
+gramps_version()
+plugins()
+
+unwind-tuples
+
+build env once
+
+
+null object
+
+stacktrace with locals
+
+exception -> display the item being processed    
+
+setting: save filename: insert category 
+
+-------done
+
+
+version
+Commit
+transaction problem...
+param
+save filename: insert category - NOT
+handle removed
+script file format
+compiled code
+save before start tx
+flatten
+versio 1.1 -> 1.1.0
+version stick to bottom
+
+
+
+------Version 1.1.0
+0. Menus
+
+1. Now all queries are done under a transaction even if they do not change the database. This avoids an error condition in a certain scenario. Commit is still required if any changes are to be made - either by "Commit changes" checkbox or explicitly calling the commit methods in the script. See docs.
+
+2. The version of the tool is displayed in the bottom right corner.
+3. The scripts can be parameterized with the "params" function. Calling this function will ask the user for values of parameters and it returns an object with those values. Syntax is
+args = params(<paramname>="<prompt>", ...)print(args.<paramname>)
+For example
+args = params(name="Person's name", address="Address")
+will prompt the user with a dialog like
+The code can then access the values given with "args.name" and "args.address".
+The call to params should be put in the initialization statements. If there are several calls then the user will see several dialogs which is usually not desired.
+The user supplied parameter values are stored in the "supertool.ini" file and the fields are automatically filled with the latest values. These values are "global" - i.e. if two scripts both use a parameter named "address" then the same default value will be used in both scripts.
+
+The parameterization feature may be enhanced or changed in the future.
+4. The "flatten" function is now properly implemented: it will work for arbitrarily deeply nested lists (previously only one level was supported).
+5. Code has been streamlined in a few places.
+6. The "Select font" button is replaced by a button for settings/preferences. Currently there are two settings, the font and the default directory/folder for the @include files.
+
+
+
+7. The script file format is slightly changed. 
+- Scripts now work also if there is a line starting with a left bracket [.
+- A version number is added when saving the file but so far it is not used or necessary when reading the file.
+
+8. The file supertool_categories.py was renamed to supertool_utils.py and some functions were moved there.
+
+-------------
+
+
+class PersonProxy(CommonProxy, AttributeProxy):
+    namespace = "Person"
+    cache = {}
+    def __init__(self, db, person_handle, person=None):
+        CommonProxy.__init__(self, db, person_handle)
+        if person:
+            self.person = person
+        elif person_handle in self.cache:
+            self.person = self.cache[person_handle]
+        else:
+            self.person = self.db.get_person_from_handle(person_handle)
+        self.cache[person_handle] = self.person
+        self.obj = self.person
+        self.gramps_id = self.person.gramps_id
+        print("init",person_handle, self.name, id(self.obj))
+
+    def _commit(self, db, trans):
+        print("_commit", self.name, id(self.obj))
+        db.commit_person(self.obj, trans)
+        
+    @property
+    
+
+        [
+            "commit",
+            "Function that commits changes to an object"
+        ],
+
+
+    
+    
+https://gramps.discourse.group/t/tree-vivisection-experiments-with-the-isotammi-supertool/1621/4
+10.7.2021: Note/Idea: It would be cool to be able to use a path (defined in preferences?) for includes, something like media path (relative to the preferences path).
+    
+    
+https://gramps.discourse.group/t/notes-type-data-model-for-notes/1645/3
+- 15.7:
+- note.type missing
+
+(https://gramps.discourse.group/t/changing-event-privacy-in-bulk/333)
+
+https://gramps.discourse.group/t/bulk-move-data-from-one-field-to-another/1623/5
+- vastasin
+
+    
+---------------
+Hi. It seems that I accidentally forgot to include the "type" attribute for notes in SuperTool.
+There is now a new version at https://github.com/Taapeli/isotammi-addons/tree/master/source/SuperTool which fixes this and has some other changes too.
+
+----------------
+> Note/Idea: It would be cool to be able to use a path (defined in preferences?) for includes, something like media path (relative to the preferences path).
+
+There is now a new version at https://github.com/Taapeli/isotammi-addons/tree/master/source/SuperTool which has this feature.
+
+

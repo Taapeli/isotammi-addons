@@ -1,38 +1,39 @@
 # SuperTool
+v1.1.0<br>
+21 Jul 2021<br>
 Author: kari.kujansuu@gmail.com<br>
-1 Jan 2021
 
-- [Introduction](#introduction)
-- [User interface](#user-interface)
-- [Basic examples](#basic-examples)
-- [Pre-defined variables](#pre-defined-variables)
-- [Example](#example)
-- [Accessing Gramps objects](#accessing-gramps-objects)
-- [General variables](#general-variables)
-- [Help feature](#help-feature)
-- [Options](#options)
-- [Row limit](#row-limit)
-- [Editing objects](#editing-objects)
-- [Download as CSV](#download-as-csv)
-- [Title field](#title-field)
-- [Initialization statements](#initialization-statements)
-- [Statements executed for every object](#statements-executed-for-every-object)
-- [Supported object types](#supported-object-types)
-- [Modifying the database](#modifying-the-database)
-- [Deleting objects](#deleting-objects)
-- [Saving the query as a script file](#saving-the-query-as-a-script-file)
-- [Saving the query as a custom filter](#saving-the-query-as-a-custom-filter)
-- [Using predefined custom filters](#using-predefined-custom-filters)
-- [Running from the command line](#running-from-the-command-line)
-- [Proxy objects](#proxy-objects)
-- [Date arithmetic](#date-arithmetic)
-- [Include files](#include-files)
-- [Changing font](#changing-font)
-
-- [More examples](#more-examples)
+ [Introduction](#introduction)
+<br> [User interface](#user-interface)
+<br> [Basic examples](#basic-examples)
+<br> [Pre-defined variables](#pre-defined-variables)
+<br> [Example](#example)
+<br> [Accessing Gramps objects](#accessing-gramps-objects)
+<br> [General variables](#general-variables)
+<br> [Help feature](#help-feature)
+<br> [Options](#options)
+<br> [Row limit](#row-limit)
+<br> [Editing objects](#editing-objects)
+<br> [Download/copy as CSV](#download-or-copy-as-csv)
+<br> [Title field](#title-field)
+<br> [Initialization statements](#initialization-statements)
+<br> [Statements executed for every object](#statements-executed-for-every-object)
+<br> [Supported object types](#supported-object-types)
+<br> [Parameterized queries](#parameterized-queries)
+<br> [Modifying the database](#modifying-the-database)
+<br> [Deleting objects](#deleting-objects)
+<br> [Saving the query as a script file](#saving-the-query-as-a-script-file)
+<br> [Saving the query as a custom filter](#saving-the-query-as-a-custom-filter)
+<br> [Using predefined custom filters](#using-predefined-custom-filters)
+<br> [Running from the command line](#running-from-the-command-line)
+<br> [Proxy objects](#proxy-objects)
+<br> [Date arithmetic](#date-arithmetic)
+<br> [Include files](#include-files)
+<br> [Settings](#settings)
+<br> [More examples](#more-examples)
 - [Reference](#reference)
-  * [Properties supported by the various object types.](#variables--or-attributes-or-properties--supported-for-the-various-object-types)
-    + [Citations](#citations)
+    * [Properties supported by the various object types.](#variables--or-attributes-or-properties--supported-for-the-various-object-types)
+    * [Citations](#citations)
     + [Events](#events)
     + [Families](#families)
     + [Notes](#notes)
@@ -49,11 +50,13 @@ Author: kari.kujansuu@gmail.com<br>
 
 ## Introduction
 
-This is a general purpose scripting tool that can be used to do "ad-hoc" queries against a Gramps family tree. The queries are expressed in the Python programming language so the tool is most useful for programmers. But the intent is also that the tool is easy enough to allow regular Gramps users to make use of it. The queries can be saved as script files that a user can then load into the tool without necessarily understanding the details.
+This is a general purpose scripting tool that can be used to do "ad-hoc" queries against a Gramps family tree/database. The queries are expressed in the Python programming language so the tool is most useful for programmers. But the intent is also that the tool is easy enough to allow regular Gramps users to make use of it. The queries can be saved as script files that a user can then load into the tool without necessarily understanding the details.
 
 This tool works in the Gramps versions 5.x and later. It will be installed in the "Isotammi tools" submenu under the Tools menu.
 
 The tool allows arbitrary Python code so it can also be used to modify the database.
+
+See [CHANGELOG](CHANGELOG.md) for changes in version 1.1.0.
 
 ## User interface 
 
@@ -93,7 +96,7 @@ This is not very impressive but remember that you can use arbitrary Python synta
 ## Pre-defined variables
 
 
-Certain pre-defined variables can be used - depending on the current category (People, Families, Events etc).
+Certain pre-defined, read-only, variables can be used - depending on the current category (People, Families, Events etc).
 
 For example, in the Person/People category the following variables are defined for each person:
 
@@ -115,6 +118,8 @@ For example, in the Person/People category the following variables are defined f
 
 Gramps_id is the ID of the person, for example I0345. Name is the person's primary name in default format. Names is a list of all names assigned to the person. Birth and death are the birth and death events of the person. Events is a list of all events attached to the person etc. You can experiment with all these by putting the variable names in the "Expressions" field.
 
+There are also some pre-defined global variables and functions.
+
 These are described in more detail in the reference section below.
 
 ## Examples
@@ -133,7 +138,9 @@ Or by using a slightly different syntax:
 
 We can order the rows by any column by clicking the column header:
 
-![SuperTool](SuperTool-5.png)
+![SuperTool](SuperTool-4d.png)
+
+Note that none of the above experiments required saving the Python code in a file - everything is executed in memory within the tool. Later we will see how to save a query in a script file.
 
 ## Accessing Gramps objects
 
@@ -141,18 +148,20 @@ The last predefined variable (person/obj) refers to the actual Gramps Person obj
 
 ## General variables
 
-In addition to the variables mentioned above, the following general variables and functions are also defined:
+In addition to the variables mentioned above, the following general/global variables and functions are also defined:
 
-* db - reference to the database object
-* Person, Family, Event etc. - these are the Gramps internal classes
 * os, sys, re, functools, collections etc - standard Python modules that might be useful (you can explicitly import any standard module but these are available without importing)
+* commit - commits database changes
+* db - reference to the database object
+* trans - the current transaction
+* Person, Family, Event etc. - these are the Gramps internal classes
 * len, uniq, flatten - some auxiliary functions
-* makedate, today - some date helper functions
+* makedate, today - date helper functions
 * filter - a function that returns a custom filter by name
 
 ## Help feature
 
-The "Help" button opens a small window that displays variables (or "attributes") available globally or for each object type. There is also a link to this document.
+The "Help" menu opens a small window that displays the variables (or "attributes") available globally or for each object type. There is also a link to this document.
 
 ![SuperTool](Help-Window.png)
 
@@ -163,15 +172,15 @@ Under the text input fields there is a set of three radio buttons that determine
 ![SuperTool-scopes](SuperTool-scopes.png)
 
 * All objects - all objects in the database of the current type/category
-* Filtered objects - all displayed objects (applicable if a Gramps regular filter is used)
-* Selected objects - only the objects selected by the user (the default)
+* Filtered objects - all displayed objects (applicable if a Gramps regular sidebar filter is used)
+* Selected objects - only the object or objects that the user has selected from the list (the default)
 
 Next are three checkboxes:
 
 ![SuperTool-options](SuperTool-options.png)
 
 * Unwind lists - if any value in the "Expressions to display" is a list then each member of the list will be shown on a separate row
-* Commit changes - any changes to the database are committed only if this is checked
+* Commit changes - any changes to the selected objects are automatically committed if this is checked
 * Summary only - do not display values for every object, only a summary after processing all objects
 
 ## Row limit
@@ -187,13 +196,14 @@ The row limit does not apply when you use the tool in the [command line mode](#r
 
 Double clicking a row in the result list will open the corresponding object for editing (in the Gramps regular edit dialog). This does not work in "Summary only" mode because then results do not correspond to any individual object.
 
-## Download as CSV
+## Download or copy as CSV
 
-The result list can be downloaded as a CSV (Comma Separated Values) file by the "Download CSV" button. There will be a choice of text encoding (utf-8 or iso8859-1/latin1) and value delimiter (comma or semicolon).
+The result list can be downloaded as a CSV (Comma Separated Values) file by the "Download CSV" button (which will appear after a successful query). There will be a choice of text encoding (utf-8 or iso8859-1/latin1) and value delimiter (comma or semicolon).
+There is also a "Copy" button which will copy the result list to clipboard in the CSV format. However, in this case the format always uses utf-8 encoding and comma as delimiter.
 
 ## Title field
 
-The first input field ("Title") gives a name to the query. This title is saved in the script file (see below) and should be a short description of the operation that is performed. The title is also used as the name of the custom filter created with the "Save as filter" button (see below).
+The first input field ("Title") gives a name to the query. This title is saved in the script file (see below) and should be a short description of the operation that is performed. The title is also used as the name of the custom filter created with the [Save as filter](#saving-the-query-as-a-custom-filter) command (see below).
 
 ## Initialization statements
 
@@ -223,13 +233,37 @@ For other categories (Dashboard, Relationships, Charts or Geography) the tool on
 
 The tool will remember the script last executed for each object type. Therefore, when you switch to another view, the contents of the input fields will change.
 
+## Parameterized queries
+
+You can use the global 'getargs' function to ask the user for parameters to a query. This function should be called in the initialization code and the syntax is:
+
+```python
+args = getargs(argname=caption, argname=caption, ...)
+```
+
+and a supplied value can be used in the script by using the 'argname' as a property of the 'args' object, e.g.
+
+```python
+args = getargs(text="Searchtext", limit="Limit")
+print("Limit is", args.limit)
+```
+This will first display a dialog like
+
+![Getargs dialog](SuperTool-getargs.png)
+
+If the user presses "OK" then the script continues normally. 
+The given values are saved and reused as defaults when getargs is called the next time.
+
+If the user presses "Cancel" then the query is canceled:
+
+This feature is quite rudimentary: only simple string values are supported. The feature may be enhanced or changed in the future. It does work with 
+[saved filters](#saving-the-query-as-a-custom-filter) so this is a way to parameterize filters. But canceling a getargs call when called from a filter does not work cleanly - it will throw an unexpected exception.
 
 ## Modifying the database
 
-You can modify the database by supplying suitable Python statements in the "Statements executed for each object" section. To be able to do that you of course have to know which Gramps functions to call to make the modifications correctly. That is, you need to know something about Gramps internals. 
+You can modify the database by supplying suitable Python statements in the "Statements executed for each object" section. To be able to do that you of course have to know which Gramps functions to call to make the modifications correctly. That is, you need to know something about Gramps internals. See e.g. the documentation at https://www.gramps-project.org/docs/gen/gen_lib.html.
 
-
-Note also that the "Commit changes" checkbox MUST be checked if any modifications are to be made (if the called functions do not start a transaction and do the commits themselves). This acts also as a safeguard to protect for any inadvertent modifications. All changes are done under a transaction and they can be undone from the Gramps menu (Edit > Undo).
+All queries are done under a transaction and any changes can be undone from the Gramps menu (Edit > Undo).
 
 For example, this will set the gender of selected people to FEMALE:
 
@@ -253,6 +287,21 @@ However, the recommended way would be to use the corresponding setter method as 
 person.set_gender(Person.FEMALE)
 ```
 
+All changes must also be "committed". If you check the "Commit changes" checkbox then all changes to the processed objects in the current category are committed automatically. You could also explicitly commit the changes by for example
+
+```python
+   db.commit_person(person, trans)
+```
+
+But this is not necessary or recommended. However, if you make changes to *other* objects than the currently selected objects then you must call  a commit method. For example, if you process objects in the Family category and make changes to children of the family then you must commit the changes explicitly, e.g. something like this:
+
+    for child in children:
+        if some-condition:
+            child.obj.set_gender(Person.FEMALE)
+            db.commit_person(child.obj, trans)
+
+Note that the argument to "commit" is the corresponding Proxy object, not the actual Gramps object.
+
 ## Deleting objects
 
 If you delete an object from the database then you should set the object's "commit_ok" attribute to False:
@@ -261,17 +310,25 @@ If you delete an object from the database then you should set the object's "comm
 obj.commit_ok = False
 ```
 
-This is because the tool automatically commits all processed objects if the "Commit changes" checkbox is marked. However, if a deleted object is committed, then it will be re-inserted in the database (this is how Gramps works). Setting <i>commit_ok</i> to False will prevent this.
+This is because the tool automatically commits all processed objects if the "Commit changes" checkbox is marked. However, if a deleted object is committed, then it will be re-inserted in the database (this is how Gramps works). Setting <i>commit_ok</i> to False will prevent this. This attribute is set in the actual Gramps object.
 
 ## Saving the query as a script file
 
-You can save the query in a file with the "Save" button and load it from a file with the "Load" button. With this you can save useful queries and also distribute them to other Gramps users. These files are also called script files. They are text files that can also be edited with an external editor. Be careful not to mix spaces and tabs though.
+The File menu has choices to save the query in a file ("Save") and load it from a file (Open). With this you can save useful queries and also distribute them to other Gramps users. These files are also called script files. They are human-readable text files that can also be edited with an external editor. Be careful not to mix spaces and tabs though.
+
+The script files have the extension ".script" by default.
+
+The "New" command will clear all input fields.
+
+![SuperTool](SuperTool-file-menu.png)
 
 ## Saving the query as a custom filter
 
 You can also save the query as a Gramps custom filter that is then immediately available to use in the Filter gramplet on the Gramps sidebar. The supplied title will be used as the filter name. Naturally the filter does not include the display list (Expressions to display) but it does include the initialization statements, the statements to execute for every object and of course the filter expression itself. 
 
 This can be used to create more complicated filters than is possible with the regular filter editor and built-in rules.
+
+The filters can use the 'getargs' function, see [Parameterized queries](#parameterized-queries).
 
 Note that the custom filter requires that SuperTool is installed - so if you remove this tool then such filters also stop working.
 
@@ -291,7 +348,7 @@ Then in the subsequent sections you can use the filter for example like:
     if my_ancestors(obj) and ...
 ```
 
-
+ 
 ## Running from the command line
 
 The tool can also be run from the command line. In that case you have to first save a query in a script file with the "Save" command. That file is used as input file for the tool. Output will go to a CSV file. Of course you also have to supply a family tree (database) name. For example this command will process the family tree named "example_tree", use the script file "old_people.script" and the output will go to a csv file named old_people.csv:
@@ -337,20 +394,25 @@ This is a bit contradictory, maybe this will change in the future...
 
 Dates can also be compared: 
 
+```python
     # died under the age of one year
-    if death.date < birth.date + 1:
+    if death.date <= birth.date + 1:
         ...
+```
 
 ## Include files
 
-The Python statements can include code from a file with the syntax
+The Python statement parts can include code from a file with the syntax
 
     @include file-name
     
-This code must be the only text on a line and it must start from the first column and contain exactly the text "@include" (with the at sign included). If the file name is not fully qualified (i.e an absolute path) then SuperTool will look at three places:
-* in a folder/directory called "supertool" under the user's home directory
+This code must be the only text on a line and it must start from the first column and contain exactly the text "@include" (in lower case, with the at sign included). If the file name is not fully qualified (i.e an absolute path) then SuperTool will look at three places:
+* in a folder/directory called "supertool" under the user's home directory ($HOME/supertool)
 * in the place where SuperTool is installed (i.e. $HOME/.gramps/gramps51/plugins/SuperTool on Linux)
 * the current directory for the Gramps process (usually the user's home directory)
+
+However, the first directory can be changed from [settings](#settings)
+.
 
 So it is intended that the user can store often used include files in her own "supertool" folder.
 
@@ -358,11 +420,17 @@ The text from the specified file is included 'as-is' to the point where the incl
 
 The included code cannot contain @include statements.
 
-This is intended to allow including possibly complex auxiliary functions without cluttering the user interface. The included code naturally has access to all pre-defined variables. The SuperTool installation will contain a few include files with generally useful functions. They will be documented in the reference section below.
+This is intended to allow including possibly complex auxiliary functions without cluttering the user interface. The included code naturally has access to all pre-defined variables. The SuperTool installation will eventually contain a few include files with generally useful functions. 
 
-## Changing font
+## Settings
 
-The tool has a button that can be used to change the display font for the tool's user interface. The screenshots above were taken before the addition of the font button.
+The Settings menu opens a settings dialog where you can change two values:
+* the font of the user interface
+* the default folder/directory for the [@include files](#include-files)
+
+If you change the directory for the @include files then you should move all existing files to the new directory. Otherwise scripts (and filters) that use the files do not work anymore.
+
+![Settings](SuperTool-settings.png)
 
 ## More examples
 
@@ -465,6 +533,7 @@ obj                  | This Gramps Note object (same as 'note')   | Note
 self                 | This NoteProxy object                      | NoteProxy
 tags                 | List of tags as strings                    | list of strings
 text                 | Text of the note                           | string
+type                 | Type of the note                           | string
 
 
 ### People
@@ -551,11 +620,15 @@ property             | description                                              
 -------------------- | -----------------------------------------------------------------------------------   | 
 db                   | Database object                                                                       | 
 dbstate              | Database state  object                                                                | 
-makedate             | Function to construct a date literal; e.g. makedate(1800, 12, 31) or makedate(1800)   | 
-uniq                 | Function that returns unique elements from a list                                     | 
-flatten              | Function that returns elements from a list of lists                                   | 
-today                | Function that returns today's date                                                    |
 filter               | Function that returns a custom filter by name                                         | 
+flatten              | Function that returns elements from nested lists                                      | 
+getargs              | Function that asks the user for parameters to be used in the query                    | 
+makedate             | Function to construct a date literal; e.g. makedate(1800, 12, 31) or makedate(1800)   | 
+namespace            | Category, e.g. 'Person'                                                               |
+today                | Function that returns today's date                                                    |
+trans                | Current transaction                                                                   |
+uistate              | UI state  object                                                                      | 
+uniq                 | Function that returns unique elements from a list                                     | 
 
 ### --
 

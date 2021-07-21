@@ -58,6 +58,8 @@ from gramps.gen.filters import FilterList
 
 _ = glocale.translation.gettext
 
+import supertool_utils
+
 gender_map = {
     Person.MALE: "M",
     Person.FEMALE: "F",
@@ -100,6 +102,7 @@ class Proxy:
 
     def __lt__(self, other):
         return False
+
 
     @listproperty
     def tags(self):
@@ -209,6 +212,11 @@ class NoteProxy(Proxy):
         self.obj = self.note
         self.gramps_id = self.obj.gramps_id
         self.text = self.obj.get()
+        self.type = self.obj.get_type().xml_str()
+
+    def _commit(self, db, trans):
+        db.commit_note(self.obj, trans)
+        
 
 
 class CitationProxy(Proxy, AttributeProxy):
@@ -225,6 +233,10 @@ class CitationProxy(Proxy, AttributeProxy):
         self.confidence = self.obj.confidence
         self.page = self.obj.page
         # self.source = SourceProxy(self.db, self.obj.source_handle)
+
+    def _commit(self, db, trans):
+        db.commit_citation(self.obj, trans)
+        
 
     @property
     def source(self):
@@ -273,6 +285,9 @@ class SourceProxy(Proxy, AttributeProxy):
         self.abbrev = self.obj.abbrev
         self.pubinfo = self.obj.pubinfo
 
+    def _commit(self, db, trans):
+        db.commit_source(self.obj, trans)
+        
     @listproperty
     def repositories(self):
         for reporef in self.source.get_reporef_list():
@@ -305,6 +320,9 @@ class RepositoryProxy(Proxy):
         self.name = self.obj.name
         self.type = self.obj.type.xml_str()
 
+    def _commit(self, db, trans):
+        db.commit_repository(self.obj, trans)
+        
     @listproperty
     def sources(self):
         for _, handle in self.db.find_backlink_handles(
@@ -333,6 +351,9 @@ class PlaceProxy(CommonProxy):
         self.lat = self.obj.lat
         self.long = self.obj.long
 
+    def _commit(self, db, trans):
+        db.commit_place(self.obj, trans)
+        
     @property
     def name(self):
         placename = self.place.get_name()
@@ -382,6 +403,10 @@ class EventProxy(CommonProxy, AttributeProxy):
         self.date = DateProxy(self.event.get_date_object())
         self.description = self.event.description
         self.role = role
+
+    def _commit(self, db, trans):
+        db.commit_event(self.obj, trans)
+        
 
     @property
     def place(self):
@@ -448,6 +473,9 @@ class PersonProxy(CommonProxy, AttributeProxy):
         self.obj = self.person
         self.gramps_id = self.person.gramps_id
 
+    def _commit(self, db, trans):
+        db.commit_person(self.obj, trans)
+        
     @property
     def name(self):
         return name_displayer.display(self.person)
@@ -516,6 +544,9 @@ class FamilyProxy(CommonProxy, AttributeProxy):
         self.gramps_id = self.family.gramps_id
         self.reltype = self.family.get_relationship().xml_str()
 
+    def _commit(self, db, trans):
+        db.commit_family(self.obj, trans)
+
     @listproperty
     def events(self):
         for eventref in self.family.get_event_ref_list():
@@ -558,6 +589,8 @@ class MediaProxy(CommonProxy, AttributeProxy):
         self.checksum = self.media.checksum
         self.date = DateProxy(self.media.date)
 
+    def _commit(self, db, trans):
+        db.commit_media(self.obj, trans)
 
 def uniq(items):
     return list(set(items))
@@ -580,10 +613,25 @@ def size(x):
 
 
 @gentolist
-def flatten(lists):
+def old_flatten(lists):
     for sublist in lists:
         for item in sublist:
             yield item
+
+from types import GeneratorType
+
+@gentolist
+def flatten(a):
+    if type(a) in [list, GeneratorType]:
+        for x in a:
+            yield from flatten(x)
+    else:
+        yield a
+
+def commit(db, trans, proxyobj): # not used, possible future use
+    print("commit", trans, proxyobj.name)
+    if trans is not None:
+        proxyobj._commit(db, trans)
 
 
 class Filterfactory:
@@ -624,48 +672,6 @@ class DummyTxn:
 
         self.txn = _Txn
 
-
-def find_fullname(fname):
-    TOOL_DIR = "supertool"
-    from gramps.gen.const import USER_HOME
-
-    mydir = os.path.split(__file__)[0]
-    userdir = os.path.join(USER_HOME, TOOL_DIR)
-    fullnames = []
-    for dirname in [userdir, mydir]:
-        fullname = os.path.join(dirname, fname)
-        fullname = os.path.abspath(fullname)
-        if fullname not in fullnames:
-            fullnames.append(fullname)
-        if os.path.exists(fullname):
-            return fullname
-    fullname = os.path.abspath(fname)
-    if fullname not in fullnames:
-        fullnames.append(fullname)
-    if os.path.exists(fullname):
-        return fullname
-
-    msg = "Include file '{}' not found; looked at\n".format(fname)
-    msg += "\n".join(["- " + name for name in fullnames])
-    raise SupertoolException(msg)
-
-
-def process_includes(code):
-    newlines = []
-    for line in code.splitlines(keepends=True):
-        parts = line.split(maxsplit=1)
-        if len(parts) > 0 and parts[0] == "@include":
-            if len(parts) == 1:
-                raise SupertoolException("Include file name missing")
-            fname = parts[1].strip()
-            fullname = find_fullname(fname)
-            for line2 in open(fullname):
-                newlines.append(line2)
-        else:
-            newlines.append(line)
-    return "".join(newlines)
-
-
 def execute(dbstate, obj, code, proxyclass, envvars=None, exectype=None):
     env = dict(
         uniq=uniq,
@@ -696,6 +702,8 @@ def execute(dbstate, obj, code, proxyclass, envvars=None, exectype=None):
         EventType=EventType,
         Media=Media,
         DummyTxn=DummyTxn,
+        #commit=functools.partial(commit, dbstate.db, envvars["trans"]),
+        getargs=supertool_utils.getargs_dialog,
     )
     if obj:
         p = proxyclass(dbstate.db, obj.handle, obj)
@@ -715,10 +723,10 @@ def execute(dbstate, obj, code, proxyclass, envvars=None, exectype=None):
         env.update(envvars)
     env["env"] = env
     if exectype == "exec":
-        code = process_includes(code)
+        #code = process_includes(code)
         res = exec(code, env, env)
     else:
-        code = code.replace("\n", " ")
+        #code = code.replace("\n", " ")
         res = eval(code, env, env)
     return res, env
 
