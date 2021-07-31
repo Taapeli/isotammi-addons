@@ -232,6 +232,7 @@ class GrampsEngine:
         query,
         step=None,
     ):
+        # type: (DbState, DisplayState, Category, List[str], Query, Callable) -> None
         self.dbstate = dbstate
         self.db = dbstate.db
         self.uistate = uistate
@@ -309,7 +310,7 @@ class GrampsEngine:
                     yield obj, env, [obj.gramps_id] + values
 
     def get_values(self, trans):
-        # type: (dict) -> Generator
+        # type: (DbTxn) -> Generator
         self.trans = trans
 
         #         if not self.category.execute_func:
