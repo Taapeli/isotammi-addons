@@ -793,11 +793,6 @@ class SuperTool(ManagedWindow):
 
         choose_file_dialog.destroy()
 
-    def main(self):
-        # type: () -> None
-        if self.uistate.viewmanager.active_page:
-            self.category_name = self.uistate.viewmanager.active_page.get_category()
-            self.loadconfig()
 
     def clear(self, _widget):
         # type: (Any) -> None
