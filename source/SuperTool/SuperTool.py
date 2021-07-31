@@ -284,40 +284,43 @@ class GrampsEngine:
             env.update(init_env)
             obj = self.category.getfunc(handle)
             obj.commit_ok = True
-            if self.statements_x:
-                value, env = self.category.execute_func(
-                    # self.dbstate, obj, self.query.statements, env, "exec"
-                    self.dbstate,
-                    obj,
-                    self.statements_x,
-                    env,
-                    "exec",
-                )
-
-            if self.filter_x:
-                # ok, env = self.evaluate_condition(obj, self.query.filter, env)
-                ok, env = self.evaluate_condition(obj, self.filter_x, env)
-                if not ok:
-                    continue
-
-            if self.query.commit_changes and obj.commit_ok:
-                self.category.commitfunc(obj, self.trans)
-
-            self.object_count += 1
-            if self.expressions_x:
-                res, env = self.category.execute_func(
-                    #                   self.dbstate, obj, self.query.expressions, env
-                    self.dbstate,
-                    obj,
-                    self.expressions_x,
-                    env,
-                )
-                if type(res) != tuple:
-                    res = (res,)
-                for values in self.generate_rows(res):
-                    values.append(handle)
-                    yield obj, env, [obj.gramps_id] + values
-
+            try:
+                if self.statements_x:
+                    value, env = self.category.execute_func(
+                        # self.dbstate, obj, self.query.statements, env, "exec"
+                        self.dbstate,
+                        obj,
+                        self.statements_x,
+                        env,
+                        "exec",
+                    )
+    
+                if self.filter_x:
+                    # ok, env = self.evaluate_condition(obj, self.query.filter, env)
+                    ok, env = self.evaluate_condition(obj, self.filter_x, env)
+                    if not ok:
+                        continue
+    
+                if self.query.commit_changes and obj.commit_ok:
+                    self.category.commitfunc(obj, self.trans)
+    
+                self.object_count += 1
+                if self.expressions_x:
+                    res, env = self.category.execute_func(
+                        self.dbstate,
+                        obj,
+                        self.expressions_x,
+                        env,
+                    )
+                    if type(res) != tuple:
+                        res = (res,)
+                    for values in self.generate_rows(res):
+                        values.append(handle)
+                        yield obj, env, [obj.gramps_id] + values
+            except Exception as e:
+                e.gramps_id = obj.gramps_id
+                raise e
+            
     def get_values(self, trans):
         # type: (DbTxn) -> Generator
         self.trans = trans
@@ -1061,6 +1064,8 @@ class SuperTool(ManagedWindow):
                 msglines = lines[-3:]
             else:
                 msglines = [str(e)]
+            if hasattr(e, "gramps_id"):
+                msglines.append("(while processing " + e.gramps_id + ")")
             errortext = "\n".join(msglines)
             self.set_error(errortext)
 
