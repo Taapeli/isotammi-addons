@@ -90,9 +90,10 @@ config.register("defaults.encoding", "utf-8")
 config.register("defaults.delimiter", "comma")
 config.register("defaults.font", "")
 config.register("defaults.last_filename", "")
-config.register("defaults.include_location","")
+config.register("defaults.include_location", "")
 
 SCRIPTFILE_EXTENSION = ".script"
+
 
 def get_text(textview):
     buf = textview.get_buffer()
@@ -240,11 +241,12 @@ class GrampsEngine:
         self.selected_handles = selected_handles
         self.query = query
         self.step = step
-        self.initial_statements_x = compile_statements(self.query.initial_statements,"initial_statements")
-        self.statements_x = compile_statements(self.query.statements,"statements")
-        self.filter_x = compile_expression(self.query.filter,"filter")
-        self.expressions_x = compile_expression(self.query.expressions,"expressions")
-            
+        self.initial_statements_x = compile_statements(
+            self.query.initial_statements, "initial_statements"
+        )
+        self.statements_x = compile_statements(self.query.statements, "statements")
+        self.filter_x = compile_expression(self.query.filter, "filter")
+        self.expressions_x = compile_expression(self.query.expressions, "expressions")
 
     def generate_rows(self, res):
         # type: (Tuple[Any,...]) -> Iterator[List[Any]]
@@ -276,7 +278,7 @@ class GrampsEngine:
         self.total_objects = len(self.selected_handles)
         for handle in self.selected_handles:
             if self.step:
-                if self.step(): # user clicked 'Cancel', stop
+                if self.step():  # user clicked 'Cancel', stop
                     return
             env = {}
             env.update(init_env)
@@ -284,12 +286,16 @@ class GrampsEngine:
             obj.commit_ok = True
             if self.statements_x:
                 value, env = self.category.execute_func(
-                    #self.dbstate, obj, self.query.statements, env, "exec"
-                    self.dbstate, obj, self.statements_x, env, "exec"
+                    # self.dbstate, obj, self.query.statements, env, "exec"
+                    self.dbstate,
+                    obj,
+                    self.statements_x,
+                    env,
+                    "exec",
                 )
 
             if self.filter_x:
-                #ok, env = self.evaluate_condition(obj, self.query.filter, env)
+                # ok, env = self.evaluate_condition(obj, self.query.filter, env)
                 ok, env = self.evaluate_condition(obj, self.filter_x, env)
                 if not ok:
                     continue
@@ -300,8 +306,11 @@ class GrampsEngine:
             self.object_count += 1
             if self.expressions_x:
                 res, env = self.category.execute_func(
-#                   self.dbstate, obj, self.query.expressions, env
-                    self.dbstate, obj, self.expressions_x, env
+                    #                   self.dbstate, obj, self.query.expressions, env
+                    self.dbstate,
+                    obj,
+                    self.expressions_x,
+                    env,
                 )
                 if type(res) != tuple:
                     res = (res,)
@@ -355,8 +364,8 @@ class Query:
 
 class ScriptFile:
     # when saving, lines starting with [ or \ are prefixed with a \
-    ESCAPE = "\\" # one backslash
-    
+    ESCAPE = "\\"  # one backslash
+
     def load(self, filename, loadtitle=True):
         # type: (str, bool) -> Query
         query = Query()
@@ -409,7 +418,7 @@ class ScriptFile:
         with open(filename, "w") as f:
             print("[Gramps SuperTool script file]", file=f)
             print("version=1", file=f)
-            print("",file=f)
+            print("", file=f)
             for key, value in data.items():
                 print("[" + key + "]", file=f)
                 lines = value.splitlines()
@@ -706,7 +715,7 @@ class SuperTool(ManagedWindow):
                     delimiter=delimiter,
                 )
                 for row in self.store:
-                    writer.writerow(row[0:-1]) # don't write the handle
+                    writer.writerow(row[0:-1])  # don't write the handle
                 break
 
         choose_file_dialog.destroy()
@@ -720,7 +729,7 @@ class SuperTool(ManagedWindow):
         stringio = io.StringIO()
         writer = csv.writer(stringio)
         for row in self.store:
-            writer.writerow(row[0:-1]) # don't write the handle
+            writer.writerow(row[0:-1])  # don't write the handle
         clipboard.set_text(stringio.getvalue(), -1)
         OkDialog("Info", "Result list copied to clipboard")
 
@@ -876,19 +885,22 @@ class SuperTool(ManagedWindow):
 
     def find_version(self):
         from gramps.gen.plug import PluginRegister
+
         preg = PluginRegister.get_instance()
         pd = preg.get_plugin("SuperTool")
         return pd.version
 
     def __create_gui(self):
         # type: () -> Gtk.Widget
-        glade = Glade(toplevel="main", also_load=["help_window", "adjustment1","save-as"])
+        glade = Glade(
+            toplevel="main", also_load=["help_window", "adjustment1", "save-as"]
+        )
         glade.set_translation_domain(None)
 
         self.title = glade.get_child_object("title")
         self.version = glade.get_child_object("version")
         version = self.find_version()
-        self.version.set_text("v"+version)
+        self.version.set_text("v" + version)
 
         self.label_filter = glade.get_child_object("label_filter")
         self.label_statements = glade.get_child_object("label_statements")
@@ -931,37 +943,43 @@ class SuperTool(ManagedWindow):
         color.to_string()
         self.btn_execute.override_background_color(Gtk.StateFlags.NORMAL, color)
 
-        glade.connect_signals({
-            "new"               : self.clear,
-            "load"              : self.load,
-            "save"              : self.save,
-            "save_as_filter"    : self.save_as_filter,
-            "settings"          : self.settings_dialog,
-            "help"              : self.help,
-            "close"             : self.__close,
-            "about"             : self.show_about_dialog,
-        })
-        
-        self.settings = Glade(toplevel='settings')
-        self.btn_font = glade.get_child_object('btn_font', self.settings.toplevel)
-        self.btn_font.connect("font-set", self.set_font)
-        self.settings.connect_signals({
-            "ok"   : self.save_settings,
-            "cancel"  : self.cancel_settings,
-            #"close"  : self.close_settings,
-        })
+        glade.connect_signals(
+            {
+                "new": self.clear,
+                "load": self.load,
+                "save": self.save,
+                "save_as_filter": self.save_as_filter,
+                "settings": self.settings_dialog,
+                "help": self.help,
+                "close": self.__close,
+                "about": self.show_about_dialog,
+            }
+        )
 
-        self.about_dialog = Glade(toplevel='about').toplevel
+        self.settings = Glade(toplevel="settings")
+        self.btn_font = glade.get_child_object("btn_font", self.settings.toplevel)
+        self.btn_font.connect("font-set", self.set_font)
+        self.settings.connect_signals(
+            {
+                "ok": self.save_settings,
+                "cancel": self.cancel_settings,
+                # "close"  : self.close_settings,
+            }
+        )
+
+        self.about_dialog = Glade(toplevel="about").toplevel
 
         TOOL_DIR = "supertool"
         from gramps.gen.const import USER_HOME
+
         userdir = os.path.join(USER_HOME, TOOL_DIR)
-        include_location_dialog = glade.get_child_object('include_location', self.settings.toplevel)
+        include_location_dialog = glade.get_child_object(
+            "include_location", self.settings.toplevel
+        )
         include_location_dialog.add_shortcut_folder(userdir)
 
         self.btn_csv.hide()
         self.listview = None
-
 
         ver = (Gtk.get_major_version(), Gtk.get_minor_version())
         if ver >= (3, 22):
@@ -979,23 +997,23 @@ class SuperTool(ManagedWindow):
     def show_about_dialog(self, widget):
         rsp = self.about_dialog.run()
         self.about_dialog.hide()
-        
+
     def settings_dialog(self, widget):
         dialog = self.settings.toplevel
         config.load()
         loc = config.get("defaults.include_location")
-        loc_entry = self.settings.get_child_object('include_location')
+        loc_entry = self.settings.get_child_object("include_location")
         loc_entry.set_filename(loc)
         dialog.run()
         self.settings.toplevel.hide()
-        
+
     def save_settings(self, widget):
-        loc_entry = self.settings.get_child_object('include_location')
+        loc_entry = self.settings.get_child_object("include_location")
         loc = loc_entry.get_filename()
-        config.set("defaults.include_location",loc)
+        config.set("defaults.include_location", loc)
         config.save()
         self.settings.toplevel.hide()
-    
+
     def cancel_settings(self, widget):
         self.settings.toplevel.hide()
 
@@ -1015,6 +1033,7 @@ class SuperTool(ManagedWindow):
     def __execute(self, obj):
         # type: (Gtk.Widget) -> None
         from gramps.gen.utils.debug import profile
+
         self.statusmsg.set_text("")
         self.output_window.hide()
         self.btn_csv.hide()
@@ -1031,7 +1050,7 @@ class SuperTool(ManagedWindow):
 
             with DbTxn(txtitle, self.dbstate.db) as self.trans:
                 self.__execute1(query)
-                #profile(self.__execute1, query)
+                # profile(self.__execute1, query)
         except Exception as e:
             traceback.print_exc()
             if isinstance(e, engine.SupertoolException):
@@ -1105,7 +1124,7 @@ class SuperTool(ManagedWindow):
         msg = "Objects: {}/{}; rows: {} ({:.2f}s)".format(
             gramps_engine.object_count, gramps_engine.total_objects, n, t2 - t1
         )
-        #print(msg)
+        # print(msg)
         self.statusmsg.set_text(msg)
         if n > 0:
             self.btn_csv.show()
@@ -1130,7 +1149,7 @@ class SuperTool(ManagedWindow):
         numcols = len(res)
         renderer = Gtk.CellRendererText()
         coltypes = []  # type: List[Union[Type[int],Type[str],Type[float]]]
-        for colnum in range(numcols-1):
+        for colnum in range(numcols - 1):
             if colnum == 0:
                 title = "ID"
                 coltypes.append(str)
@@ -1210,7 +1229,7 @@ class SuperTool(ManagedWindow):
             OkDialog(_("Error"), msg, parent=self.uistate.window)
             return
         filterdb.add(category.objclass, the_filter)
-        #print("added filter", the_filter)
+        # print("added filter", the_filter)
         filterdb.save()
         reload_custom_filters()
         self.uistate.emit("filters-changed", (category.objclass,))
@@ -1246,12 +1265,12 @@ class Tool(tool.Tool):
             print("Script file '{}' does not exist".format(script_filename))
             return
         output_filename = self.options.handler.options_dict.get("output")
-        #print("script_filename:", script_filename)
+        # print("script_filename:", script_filename)
         scriptfile = ScriptFile()
-        #print("scriptfile:", scriptfile)
+        # print("scriptfile:", scriptfile)
         query = scriptfile.load(script_filename)
-        #print("query:", query)
-        #print(self.options.handler.options_dict)
+        # print("query:", query)
+        # print(self.options.handler.options_dict)
         category_name = self.options.handler.options_dict.get("category")
         if not category_name:
             category_name = query.category
@@ -1281,7 +1300,7 @@ class Tool(tool.Tool):
                 else:
                     print(json.dumps(values))
         t2 = time.time()
-        
+
         msg = "Objects: {}/{} ({:.2f}s)".format(
             gramps_engine.object_count, gramps_engine.total_objects, t2 - t1
         )
