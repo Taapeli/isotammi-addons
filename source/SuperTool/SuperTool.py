@@ -501,7 +501,7 @@ class SuperTool(ManagedWindow):
 
     def init(self):
         # type: () -> None
-        window = self.__create_gui()
+        window = self.create_gui()
         self.select_category()
         self.loadconfig()
         # self.load_attributes()
@@ -808,7 +808,7 @@ class SuperTool(ManagedWindow):
         self.commit_checkbox.set_active(False)
         self.summary_checkbox.set_active(False)
 
-    def __close(self, obj):
+    def exit(self, obj):
         self.saveconfig()
         if self.help_win:
             self.help_win.close()
@@ -890,7 +890,7 @@ class SuperTool(ManagedWindow):
         pd = preg.get_plugin("SuperTool")
         return pd.version
 
-    def __create_gui(self):
+    def create_gui(self):
         # type: () -> Gtk.Widget
         glade = Glade(
             toplevel="main", also_load=["help_window", "adjustment1", "save-as"]
@@ -933,7 +933,7 @@ class SuperTool(ManagedWindow):
         self.help_win = None
 
         self.selected_objects.set_active(True)
-        self.btn_execute.connect("clicked", self.__execute)
+        self.btn_execute.connect("clicked", self.execute)
         self.btn_csv.connect("clicked", self.download)
         self.btn_copy.connect("clicked", self.copy)
 
@@ -951,7 +951,7 @@ class SuperTool(ManagedWindow):
                 "save_as_filter": self.save_as_filter,
                 "settings": self.settings_dialog,
                 "help": self.help,
-                "close": self.__close,
+                "close": self.exit,
                 "about": self.show_about_dialog,
             }
         )
@@ -1030,7 +1030,7 @@ class SuperTool(ManagedWindow):
         self.category_name = self.uistate.viewmanager.active_page.get_category()
         self.category = supertool_utils.get_category_info(self.db, self.category_name)
 
-    def __execute(self, obj):
+    def execute(self, obj):
         # type: (Gtk.Widget) -> None
         from gramps.gen.utils.debug import profile
 
@@ -1049,7 +1049,7 @@ class SuperTool(ManagedWindow):
                 txtitle += " ({})".format(self.title.get_text())
 
             with DbTxn(txtitle, self.dbstate.db) as self.trans:
-                self.__execute1(query)
+                self.execute1(query)
                 # profile(self.__execute1, query)
         except Exception as e:
             traceback.print_exc()
@@ -1064,7 +1064,7 @@ class SuperTool(ManagedWindow):
             errortext = "\n".join(msglines)
             self.set_error(errortext)
 
-    def __execute1(self, query):
+    def execute1(self, query):
         # type: (Query) -> None
         self.errormsg.set_text("")
         t1 = time.time()
