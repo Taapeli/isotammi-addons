@@ -239,17 +239,10 @@ class GrampsEngine:
         self.selected_handles = selected_handles
         self.query = query
         self.step = step
-        compile_code = True
-        if compile_code:
-            self.initial_statements_x = compile_statements(self.query.initial_statements,"initial_statements")
-            self.statements_x = compile_statements(self.query.statements,"statements")
-            self.filter_x = compile_expression(self.query.filter,"filter")
-            self.expressions_x = compile_expression(self.query.expressions,"expressions")
-        else:
-            self.initial_statements_x = self.query.initial_statements
-            self.statements_x = self.query.statements
-            self.filter_x = self.query.filter.replace("\n"," ")
-            self.expressions_x = self.query.expressions.replace("\n"," ")
+        self.initial_statements_x = compile_statements(self.query.initial_statements,"initial_statements")
+        self.statements_x = compile_statements(self.query.statements,"statements")
+        self.filter_x = compile_expression(self.query.filter,"filter")
+        self.expressions_x = compile_expression(self.query.expressions,"expressions")
             
 
     def generate_rows(self, res):
