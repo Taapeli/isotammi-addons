@@ -1177,10 +1177,10 @@ class SuperTool(ManagedWindow):
 
         self.store = Gtk.TreeStore(*coltypes)
         self.listview.set_model(self.store)
-        self.listview.connect("button-press-event", self.__button_press)
+        self.listview.connect("button-press-event", self.button_press)
         self.listview.show()
 
-    def __button_press(self, treeview, event):
+    def button_press(self, treeview, event):
         if not self.db.db_is_open:
             return True
         try:  # may fail if clicked too frequently
