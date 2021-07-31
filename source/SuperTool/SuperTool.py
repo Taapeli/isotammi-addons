@@ -674,7 +674,7 @@ class SuperTool(ManagedWindow):
         # type: () -> None
         self.loadstate(self.get_configfile(), loadtitle=False)
 
-    def download(self, obj):
+    def download(self, _widget):
         # type: (Gtk.Widget) -> None
         choose_file_dialog = CsvFileChooserDialog(self.uistate)
         title = self.title.get_text().strip()
@@ -723,7 +723,7 @@ class SuperTool(ManagedWindow):
 
         choose_file_dialog.destroy()
 
-    def copy(self, obj):
+    def copy(self, _widget):
         # type: (Gtk.Widget) -> None
         clipboard = Gtk.Clipboard.get(Gdk.SELECTION_CLIPBOARD)
 
@@ -736,7 +736,7 @@ class SuperTool(ManagedWindow):
         clipboard.set_text(stringio.getvalue(), -1)
         OkDialog("Info", "Result list copied to clipboard")
 
-    def save(self, obj):
+    def save(self, _widget):
         # type: (Gtk.Widget) -> None
         choose_file_dialog = ScriptSaveFileChooserDialog(self.uistate)
         title = self.title.get_text().strip()
@@ -768,7 +768,7 @@ class SuperTool(ManagedWindow):
 
         choose_file_dialog.destroy()
 
-    def load(self, obj):
+    def load(self, _widget):
         # type: (Gtk.Widget) -> None
         choose_file_dialog = ScriptOpenFileChooserDialog(self.uistate)
         choose_file_dialog.set_current_name(
@@ -799,7 +799,7 @@ class SuperTool(ManagedWindow):
             self.category_name = self.uistate.viewmanager.active_page.get_category()
             self.loadconfig()
 
-    def clear(self, obj):
+    def clear(self, _widget):
         # type: (Any) -> None
         self.title.set_text("")
         set_text(self.initial_statements, "")
@@ -811,7 +811,7 @@ class SuperTool(ManagedWindow):
         self.commit_checkbox.set_active(False)
         self.summary_checkbox.set_active(False)
 
-    def exit(self, obj):
+    def exit(self, _widget):
         self.saveconfig()
         if self.help_win:
             self.help_win.close()
@@ -879,7 +879,7 @@ class SuperTool(ManagedWindow):
                 self.help_notebook.set_current_page(page)
             page += 1
 
-    def help(self, obj):
+    def help(self, _widget):
         self.load_help()
         self.help_win = HelpWindow(self.uistate, self.help_notebook)
         font_description = self.btn_font.get_font_desc()
@@ -997,11 +997,11 @@ class SuperTool(ManagedWindow):
 
         return glade.toplevel
 
-    def show_about_dialog(self, widget):
+    def show_about_dialog(self, _widget):
         rsp = self.about_dialog.run()
         self.about_dialog.hide()
 
-    def settings_dialog(self, widget):
+    def settings_dialog(self, _widget):
         dialog = self.settings.toplevel
         config.load()
         loc = config.get("defaults.include_location")
@@ -1010,14 +1010,14 @@ class SuperTool(ManagedWindow):
         dialog.run()
         self.settings.toplevel.hide()
 
-    def save_settings(self, widget):
+    def save_settings(self, _widget):
         loc_entry = self.settings.get_child_object("include_location")
         loc = loc_entry.get_filename()
         config.set("defaults.include_location", loc)
         config.save()
         self.settings.toplevel.hide()
 
-    def cancel_settings(self, widget):
+    def cancel_settings(self, _widget):
         self.settings.toplevel.hide()
 
     def set_font(self, widget):
@@ -1033,7 +1033,7 @@ class SuperTool(ManagedWindow):
         self.category_name = self.uistate.viewmanager.active_page.get_category()
         self.category = supertool_utils.get_category_info(self.db, self.category_name)
 
-    def execute(self, obj):
+    def execute(self, _widget):
         # type: (Gtk.Widget) -> None
         from gramps.gen.utils.debug import profile
 
