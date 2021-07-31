@@ -275,8 +275,8 @@ class GrampsEngine:
         self.total_objects = len(self.selected_handles)
         for handle in self.selected_handles:
             if self.step:
-                if self.step():
-                    raise StopIteration()
+                if self.step(): # user clicked 'Cancel', stop
+                    return
             env = {}
             env.update(init_env)
             obj = self.category.getfunc(handle)
