@@ -63,6 +63,7 @@ from gramps.gen.db.txn import DbTxn
 from gramps.gen.filters._genericfilter import GenericFilterFactory
 from gramps.gen.filters._filterlist import FilterList
 from gramps.gen.filters import reload_custom_filters
+from gramps.gen.plug import PluginRegister
 
 from gramps.gui.dialog import OkDialog
 from gramps.gui.glade import Glade
@@ -489,12 +490,13 @@ class NullTrans:
 
 
 class SuperTool(ManagedWindow):
-    def __init__(self, user, dbstate):
+    def __init__(self, user, dbstate, plugindata):
         ManagedWindow.__init__(self, user.uistate, [], self.__class__, modal=False)
         self.user = user
         self.uistate = user.uistate
         self.dbstate = dbstate
         self.db = dbstate.db
+        self.plugindata = plugindata
         self.csv_filename = None
         self.last_filename = None
         self.getfunc = None
@@ -881,13 +883,6 @@ class SuperTool(ManagedWindow):
         self.help_win.modify_font(font_description)
         self.help_win.show_all()
 
-    def find_version(self):
-        from gramps.gen.plug import PluginRegister
-
-        preg = PluginRegister.get_instance()
-        pd = preg.get_plugin("SuperTool")
-        return pd.version
-
     def create_gui(self):
         # type: () -> Gtk.Widget
         glade = Glade(
@@ -897,8 +892,7 @@ class SuperTool(ManagedWindow):
 
         self.title = glade.get_child_object("title")
         self.version = glade.get_child_object("version")
-        version = self.find_version()
-        self.version.set_text("v" + version)
+        self.version.set_text("v" + self.plugindata.version)
 
         self.label_filter = glade.get_child_object("label_filter")
         self.label_statements = glade.get_child_object("label_statements")
@@ -1251,11 +1245,16 @@ class Tool(tool.Tool):
         self.dbstate = dbstate
         self.db = dbstate.db
         tool.Tool.__init__(self, dbstate, options_class, name)
+        pd = self.get_plugindata(name)
         if not self.uistate:  # CLI mode
             self.run_cli()
             return
-        self.run()
+        self.run(pd)
 
+    def get_plugindata(self, plugin_id):
+        preg = PluginRegister.get_instance()
+        return preg.get_plugin(plugin_id)
+    
     def run_cli(self):
         script_filename = self.options.handler.options_dict["script"]
         if not script_filename:
@@ -1306,9 +1305,9 @@ class Tool(tool.Tool):
         )
         print(msg)
 
-    def run(self):
+    def run(self, plugindata):
         # type: () -> None
-        m = SuperTool(self.user, self.dbstate)
+        m = SuperTool(self.user, self.dbstate, plugindata)
 
 
 # ------------------------------------------------------------------------
