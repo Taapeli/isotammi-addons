@@ -1247,6 +1247,8 @@ class Tool(tool.Tool):
         tool.Tool.__init__(self, dbstate, options_class, name)
         pd = self.get_plugindata(name)
         if not self.uistate:  # CLI mode
+            print()
+            print("SuperTool v" + pd.version)
             self.run_cli()
             return
         self.run(pd)
