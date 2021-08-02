@@ -108,6 +108,7 @@ def rebuild(addon):
     def filter(tarinfo):
         if tarinfo.name.endswith("/__pycache__"): return None
         if tarinfo.name.endswith("~"): return None
+        if tarinfo.name.endswith(".script"): return None
         return tarinfo
     bump_version(addon)
     update_translations(addon)
