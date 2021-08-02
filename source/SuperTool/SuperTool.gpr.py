@@ -43,7 +43,7 @@ register(
     gramps_target_version=major_version,
     status=STABLE,
     fname="SuperTool.py",
-    authors=["KKu"],
+    authors=["Kari Kujansuu"],
     category="Isotammi",
     toolclass="Tool",
     optionclass="Options",
