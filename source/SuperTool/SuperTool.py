@@ -504,316 +504,6 @@ class SuperTool(ManagedWindow):
         self.editfunc = None
         self.init()
 
-    def init(self):
-        # type: () -> None
-        window = self.create_gui()
-        self.select_category()
-        self.loadconfig()
-        # self.load_attributes()
-        self.dbstate.connect("no-database", self.db_closed)
-        self.dbstate.connect("database-changed", self.db_changed)
-        self.uistate.viewmanager.notebook.connect("switch-page", self.pageswitch)
-        self.set_window(window, None, _("SuperTool"))
-        # self.window.set_sensitive(self.category.objclass is not None)
-        # self.btn_help.set_sensitive(True)
-        self.help_loaded = False
-
-        config.load()
-        font = config.get("defaults.font")
-        if font:
-            self.btn_font.set_font(font)
-            font_description = self.btn_font.get_font_desc()
-            self.window.modify_font(font_description)
-        self.last_filename = config.get("defaults.last_filename")
-        self.show()
-        self.check_category()
-
-    def db_closed(self):
-        # type: () -> None
-        if self.listview:
-            self.output_window.remove(self.listview)
-        self.listview = None  # type: Optional[Gtk.TreeView]
-        self.btn_execute.set_sensitive(False)
-
-    def db_changed(self, db):
-        # type: (Any) -> None
-        self.db = self.dbstate.db
-        if db.db_is_open:
-            self.btn_execute.set_sensitive(True)
-        self.statusmsg.set_text("")
-        self.select_category()
-
-    def get_configfile(self):
-        # type: () -> str
-        return __file__[:-3] + "-" + self.category_name + SCRIPTFILE_EXTENSION
-
-    def get_attributes(self, objclass, proxyclass):
-        obj = objclass()
-        for name in dir(obj):
-            if name.startswith("_"):
-                continue
-            attr = getattr(obj, name)
-            #             if type(attr) == types.FunctionType: continue
-            if type(attr) == types.MethodType:
-                continue
-        from unittest import mock
-
-        db = mock.Mock()
-        obj = mock.Mock()
-        p = proxyclass(db, obj.handle, obj)
-
-        for name in dir(proxyclass) + list(
-            p.__dict__.keys()
-        ):  # this contains the @property methods
-            if name.startswith("_"):
-                continue
-            yield name
-
-    def set_error(self, msg):
-        # type: (str) -> None
-        self.errormsg.set_markup(
-            "<span font_family='monospace' color='red' size='larger'>{}</span>".format(
-                msg.replace("<", "&lt;")
-            )
-        )
-
-    def check_category(self):
-        # type: () -> None
-        category_ok = self.category.objclass is not None
-        if category_ok:
-            self.label_filter.show()
-            self.label_statements.show()
-            self.statements.show()
-            self.filter.show()
-        else:
-            # self.set_error("This category ({}) is not supported".format(self.category_name))
-            self.label_filter.hide()
-            self.label_statements.hide()
-            self.statements.hide()
-            self.filter.hide()
-            self.summary_checkbox.set_active(True)
-
-        self.all_objects.set_sensitive(category_ok)
-        self.filtered_objects.set_sensitive(category_ok)
-        self.selected_objects.set_sensitive(category_ok)
-
-        self.summary_checkbox.set_sensitive(category_ok)
-
-    def pageswitch(self, *args):
-        # type: (Any) -> None
-        self.saveconfig()
-        self.select_category()
-        self.loadconfig()
-        if self.listview:
-            self.output_window.remove(self.listview)
-            self.btn_csv.hide()
-            self.btn_copy.hide()
-        self.statusmsg.set_text("")
-        self.check_category()
-
-    def savestate(self, filename):
-        # type: (str) -> Query
-        query = Query()
-        query.category = self.category_name
-        query.title = self.title.get_text()
-        if self.selected_objects.get_active():
-            scope = "selected"
-        elif self.all_objects.get_active():
-            scope = "all"
-        elif self.filtered_objects.get_active():
-            scope = "filtered"
-        query.scope = scope
-        query.expressions = get_text(self.expressions)
-        query.filter = get_text(self.filter)
-        query.statements = get_text(self.statements)
-        query.initial_statements = get_text(self.initial_statements)
-
-        query.unwind_lists = self.unwind_lists.get_active()
-        query.commit_changes = self.commit_checkbox.get_active()
-        query.summary_only = self.summary_checkbox.get_active()
-
-        scriptfile = ScriptFile()
-        scriptfile.save(filename, query)
-        return query
-        # self.writedata(filename, data)
-
-    def loadstate(self, filename, loadtitle=True):
-        # type: (str, bool) -> None
-        scriptfile = ScriptFile()
-        query = scriptfile.load(filename)
-        if query.category and query.category != self.category_name:
-            msg = "Warning: saved query is for category '{}'. Current category is '{}'."
-            msg = msg.format(query.category, self.category_name)
-            OkDialog(
-                _("Warning"),
-                msg,
-                parent=self.uistate.window,
-            )
-
-        if not query.title and loadtitle:
-            name = os.path.split(filename)[1]
-            query.title = name.replace(SCRIPTFILE_EXTENSION, "")
-        self.title.set_text(query.title)
-
-        set_text(self.expressions, query.expressions)
-        set_text(self.filter, query.filter)
-        set_text(self.statements, query.statements)
-        set_text(self.initial_statements, query.initial_statements)
-        scope = query.scope
-        self.all_objects.set_active(scope == "all")
-        self.filtered_objects.set_active(scope == "filtered_")
-        self.selected_objects.set_active(scope == "selected")
-
-        self.unwind_lists.set_active(query.unwind_lists)
-        self.commit_checkbox.set_active(query.commit_changes)
-        self.summary_checkbox.set_active(query.summary_only)
-
-    def saveconfig(self):
-        # type: () -> Query
-        return self.savestate(self.get_configfile())
-
-    def loadconfig(self):
-        # type: () -> None
-        self.loadstate(self.get_configfile(), loadtitle=False)
-
-    def download(self, _widget):
-        # type: (Gtk.Widget) -> None
-        choose_file_dialog = CsvFileChooserDialog(self.uistate)
-        title = self.title.get_text().strip()
-        if title:
-            fname = title + ".csv"
-        else:
-            fname = self.category_name + ".csv"
-
-        choose_file_dialog.set_current_name(fname)
-        if self.csv_filename:
-            if self.title.get_text():
-                dirname = os.path.split(self.csv_filename)[0]
-                self.csv_filename = os.path.join(dirname, fname)
-            choose_file_dialog.set_filename(self.csv_filename)
-
-        while True:
-            response = choose_file_dialog.run()
-            if response == Gtk.ResponseType.CANCEL:
-                break
-            elif response == Gtk.ResponseType.DELETE_EVENT:
-                break
-            elif response == Gtk.ResponseType.OK:
-                self.csv_filename = choose_file_dialog.get_filename()
-                delimiter = ","
-                if choose_file_dialog.cb_comma.get_active():
-                    delimiter = ","
-                if choose_file_dialog.cb_semicolon.get_active():
-                    delimiter = ";"
-                encoding = "utf-8"
-                if choose_file_dialog.cb_utf8.get_active():
-                    encoding = "utf-8"
-                if choose_file_dialog.cb_iso8859_1.get_active():
-                    encoding = "iso8859-1"
-
-                config.set("defaults.encoding", encoding)
-                config.set("defaults.delimiter", delimiter)
-                config.save()
-
-                writer = csv.writer(
-                    open(self.csv_filename, "w", encoding=encoding, newline=""),
-                    delimiter=delimiter,
-                )
-                for row in self.store:
-                    writer.writerow(row[0:-1])  # don't write the handle
-                break
-
-        choose_file_dialog.destroy()
-
-    def copy(self, _widget):
-        # type: (Gtk.Widget) -> None
-        clipboard = Gtk.Clipboard.get(Gdk.SELECTION_CLIPBOARD)
-
-        import io
-
-        stringio = io.StringIO()
-        writer = csv.writer(stringio)
-        for row in self.store:
-            writer.writerow(row[0:-1])  # don't write the handle
-        clipboard.set_text(stringio.getvalue(), -1)
-        OkDialog("Info", "Result list copied to clipboard")
-
-    def save(self, _widget):
-        # type: (Gtk.Widget) -> None
-        choose_file_dialog = ScriptSaveFileChooserDialog(self.uistate)
-        title = self.title.get_text().strip()
-        if title:
-            fname = title + SCRIPTFILE_EXTENSION
-        else:
-            fname = self.category_name + "-query" + SCRIPTFILE_EXTENSION
-        choose_file_dialog.set_current_name(fname)
-        choose_file_dialog.set_do_overwrite_confirmation(True)
-        if self.last_filename:
-            if self.title.get_text():
-                dirname = os.path.split(self.last_filename)[0]
-                self.last_filename = os.path.join(dirname, fname)
-            choose_file_dialog.set_filename(self.last_filename)
-
-        while True:
-            response = choose_file_dialog.run()
-            if response == Gtk.ResponseType.CANCEL:
-                break
-            elif response == Gtk.ResponseType.DELETE_EVENT:
-                break
-            elif response == Gtk.ResponseType.OK:
-                filename = choose_file_dialog.get_filename()
-                self.savestate(filename)
-                self.last_filename = filename
-                config.set("defaults.last_filename", filename)
-                config.save()
-                break
-
-        choose_file_dialog.destroy()
-
-    def load(self, _widget):
-        # type: (Gtk.Widget) -> None
-        choose_file_dialog = ScriptOpenFileChooserDialog(self.uistate)
-        choose_file_dialog.set_current_name(
-            self.category_name + "-query" + SCRIPTFILE_EXTENSION
-        )
-        if self.last_filename:
-            choose_file_dialog.set_filename(self.last_filename)
-
-        while True:
-            response = choose_file_dialog.run()
-            if response == Gtk.ResponseType.CANCEL:
-                break
-            elif response == Gtk.ResponseType.DELETE_EVENT:
-                break
-            elif response == Gtk.ResponseType.OK:
-                filename = choose_file_dialog.get_filename()
-                self.loadstate(filename)
-                self.last_filename = filename
-                config.set("defaults.last_filename", filename)
-                config.save()
-                break
-
-        choose_file_dialog.destroy()
-
-
-    def clear(self, _widget):
-        # type: (Any) -> None
-        self.title.set_text("")
-        set_text(self.initial_statements, "")
-        set_text(self.statements, "")
-        set_text(self.filter, "")
-        set_text(self.expressions, "")
-        self.selected_objects.set_active(True)
-        self.unwind_lists.set_active(False)
-        self.commit_checkbox.set_active(False)
-        self.summary_checkbox.set_active(False)
-
-    def exit(self, _widget):
-        self.saveconfig()
-        if self.help_win:
-            self.help_win.close()
-        self.close()
-
     def build_help(self):  # temporary helper; not used
         self.help_notebook = Gtk.Notebook()
         page = 0
@@ -850,38 +540,102 @@ class SuperTool(ManagedWindow):
         self.help_loaded = True
         print(json.dumps(data, indent=4))
 
-    def load_help(self):
-        dirname = os.path.split(__file__)[0]
-        fname = os.path.join(dirname, "helptext.txt")
-        data = json.loads(open(fname).read())
-        self.help_notebook = Gtk.Notebook()
-        page = 0
-        for cat_name in ["global"] + supertool_utils.get_categories():
-            grid = Gtk.Grid()
-            grid.set_column_spacing(10)
-            row = 0
-            col = 0
-            for name, desc in sorted(data[cat_name]):
-                label = Gtk.Label(label=name)
-                label.set_halign(Gtk.Align.START)
-                grid.attach(label, col, row, 1, 1)
+    def build_listview(self, res):
+        # type: (Tuple[Union[int,str,float],...]) -> None
+        self.listview = Gtk.TreeView()
+        numcols = len(res)
+        renderer = Gtk.CellRendererText()
+        coltypes = []  # type: List[Union[Type[int],Type[str],Type[float]]]
+        for colnum in range(numcols - 1):
+            if colnum == 0:
+                title = "ID"
+                coltypes.append(str)
+            else:
+                title = "Value %s" % colnum
+                coltype = type(res[colnum])
+                if coltype in {int, str, float}:
+                    coltypes.append(coltype)
+                else:
+                    coltypes.append(str)
+            col = Gtk.TreeViewColumn(title, renderer, text=colnum, weight_set=True)
+            col.set_clickable(True)
+            col.set_resizable(True)
+            col.set_sort_column_id(colnum)
+            self.listview.append_column(col)
+        coltypes.append(str)  # for handle
 
-                label = Gtk.Label(label=desc)
-                label.set_halign(Gtk.Align.START)
-                grid.attach(label, col + 1, row, 1, 1)
-                row += 1
-            self.help_notebook.append_page(grid, Gtk.Label(label=cat_name))
-            grid.show()
-            if cat_name == self.category_name:
-                self.help_notebook.set_current_page(page)
-            page += 1
+        self.output_window.set_size_request(600, 400)
+        self.output_window.add(self.listview)
 
-    def help(self, _widget):
-        self.load_help()
-        self.help_win = HelpWindow(self.uistate, self.help_notebook)
-        font_description = self.btn_font.get_font_desc()
-        self.help_win.modify_font(font_description)
-        self.help_win.show_all()
+        self.store = Gtk.TreeStore(*coltypes)
+        self.listview.set_model(self.store)
+        self.listview.connect("button-press-event", self.button_press)
+        self.listview.show()
+
+    def button_press(self, treeview, event):
+        if not self.db.db_is_open:
+            return True
+        try:  # may fail if clicked too frequently
+            if event.type == Gdk.EventType.DOUBLE_BUTTON_PRESS and event.button == 1:
+                model, treeiter = self.listview.get_selection().get_selected()
+                row = list(model[treeiter])
+                handle = row[-1]
+                obj = self.category.getfunc(handle)
+                self.category.editfunc(self.dbstate, self.uistate, [], obj)
+                return True
+        except:
+            traceback.print_exc()
+        return False
+
+    def cancel_settings(self, _widget):
+        self.settings.toplevel.hide()
+
+    def check_category(self):
+        # type: () -> None
+        category_ok = self.category.objclass is not None
+        if category_ok:
+            self.label_filter.show()
+            self.label_statements.show()
+            self.statements.show()
+            self.filter.show()
+        else:
+            # self.set_error("This category ({}) is not supported".format(self.category_name))
+            self.label_filter.hide()
+            self.label_statements.hide()
+            self.statements.hide()
+            self.filter.hide()
+            self.summary_checkbox.set_active(True)
+
+        self.all_objects.set_sensitive(category_ok)
+        self.filtered_objects.set_sensitive(category_ok)
+        self.selected_objects.set_sensitive(category_ok)
+
+        self.summary_checkbox.set_sensitive(category_ok)
+
+    def clear(self, _widget):
+        # type: (Any) -> None
+        self.title.set_text("")
+        set_text(self.initial_statements, "")
+        set_text(self.statements, "")
+        set_text(self.filter, "")
+        set_text(self.expressions, "")
+        self.selected_objects.set_active(True)
+        self.unwind_lists.set_active(False)
+        self.commit_checkbox.set_active(False)
+        self.summary_checkbox.set_active(False)
+
+    def copy(self, _widget):
+        # type: (Gtk.Widget) -> None
+        clipboard = Gtk.Clipboard.get(Gdk.SELECTION_CLIPBOARD)
+
+        import io
+
+        stringio = io.StringIO()
+        writer = csv.writer(stringio)
+        for row in self.store:
+            writer.writerow(row[0:-1])  # don't write the handle
+        clipboard.set_text(stringio.getvalue(), -1)
+        OkDialog("Info", "Result list copied to clipboard")
 
     def create_gui(self):
         # type: () -> Gtk.Widget
@@ -987,41 +741,69 @@ class SuperTool(ManagedWindow):
 
         return glade.toplevel
 
-    def show_about_dialog(self, _widget):
-        rsp = self.about_dialog.run()
-        self.about_dialog.hide()
+    def db_changed(self, db):
+        # type: (Any) -> None
+        self.db = self.dbstate.db
+        if db.db_is_open:
+            self.btn_execute.set_sensitive(True)
+        self.statusmsg.set_text("")
+        self.select_category()
 
-    def settings_dialog(self, _widget):
-        dialog = self.settings.toplevel
-        config.load()
-        loc = config.get("defaults.include_location")
-        loc_entry = self.settings.get_child_object("include_location")
-        loc_entry.set_filename(loc)
-        dialog.run()
-        self.settings.toplevel.hide()
-
-    def save_settings(self, _widget):
-        loc_entry = self.settings.get_child_object("include_location")
-        loc = loc_entry.get_filename()
-        config.set("defaults.include_location", loc)
-        config.save()
-        self.settings.toplevel.hide()
-
-    def cancel_settings(self, _widget):
-        self.settings.toplevel.hide()
-
-    def set_font(self, widget):
-        font = widget.get_font()
-        font_description = widget.get_font_desc()
-        self.window.modify_font(font_description)
-        config.set("defaults.font", font)
-        config.save()
-
-    def select_category(self):
+    def db_closed(self):
         # type: () -> None
-        self.execute_func = None
-        self.category_name = self.uistate.viewmanager.active_page.get_category()
-        self.category = supertool_utils.get_category_info(self.db, self.category_name)
+        if self.listview:
+            self.output_window.remove(self.listview)
+        self.listview = None  # type: Optional[Gtk.TreeView]
+        self.btn_execute.set_sensitive(False)
+
+    def download(self, _widget):
+        # type: (Gtk.Widget) -> None
+        choose_file_dialog = CsvFileChooserDialog(self.uistate)
+        title = self.title.get_text().strip()
+        if title:
+            fname = title + ".csv"
+        else:
+            fname = self.category_name + ".csv"
+
+        choose_file_dialog.set_current_name(fname)
+        if self.csv_filename:
+            if self.title.get_text():
+                dirname = os.path.split(self.csv_filename)[0]
+                self.csv_filename = os.path.join(dirname, fname)
+            choose_file_dialog.set_filename(self.csv_filename)
+
+        while True:
+            response = choose_file_dialog.run()
+            if response == Gtk.ResponseType.CANCEL:
+                break
+            elif response == Gtk.ResponseType.DELETE_EVENT:
+                break
+            elif response == Gtk.ResponseType.OK:
+                self.csv_filename = choose_file_dialog.get_filename()
+                delimiter = ","
+                if choose_file_dialog.cb_comma.get_active():
+                    delimiter = ","
+                if choose_file_dialog.cb_semicolon.get_active():
+                    delimiter = ";"
+                encoding = "utf-8"
+                if choose_file_dialog.cb_utf8.get_active():
+                    encoding = "utf-8"
+                if choose_file_dialog.cb_iso8859_1.get_active():
+                    encoding = "iso8859-1"
+
+                config.set("defaults.encoding", encoding)
+                config.set("defaults.delimiter", delimiter)
+                config.save()
+
+                writer = csv.writer(
+                    open(self.csv_filename, "w", encoding=encoding, newline=""),
+                    delimiter=delimiter,
+                )
+                for row in self.store:
+                    writer.writerow(row[0:-1])  # don't write the handle
+                break
+
+        choose_file_dialog.destroy()
 
     def execute(self, _widget):
         # type: (Gtk.Widget) -> None
@@ -1129,73 +911,155 @@ class SuperTool(ManagedWindow):
             self.btn_copy.hide()
         self.output_window.show()
 
-    @contextmanager
-    def progress(self, title1, title2, count):
-        self._progress = ProgressMeter(title1, can_cancel=True)
-        self._progress.set_pass(title2, count, ProgressMeter.MODE_FRACTION)
-        try:
-            yield self._progress.step
-        finally:
-            self._progress.close()
+    def exit(self, _widget):
+        self.saveconfig()
+        if self.help_win:
+            self.help_win.close()
+        self.close()
 
-    def build_listview(self, res):
-        # type: (Tuple[Union[int,str,float],...]) -> None
-        self.listview = Gtk.TreeView()
-        numcols = len(res)
-        renderer = Gtk.CellRendererText()
-        coltypes = []  # type: List[Union[Type[int],Type[str],Type[float]]]
-        for colnum in range(numcols - 1):
-            if colnum == 0:
-                title = "ID"
-                coltypes.append(str)
-            else:
-                title = "Value %s" % colnum
-                coltype = type(res[colnum])
-                if coltype in {int, str, float}:
-                    coltypes.append(coltype)
-                else:
-                    coltypes.append(str)
-            col = Gtk.TreeViewColumn(title, renderer, text=colnum, weight_set=True)
-            col.set_clickable(True)
-            col.set_resizable(True)
-            col.set_sort_column_id(colnum)
-            self.listview.append_column(col)
-        coltypes.append(str)  # for handle
+    def get_attributes(self, objclass, proxyclass):
+        obj = objclass()
+        for name in dir(obj):
+            if name.startswith("_"):
+                continue
+            attr = getattr(obj, name)
+            #             if type(attr) == types.FunctionType: continue
+            if type(attr) == types.MethodType:
+                continue
+        from unittest import mock
 
-        self.output_window.set_size_request(600, 400)
-        self.output_window.add(self.listview)
+        db = mock.Mock()
+        obj = mock.Mock()
+        p = proxyclass(db, obj.handle, obj)
 
-        self.store = Gtk.TreeStore(*coltypes)
-        self.listview.set_model(self.store)
-        self.listview.connect("button-press-event", self.button_press)
-        self.listview.show()
+        for name in dir(proxyclass) + list(
+            p.__dict__.keys()
+        ):  # this contains the @property methods
+            if name.startswith("_"):
+                continue
+            yield name
 
-    def button_press(self, treeview, event):
-        if not self.db.db_is_open:
-            return True
-        try:  # may fail if clicked too frequently
-            if event.type == Gdk.EventType.DOUBLE_BUTTON_PRESS and event.button == 1:
-                model, treeiter = self.listview.get_selection().get_selected()
-                row = list(model[treeiter])
-                handle = row[-1]
-                obj = self.category.getfunc(handle)
-                self.category.editfunc(self.dbstate, self.uistate, [], obj)
-                return True
-        except:
-            traceback.print_exc()
-        return False
+    def get_configfile(self):
+        # type: () -> str
+        return __file__[:-3] + "-" + self.category_name + SCRIPTFILE_EXTENSION
 
-    def save_as_filter(self, obj):
-        filtername = self.title.get_text().strip()
-        filtertext = get_text(self.filter).strip()
-        initial_statements = get_text(self.initial_statements).strip()
-        initial_statements = initial_statements.replace("\n", "<br>")
+    def help(self, _widget):
+        self.load_help()
+        self.help_win = HelpWindow(self.uistate, self.help_notebook)
+        font_description = self.btn_font.get_font_desc()
+        self.help_win.modify_font(font_description)
+        self.help_win.show_all()
 
-        statements = get_text(self.statements).strip()
-        statements = statements.replace("\n", "<br>")
-        self.makefilter(
-            self.category, filtername, filtertext, initial_statements, statements
+    def init(self):
+        # type: () -> None
+        window = self.create_gui()
+        self.select_category()
+        self.loadconfig()
+        # self.load_attributes()
+        self.dbstate.connect("no-database", self.db_closed)
+        self.dbstate.connect("database-changed", self.db_changed)
+        self.uistate.viewmanager.notebook.connect("switch-page", self.pageswitch)
+        self.set_window(window, None, _("SuperTool"))
+        # self.window.set_sensitive(self.category.objclass is not None)
+        # self.btn_help.set_sensitive(True)
+        self.help_loaded = False
+
+        config.load()
+        font = config.get("defaults.font")
+        if font:
+            self.btn_font.set_font(font)
+            font_description = self.btn_font.get_font_desc()
+            self.window.modify_font(font_description)
+        self.last_filename = config.get("defaults.last_filename")
+        self.show()
+        self.check_category()
+
+    def load(self, _widget):
+        # type: (Gtk.Widget) -> None
+        choose_file_dialog = ScriptOpenFileChooserDialog(self.uistate)
+        choose_file_dialog.set_current_name(
+            self.category_name + "-query" + SCRIPTFILE_EXTENSION
         )
+        if self.last_filename:
+            choose_file_dialog.set_filename(self.last_filename)
+
+        while True:
+            response = choose_file_dialog.run()
+            if response == Gtk.ResponseType.CANCEL:
+                break
+            elif response == Gtk.ResponseType.DELETE_EVENT:
+                break
+            elif response == Gtk.ResponseType.OK:
+                filename = choose_file_dialog.get_filename()
+                self.loadstate(filename)
+                self.last_filename = filename
+                config.set("defaults.last_filename", filename)
+                config.save()
+                break
+
+        choose_file_dialog.destroy()
+
+
+    def load_help(self):
+        dirname = os.path.split(__file__)[0]
+        fname = os.path.join(dirname, "helptext.txt")
+        data = json.loads(open(fname).read())
+        self.help_notebook = Gtk.Notebook()
+        page = 0
+        for cat_name in ["global"] + supertool_utils.get_categories():
+            grid = Gtk.Grid()
+            grid.set_column_spacing(10)
+            row = 0
+            col = 0
+            for name, desc in sorted(data[cat_name]):
+                label = Gtk.Label(label=name)
+                label.set_halign(Gtk.Align.START)
+                grid.attach(label, col, row, 1, 1)
+
+                label = Gtk.Label(label=desc)
+                label.set_halign(Gtk.Align.START)
+                grid.attach(label, col + 1, row, 1, 1)
+                row += 1
+            self.help_notebook.append_page(grid, Gtk.Label(label=cat_name))
+            grid.show()
+            if cat_name == self.category_name:
+                self.help_notebook.set_current_page(page)
+            page += 1
+
+    def loadconfig(self):
+        # type: () -> None
+        self.loadstate(self.get_configfile(), loadtitle=False)
+
+    def loadstate(self, filename, loadtitle=True):
+        # type: (str, bool) -> None
+        scriptfile = ScriptFile()
+        query = scriptfile.load(filename)
+        if query.category and query.category != self.category_name:
+            msg = "Warning: saved query is for category '{}'. Current category is '{}'."
+            msg = msg.format(query.category, self.category_name)
+            OkDialog(
+                _("Warning"),
+                msg,
+                parent=self.uistate.window,
+            )
+
+        if not query.title and loadtitle:
+            name = os.path.split(filename)[1]
+            query.title = name.replace(SCRIPTFILE_EXTENSION, "")
+        self.title.set_text(query.title)
+
+        set_text(self.expressions, query.expressions)
+        set_text(self.filter, query.filter)
+        set_text(self.statements, query.statements)
+        set_text(self.initial_statements, query.initial_statements)
+        scope = query.scope
+        self.all_objects.set_active(scope == "all")
+        self.filtered_objects.set_active(scope == "filtered_")
+        self.selected_objects.set_active(scope == "selected")
+
+        self.unwind_lists.set_active(query.unwind_lists)
+        self.commit_checkbox.set_active(query.commit_changes)
+        self.summary_checkbox.set_active(query.summary_only)
 
     def makefilter(
         self, category, filtername, filtertext, initial_statements, statements
@@ -1231,6 +1095,143 @@ class SuperTool(ManagedWindow):
 
         msg = "Created filter {0}".format(filtername)
         OkDialog(_("Done"), msg, parent=self.uistate.window)
+
+
+    def pageswitch(self, *args):
+        # type: (Any) -> None
+        self.saveconfig()
+        self.select_category()
+        self.loadconfig()
+        if self.listview:
+            self.output_window.remove(self.listview)
+            self.btn_csv.hide()
+            self.btn_copy.hide()
+        self.statusmsg.set_text("")
+        self.check_category()
+
+    @contextmanager
+    def progress(self, title1, title2, count):
+        self._progress = ProgressMeter(title1, can_cancel=True)
+        self._progress.set_pass(title2, count, ProgressMeter.MODE_FRACTION)
+        try:
+            yield self._progress.step
+        finally:
+            self._progress.close()
+
+    def save(self, _widget):
+        # type: (Gtk.Widget) -> None
+        choose_file_dialog = ScriptSaveFileChooserDialog(self.uistate)
+        title = self.title.get_text().strip()
+        if title:
+            fname = title + SCRIPTFILE_EXTENSION
+        else:
+            fname = self.category_name + "-query" + SCRIPTFILE_EXTENSION
+        choose_file_dialog.set_current_name(fname)
+        choose_file_dialog.set_do_overwrite_confirmation(True)
+        if self.last_filename:
+            if self.title.get_text():
+                dirname = os.path.split(self.last_filename)[0]
+                self.last_filename = os.path.join(dirname, fname)
+            choose_file_dialog.set_filename(self.last_filename)
+
+        while True:
+            response = choose_file_dialog.run()
+            if response == Gtk.ResponseType.CANCEL:
+                break
+            elif response == Gtk.ResponseType.DELETE_EVENT:
+                break
+            elif response == Gtk.ResponseType.OK:
+                filename = choose_file_dialog.get_filename()
+                self.savestate(filename)
+                self.last_filename = filename
+                config.set("defaults.last_filename", filename)
+                config.save()
+                break
+
+        choose_file_dialog.destroy()
+
+    def save_as_filter(self, obj):
+        filtername = self.title.get_text().strip()
+        filtertext = get_text(self.filter).strip()
+        initial_statements = get_text(self.initial_statements).strip()
+        initial_statements = initial_statements.replace("\n", "<br>")
+
+        statements = get_text(self.statements).strip()
+        statements = statements.replace("\n", "<br>")
+        self.makefilter(
+            self.category, filtername, filtertext, initial_statements, statements
+        )
+
+    def save_settings(self, _widget):
+        loc_entry = self.settings.get_child_object("include_location")
+        loc = loc_entry.get_filename()
+        config.set("defaults.include_location", loc)
+        config.save()
+        self.settings.toplevel.hide()
+
+    def saveconfig(self):
+        # type: () -> Query
+        return self.savestate(self.get_configfile())
+
+    def savestate(self, filename):
+        # type: (str) -> Query
+        query = Query()
+        query.category = self.category_name
+        query.title = self.title.get_text()
+        if self.selected_objects.get_active():
+            scope = "selected"
+        elif self.all_objects.get_active():
+            scope = "all"
+        elif self.filtered_objects.get_active():
+            scope = "filtered"
+        query.scope = scope
+        query.expressions = get_text(self.expressions)
+        query.filter = get_text(self.filter)
+        query.statements = get_text(self.statements)
+        query.initial_statements = get_text(self.initial_statements)
+
+        query.unwind_lists = self.unwind_lists.get_active()
+        query.commit_changes = self.commit_checkbox.get_active()
+        query.summary_only = self.summary_checkbox.get_active()
+
+        scriptfile = ScriptFile()
+        scriptfile.save(filename, query)
+        return query
+        # self.writedata(filename, data)
+
+    def select_category(self):
+        # type: () -> None
+        self.execute_func = None
+        self.category_name = self.uistate.viewmanager.active_page.get_category()
+        self.category = supertool_utils.get_category_info(self.db, self.category_name)
+
+    def set_error(self, msg):
+        # type: (str) -> None
+        self.errormsg.set_markup(
+            "<span font_family='monospace' color='red' size='larger'>{}</span>".format(
+                msg.replace("<", "&lt;")
+            )
+        )
+
+    def set_font(self, widget):
+        font = widget.get_font()
+        font_description = widget.get_font_desc()
+        self.window.modify_font(font_description)
+        config.set("defaults.font", font)
+        config.save()
+
+    def settings_dialog(self, _widget):
+        dialog = self.settings.toplevel
+        config.load()
+        loc = config.get("defaults.include_location")
+        loc_entry = self.settings.get_child_object("include_location")
+        loc_entry.set_filename(loc)
+        dialog.run()
+        self.settings.toplevel.hide()
+
+    def show_about_dialog(self, _widget):
+        rsp = self.about_dialog.run()
+        self.about_dialog.hide()
 
 
 # -------------------------------------------------------------------------
