@@ -960,6 +960,7 @@ class SuperTool(ManagedWindow):
         )
 
         self.about_dialog = Glade(toplevel="about").toplevel
+        self.about_dialog.set_version(self.plugindata.version)
 
         TOOL_DIR = "supertool"
         from gramps.gen.const import USER_HOME

@@ -15,6 +15,7 @@
     <property name="can_focus">False</property>
     <property name="type_hint">dialog</property>
     <property name="program_name">SuperTool</property>
+    <property name="website">https://github.com/Taapeli/isotammi-addons/tree/master/source/SuperTool</property>
     <property name="authors">Kari Kujansuu</property>
     <property name="logo_icon_name">face-smile</property>
     <property name="license_type">gpl-2-0</property>
