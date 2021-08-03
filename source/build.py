@@ -13,6 +13,12 @@ from gramps.gen.plug import make_environment, PTYPE_STR
 grampsversions = [("5.0","gramps50"), ("5.1","gramps51"), ("5.2","gramps52")]
 languages = ["en","fi","sv"]
 
+def ignore(fname):
+    if fname.endswith("/__pycache__"): return True
+    if fname.endswith("~"): return True
+    if fname.endswith(".script"): return True
+    return False
+
 def get_tgz(addon,grampsver):
     return f"../addons/{grampsver}/download/{addon}.addon.tgz"
 
@@ -29,6 +35,7 @@ def get_files(addon):
         dirs2 = [dir for dir in dirs if not dir.startswith("__")]
         dirs[:] = dirs2
         for fname in files:
+            if ignore(fname): continue
             yield os.path.join(dirname,fname)
     
 
@@ -106,9 +113,7 @@ def update_translations(addon):
         
 def rebuild(addon):
     def filter(tarinfo):
-        if tarinfo.name.endswith("/__pycache__"): return None
-        if tarinfo.name.endswith("~"): return None
-        if tarinfo.name.endswith(".script"): return None
+        if ignore(tarinfo.name): return None
         return tarinfo
     bump_version(addon)
     update_translations(addon)
