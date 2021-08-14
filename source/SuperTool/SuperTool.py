@@ -267,6 +267,11 @@ class Query:
         self.filter_compiled = compile_expression(self.filter, "filter")
         self.expressions_compiled = compile_expression(self.expressions, "expressions")
 
+    def get_filename(self, files, linenum):
+        for fname,startline,endline in files:
+            if startline <= linenum <= endline:
+                return fname, (linenum-startline+1)
+        return "", linenum
 
 class ScriptFile:
     # when saving, lines starting with [ or \ are prefixed with a \
@@ -599,7 +604,6 @@ class SuperTool(ManagedWindow):
             self.statements.show()
             self.filter.show()
         else:
-            # self.set_error("This category ({}) is not supported".format(self.category_name))
             self.label_filter.hide()
             self.label_statements.hide()
             self.statements.hide()
@@ -832,14 +836,40 @@ class SuperTool(ManagedWindow):
                 self.set_error(str(e))
                 return
             lines = traceback.format_exc().splitlines()
+            source = None
+            src = ""
+            fname = ""
+            linenum2 = ""
             if len(lines) >= 3 and lines[-2].strip() == "^":
                 msglines = lines[-3:]
-            else:
-                msglines = [str(e)]
-            if hasattr(e, "gramps_id"):
-                msglines.append("(while processing " + e.gramps_id + ")")
+            elif len(lines) >= 2:
+                import re
+                m = re.match(r'\s+File "(.+)", line (\d+)', lines[-2])
+                if m:
+                    src = m.group(1)
+                    linenum = int(m.group(2))
+                    linenum2 = linenum
+                    if src == "initial_statements":
+                        source = query.initial_statements_with_includes
+                        fname, linenum2 = query.get_filename(query.initial_statements_files, linenum)
+                    elif src == "statements":
+                        source = query.statements_with_includes
+                        fname, linenum2 = query.get_filename(query.statements_files, linenum)
+                    elif src == "filter":
+                        source = query.filter
+                    elif src == "expressions":
+                        source = query.expressions
+                msglines = [lines[-1]]
+            elif len(lines) >= 1:
+                msglines = [lines[-1]]
             errortext = "\n".join(msglines)
-            self.set_error(errortext)
+            context = ""
+            codeline = ""
+            if hasattr(e, "gramps_id"):
+                context = "While processing " + e.gramps_id
+            if source:
+                codeline = source.splitlines()[linenum-1]
+            self.set_error(errortext, context, codeline, src, fname, linenum=linenum2)
 
     def execute1(self, query):
         # type: (Query) -> None
@@ -1205,13 +1235,29 @@ class SuperTool(ManagedWindow):
         self.category_name = self.uistate.viewmanager.active_page.get_category()
         self.category = supertool_utils.get_category_info(self.db, self.category_name)
 
-    def set_error(self, msg):
-        # type: (str) -> None
-        self.errormsg.set_markup(
-            "<span font_family='monospace' color='red' size='larger'>{}</span>".format(
-                msg.replace("<", "&lt;")
-            )
+    def set_error(self, msg, context="", codeline="", src="", fname="", linenum=""):
+        # type: (str, str, str) -> None
+        s = "<span font_family='monospace' color='red' size='larger'>{msg}</span>"
+        if context:
+            s += "\n<span font_family='sans-serif'>{context}</span>"
+        if src:
+            s += "\nIn <span font_family='serif' background='white'>{src}</span>"
+        if fname:
+            s += "\nIn <span font_family='serif' background='white'>{fname}</span>"
+        if linenum:
+            s += "\nOn line {linenum}"
+        if codeline:
+            s += "\n<span font_family='monospace' background='white'>{codeline}</span>"
+            
+        s = s.format(
+                msg=msg.replace("<", "&lt;"),
+                context=context.replace("<", "&lt;"),
+                src=src,
+                fname=fname.replace("<", "&lt;"),
+                linenum=linenum,
+                codeline=codeline.replace("<", "&lt;"),
         )
+        self.errormsg.set_markup(s)
 
     def set_font(self, widget):
         font = widget.get_font()

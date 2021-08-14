@@ -10,14 +10,16 @@ People
 [initial_statements]
 
 [statements]
+reflist=referrers("Person")
 
 [filter]
+reflist
 
 [expressions]
-name
+reflist
 
 [scope]
-selected
+all
 
 [unwind_lists]
 False
