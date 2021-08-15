@@ -223,6 +223,141 @@ class CsvFileChooserDialog(Gtk.FileChooserDialog):
         filter_csv.add_pattern("*.csv")
         self.add_filter(filter_csv)
 
+class HelpWindow(Gtk.Window):
+    def __init__(self, uistate, help_notebook):
+        Gtk.Window.__init__(self, title="Help Window")
+        self.set_keep_above(True)
+        self.box = Gtk.VBox(spacing=6)
+        self.add(self.box)
+
+        readme_url = "https://github.com/Taapeli/isotammi-addons/blob/master/source/SuperTool/README.md"
+
+        label = Gtk.Label()
+        markup = '<a href="{url}">{title}</a>'.format(
+            url=readme_url, title="Open README in a browser"
+        )
+        label.set_markup(markup)
+        self.box.pack_start(label, True, True, 0)
+
+        self.box.pack_start(Gtk.Label("Available properties"), True, True, 0)
+        self.box.pack_start(help_notebook, True, True, 0)
+
+
+class NullTrans:
+    pass
+
+
+class Query:
+    def __init__(self):
+        self.category = ""
+        self.title = ""
+        self.initial_statements = ""
+        self.statements = ""
+        self.filter = ""
+        self.expressions = ""
+        self.scope = "selected"
+        self.unwind_lists = False
+        self.commit_changes = False
+        self.summary_only = False
+
+
+class ScriptFile:
+    # when saving, lines starting with [ or \ are prefixed with a \
+    ESCAPE = "\\"  # one backslash
+
+    def load(self, filename, loadtitle=True):
+        # type: (str, bool) -> Query
+        query = Query()
+        if filename.endswith(".json"):
+            data = self.__readdata_json(filename)
+        else:
+            data = self.__readdata(filename)
+        query.category = data.get("category", "")
+        title = data.get("title", "")
+        if not title and loadtitle:
+            name = os.path.split(filename)[1]
+            title = name.replace(SCRIPTFILE_EXTENSION, "")
+        query.title = title
+
+        query.initial_statements = data.get("initial_statements", "")
+        query.statements = data.get("statements", "")
+        query.filter = data.get("filter", "")
+        query.expressions = data.get("expressions", "")
+        query.scope = data.get("scope", "selected")
+
+        unwind_lists = data.get("unwind_lists", "")
+        commit_changes = data.get("commit_changes", "")
+        summary_only = data.get("summary_only", "")
+        query.unwind_lists = unwind_lists == "True"
+        query.commit_changes = commit_changes == "True"
+        query.summary_only = summary_only == "True"
+        return query
+
+    def save(self, filename, query):
+        # type: (str, Query) -> None
+        data = {}
+        data["title"] = query.title
+        data["category"] = query.category
+        data["initial_statements"] = query.initial_statements
+        data["statements"] = query.statements
+        data["filter"] = query.filter
+        data["expressions"] = query.expressions
+
+        data["scope"] = query.scope
+
+        data["unwind_lists"] = str(query.unwind_lists)
+        data["commit_changes"] = str(query.commit_changes)
+        data["summary_only"] = str(query.summary_only)
+
+        self.__writedata(filename, data)
+
+    def __writedata(self, filename, data):
+        # type: (str, Dict[str,str]) -> None
+        # open(filename, "w").write(json.dumps(data, indent=4))
+        with open(filename, "w") as f:
+            print("[Gramps SuperTool script file]", file=f)
+            print("version=1", file=f)
+            print("", file=f)
+            for key, value in data.items():
+                print("[" + key + "]", file=f)
+                lines = value.splitlines()
+                for line in lines:
+                    if line.startswith("[") or line.startswith(self.ESCAPE):
+                        line = self.ESCAPE + line
+                    print(line, file=f)
+                print(file=f)  # empty line
+
+    def __readdata(self, filename):
+        try:
+            data = {}
+            key = None
+            value = ""
+            for line in open(filename):
+                if line.startswith("["):
+                    if key:
+                        data[key] = value.rstrip()
+                    key = line.strip()[1:-1]
+                    value = ""
+                elif line.startswith(self.ESCAPE):
+                    value += line[1:]
+                else:
+                    value += line
+            if key:
+                data[key] = value.rstrip()
+            return data
+        except:
+            return {}
+
+    def __readdata_json(self, filename):
+        # type: (str) -> Dict[str,str]
+        try:
+            data = open(filename).read()
+            return json.loads(data)
+        except FileNotFoundError:
+            return {}
+        except:
+            traceback.print_exc()
+            return {}
 
 class GrampsEngine:
     def __init__(
@@ -350,143 +485,6 @@ class GrampsEngine:
                     res = (res,)
                 for values in self.generate_rows(res):
                     yield [None] + values + [None]
-
-
-class Query:
-    def __init__(self):
-        self.category = ""
-        self.title = ""
-        self.initial_statements = ""
-        self.statements = ""
-        self.filter = ""
-        self.expressions = ""
-        self.scope = "selected"
-        self.unwind_lists = False
-        self.commit_changes = False
-        self.summary_only = False
-
-
-class ScriptFile:
-    # when saving, lines starting with [ or \ are prefixed with a \
-    ESCAPE = "\\"  # one backslash
-
-    def load(self, filename, loadtitle=True):
-        # type: (str, bool) -> Query
-        query = Query()
-        if filename.endswith(".json"):
-            data = self.__readdata_json(filename)
-        else:
-            data = self.__readdata(filename)
-        query.category = data.get("category", "")
-        title = data.get("title", "")
-        if not title and loadtitle:
-            name = os.path.split(filename)[1]
-            title = name.replace(SCRIPTFILE_EXTENSION, "")
-        query.title = title
-
-        query.initial_statements = data.get("initial_statements", "")
-        query.statements = data.get("statements", "")
-        query.filter = data.get("filter", "")
-        query.expressions = data.get("expressions", "")
-        query.scope = data.get("scope", "selected")
-
-        unwind_lists = data.get("unwind_lists", "")
-        commit_changes = data.get("commit_changes", "")
-        summary_only = data.get("summary_only", "")
-        query.unwind_lists = unwind_lists == "True"
-        query.commit_changes = commit_changes == "True"
-        query.summary_only = summary_only == "True"
-        return query
-
-    def save(self, filename, query):
-        # type: (str, Query) -> None
-        data = {}
-        data["title"] = query.title
-        data["category"] = query.category
-        data["initial_statements"] = query.initial_statements
-        data["statements"] = query.statements
-        data["filter"] = query.filter
-        data["expressions"] = query.expressions
-
-        data["scope"] = query.scope
-
-        data["unwind_lists"] = str(query.unwind_lists)
-        data["commit_changes"] = str(query.commit_changes)
-        data["summary_only"] = str(query.summary_only)
-
-        self.__writedata(filename, data)
-
-    def __writedata(self, filename, data):
-        # type: (str, Dict[str,str]) -> None
-        # open(filename, "w").write(json.dumps(data, indent=4))
-        with open(filename, "w") as f:
-            print("[Gramps SuperTool script file]", file=f)
-            print("version=1", file=f)
-            print("", file=f)
-            for key, value in data.items():
-                print("[" + key + "]", file=f)
-                lines = value.splitlines()
-                for line in lines:
-                    if line.startswith("[") or line.startswith(self.ESCAPE):
-                        line = self.ESCAPE + line
-                    print(line, file=f)
-                print(file=f)  # empty line
-
-    def __readdata(self, filename):
-        try:
-            data = {}
-            key = None
-            value = ""
-            for line in open(filename):
-                if line.startswith("["):
-                    if key:
-                        data[key] = value.rstrip()
-                    key = line.strip()[1:-1]
-                    value = ""
-                elif line.startswith(self.ESCAPE):
-                    value += line[1:]
-                else:
-                    value += line
-            if key:
-                data[key] = value.rstrip()
-            return data
-        except:
-            return {}
-
-    def __readdata_json(self, filename):
-        # type: (str) -> Dict[str,str]
-        try:
-            data = open(filename).read()
-            return json.loads(data)
-        except FileNotFoundError:
-            return {}
-        except:
-            traceback.print_exc()
-            return {}
-
-
-class HelpWindow(Gtk.Window):
-    def __init__(self, uistate, help_notebook):
-        Gtk.Window.__init__(self, title="Help Window")
-        self.set_keep_above(True)
-        self.box = Gtk.VBox(spacing=6)
-        self.add(self.box)
-
-        readme_url = "https://github.com/Taapeli/isotammi-addons/blob/master/source/SuperTool/README.md"
-
-        label = Gtk.Label()
-        markup = '<a href="{url}">{title}</a>'.format(
-            url=readme_url, title="Open README in a browser"
-        )
-        label.set_markup(markup)
-        self.box.pack_start(label, True, True, 0)
-
-        self.box.pack_start(Gtk.Label("Available properties"), True, True, 0)
-        self.box.pack_start(help_notebook, True, True, 0)
-
-
-class NullTrans:
-    pass
 
 
 class SuperTool(ManagedWindow):
