@@ -84,7 +84,7 @@ _ = _trans.gettext
 # -------------------------------------------------------------------------
 import supertool_utils
 import supertool_engine as engine
-from supertool_utils import compile_statements, compile_expression
+from supertool_utils import compile_statements, compile_expression, process_includes
 
 config = configman.register_manager("supertool")
 config.register("defaults.encoding", "utf-8")
@@ -256,6 +256,17 @@ class Query:
         self.commit_changes = False
         self.summary_only = False
 
+    def initialize(self):
+        self.initial_statements_with_includes, self.initial_statements_files = process_includes(self.initial_statements)
+        self.statements_with_includes, self.statements_files = process_includes(self.statements)
+
+        self.initial_statements_compiled = compile_statements(
+            self.initial_statements_with_includes, "initial_statements"
+        )
+        self.statements_compiled = compile_statements(self.statements_with_includes, "statements")
+        self.filter_compiled = compile_expression(self.filter, "filter")
+        self.expressions_compiled = compile_expression(self.expressions, "expressions")
+
 
 class ScriptFile:
     # when saving, lines starting with [ or \ are prefixed with a \
@@ -373,12 +384,7 @@ class GrampsEngine:
         self.selected_handles = selected_handles
         self.query = query
         self.step = step
-        self.initial_statements_x = compile_statements(
-            self.query.initial_statements, "initial_statements"
-        )
-        self.statements_x = compile_statements(self.query.statements, "statements")
-        self.filter_x = compile_expression(self.query.filter, "filter")
-        self.expressions_x = compile_expression(self.query.expressions, "expressions")
+        self.query.initialize()
 
     def generate_rows(self, res):
         # type: (Tuple[Any,...]) -> Iterator[List[Any]]
@@ -417,19 +423,19 @@ class GrampsEngine:
             obj = self.category.getfunc(handle)
             obj.commit_ok = True
             try:
-                if self.statements_x:
+                if self.query.statements_compiled:
                     value, env = self.category.execute_func(
                         # self.dbstate, obj, self.query.statements, env, "exec"
                         self.dbstate,
                         obj,
-                        self.statements_x,
+                        self.query.statements_compiled,
                         env,
                         "exec",
                     )
     
-                if self.filter_x:
+                if self.query.filter_compiled:
                     # ok, env = self.evaluate_condition(obj, self.query.filter, env)
-                    ok, env = self.evaluate_condition(obj, self.filter_x, env)
+                    ok, env = self.evaluate_condition(obj, self.query.filter_compiled, env)
                     if not ok:
                         continue
     
@@ -437,11 +443,11 @@ class GrampsEngine:
                     self.category.commitfunc(obj, self.trans)
     
                 self.object_count += 1
-                if self.expressions_x:
+                if self.query.expressions_compiled:
                     res, env = self.category.execute_func(
                         self.dbstate,
                         obj,
-                        self.expressions_x,
+                        self.query.expressions_compiled,
                         env,
                     )
                     if type(res) != tuple:
@@ -463,9 +469,9 @@ class GrampsEngine:
         init_env = {}  # type: Dict[str,Any]
         init_env["trans"] = trans
         init_env["uistate"] = self.uistate
-        if self.initial_statements_x:
+        if self.query.initial_statements_compiled:
             value, init_env = self.category.execute_func(
-                self.dbstate, None, self.initial_statements_x, init_env, "exec"
+                self.dbstate, None, self.query.initial_statements_compiled, init_env, "exec"
             )
 
         for obj, env, values in self.generate_values(init_env):
@@ -473,9 +479,9 @@ class GrampsEngine:
                 yield values
 
         if self.query.summary_only:
-            if self.expressions_x:
+            if self.query.expressions_compiled:
                 res, env = self.category.execute_func(
-                    self.dbstate, None, self.expressions_x, init_env
+                    self.dbstate, None, self.query.expressions_compiled, init_env
                 )
                 if type(res) != tuple:
                     res = (res,)

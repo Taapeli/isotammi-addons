@@ -203,6 +203,7 @@ def find_fullname(fname, default_location):
 
 
 def process_includes(code):
+    # type (str) -> Tuple[str, List[Tuple(str,int,int)]]
     config.load()
     default_location = config.get("defaults.include_location")
     if not default_location:
@@ -210,6 +211,7 @@ def process_includes(code):
         from gramps.gen.const import USER_HOME
         default_location = os.path.join(USER_HOME, TOOL_DIR)
     newlines = []
+    files = []
     for line in code.splitlines(keepends=True):
         parts = line.split(maxsplit=1)
         if len(parts) > 0 and parts[0] == "@include":
@@ -217,15 +219,17 @@ def process_includes(code):
                 raise engine.SupertoolException("Include file name missing")
             fname = parts[1].strip()
             fullname = find_fullname(fname, default_location)
+            startline = len(newlines)+1
             for line2 in open(fullname):
                 newlines.append(line2)
+            endline = len(newlines)
+            files.append((fullname,startline,endline))
         else:
             newlines.append(line)
-    return "".join(newlines)
+    return "".join(newlines), files
 
 def compile_statements(statements, source):
     if statements.strip() == "": return None
-    statements = process_includes(statements)
     return compile(statements, source, 'exec')
 
 def compile_expression(expression, source):
