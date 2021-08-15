@@ -243,10 +243,6 @@ class HelpWindow(Gtk.Window):
         self.box.pack_start(help_notebook, True, True, 0)
 
 
-class NullTrans:
-    pass
-
-
 class Query:
     def __init__(self):
         self.category = ""
