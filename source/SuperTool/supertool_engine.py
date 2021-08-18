@@ -110,6 +110,29 @@ class Proxy:
             tag = self.db.get_tag_from_handle(tag_handle)
             yield tag.name
 
+    @gentolist
+    def referrers(self, reftype):
+        for _, handle in self.db.find_backlink_handles(
+            self.handle, include_classes=[reftype]
+        ):
+            if reftype == "Person":
+                yield PersonProxy(self.db, handle)
+            if reftype == "Family":
+                yield FamilyProxy(self.db, handle)
+            if reftype == "Event":
+                yield EventProxy(self.db, handle)
+            if reftype == "Place":
+                yield PlaceProxy(self.db, handle)
+            if reftype == "Source":
+                yield SourceProxy(self.db, handle)
+            if reftype == "Citation":
+                yield CitationProxy(self.db, handle)
+            if reftype == "Repository":
+                yield RepositoryProxy(self.db, handle)
+            if reftype == "Media":
+                yield MediaProxy(self.db, handle)
+            if reftype == "Note":
+                yield NoteProxy(self.db, handle)
 
 class AttributeProxy:
     @listproperty
@@ -199,29 +222,6 @@ class CommonProxy(Proxy):
         for handle in self.obj.get_note_list():
             yield NoteProxy(self.db, handle)
 
-    @gentolist
-    def referrers(self, reftype):
-        for _, handle in self.db.find_backlink_handles(
-            self.handle, include_classes=[reftype]
-        ):
-            if reftype == "Person":
-                yield PersonProxy(self.db, handle)
-            if reftype == "Family":
-                yield FamilyProxy(self.db, handle)
-            if reftype == "Event":
-                yield EventProxy(self.db, handle)
-            if reftype == "Place":
-                yield PlaceProxy(self.db, handle)
-            if reftype == "Source":
-                yield SourceProxy(self.db, handle)
-            if reftype == "Citation":
-                yield CitationProxy(self.db, handle)
-            if reftype == "Repository":
-                yield RepositoryProxy(self.db, handle)
-            if reftype == "Media":
-                yield MediaProxy(self.db, handle)
-            if reftype == "Note":
-                yield NoteProxy(self.db, handle)
 
 class NoteProxy(Proxy):
     namespace = "Note"
