@@ -43,6 +43,10 @@
         [
             "getargs",
             "Function that asks the user for parameters to be used in the query"
+        ],
+        [
+            "referrers",
+            "Function returning objects of specified category that refer to this object"
         ]
     ],
     "People": [
@@ -264,6 +268,10 @@
             "encloses",
             "List of places that this place encloses"
         ],
+        [
+            "events",
+            "List of events that occurred in this place"
+        ], 
         [
             "gramps_id",
             "Gramps id, e.g. P0123"

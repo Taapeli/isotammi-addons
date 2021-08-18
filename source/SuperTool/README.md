@@ -567,6 +567,7 @@ property             | description                                  | type
 citations            | List of citations                            | list of CitationProxy objects
 enclosed_by          | List of places that enclose this place       | list of PlaceProxy objects
 encloses             | List of places that this place encloses      | list of PlaceProxy objects
+events               | List of events that occurred in this place   | list of EventProxy objects
 gramps_id            | Gramps id, e.g. P0123                        | string
 handle               | Gramps internal handle                       | string
 longname             | Full name including enclosing places         | string
@@ -625,6 +626,7 @@ flatten              | Function that returns elements from nested lists         
 getargs              | Function that asks the user for parameters to be used in the query                    | 
 makedate             | Function to construct a date literal; e.g. makedate(1800, 12, 31) or makedate(1800)   | 
 namespace            | Category, e.g. 'Person'                                                               |
+referrers(category)  | Function returning objects of type 'category' that refer to this object               |
 today                | Function that returns today's date                                                    |
 trans                | Current transaction                                                                   |
 uistate              | UI state  object                                                                      | 
