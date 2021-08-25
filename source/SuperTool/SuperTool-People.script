@@ -10,13 +10,12 @@ People
 [initial_statements]
 
 [statements]
-reflist=referrers("Person")
 
 [filter]
-reflist
+name.find("Fox") >= 0
 
 [expressions]
-reflist
+name
 
 [scope]
 all
