@@ -115,11 +115,11 @@ class GenericFilterRule(Rule):
         self.rule = self.list[0].replace("<br>", " ").strip()
 
         self.initial_statements = self.list[1].replace("<br>", "\n").strip()
-        self.initial_statements = supertool_utils.process_includes(self.initial_statements)
+        self.initial_statements, files = supertool_utils.process_includes(self.initial_statements)
         self.initial_statements = compile(self.initial_statements, "initial_statements", 'exec')
 
         self.statements = self.list[2].replace("<br>", "\n").strip()
-        self.statements = supertool_utils.process_includes(self.statements)
+        self.statements, files = supertool_utils.process_includes(self.statements)
         self.statements = compile(self.statements, "statements", 'exec')
 
         self.init_env = {}  # type: Dict[str,Any]
