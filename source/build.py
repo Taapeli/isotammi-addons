@@ -14,6 +14,7 @@ grampsversions = [("5.0","gramps50"), ("5.1","gramps51"), ("5.2","gramps52")]
 languages = ["en","fi","sv"]
 
 def ignore(fname):
+    if fname.endswith(".gpr.py"): return True
     if fname.endswith("/__pycache__"): return True
     if fname.endswith("~"): return True
     if fname.endswith(".script"): return True

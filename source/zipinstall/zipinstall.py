@@ -2,6 +2,7 @@
 # Gramps - a GTK+/GNOME based genealogy program
 #
 # Copyright (C) 2015-2016 Nick Hall
+# Copyright (C) 2020-2021 Kari Kujansuu
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,27 +18,28 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-from zipfile import ZipFile, ZIP_DEFLATED
-from gramps.gen.plug._pluginreg import PTYPE, PTYPE_STR, VIEW
-from gramps.gen.plug._pluginreg import PluginRegister, make_environment
-import uuid
-import shutil
-import traceback
-
-"""
-Import a plugin from a ZIP file
-"""
+#
+#     Import a plugin from a .zip or .tgz file
+# 
 import os
+import shutil
+import tarfile
+import traceback
+import uuid
 
-from gramps.gui.managedwindow import ManagedWindow
-from gramps.gen.config import config
+from io import BytesIO
+from zipfile import ZipFile, ZIP_DEFLATED
 
 from gi.repository import Gtk, Gdk, GObject
 
-from gramps.gui.plug import tool
-from gramps.gui.dialog import OkDialog, ErrorDialog
+from gramps.gen.config import config
+from gramps.gen.plug._pluginreg import PTYPE, PTYPE_STR, VIEW
+from gramps.gen.plug._pluginreg import PluginRegister, make_environment
 
 from gramps.gen.const import USER_PLUGINS
+from gramps.gui.dialog import OkDialog, ErrorDialog
+from gramps.gui.managedwindow import ManagedWindow
+from gramps.gui.plug import tool
 
 from gramps.gen.const import GRAMPS_LOCALE as glocale
 try:
@@ -84,15 +86,64 @@ def add_all_files_filter(chooser):
     mime_filter.add_pattern('*')
     chooser.add_filter(mime_filter)
 
+def add_supported_files_filter(chooser):
+    """
+    Add a zip file permitting filter to the file chooser dialog.
+    """
+    mime_filter = Gtk.FileFilter()
+    mime_filter.set_name(_('Supported files'))
+    mime_filter.add_pattern('*.zip')
+    mime_filter.add_pattern('*.tgz')
+    mime_filter.add_pattern('*.tar.gz')
+    chooser.add_filter(mime_filter)
+
 def add_zip_files_filter(chooser):
     """
     Add a zip file permitting filter to the file chooser dialog.
     """
     mime_filter = Gtk.FileFilter()
-    mime_filter.set_name(_('ZIP files'))
+    mime_filter.set_name(_('.zip files'))
     mime_filter.add_pattern('*.zip')
     chooser.add_filter(mime_filter)
 
+def add_tgz_files_filter(chooser):
+    """
+    Add a zip file permitting filter to the file chooser dialog.
+    """
+    mime_filter = Gtk.FileFilter()
+    mime_filter.set_name(_('.tgz files'))
+    mime_filter.add_pattern('*.tgz')
+    mime_filter.add_pattern('*.tar.gz')
+    chooser.add_filter(mime_filter)
+
+#-------------------------------------------------------------------------
+#
+# Tgzfile
+#
+#-------------------------------------------------------------------------
+class Tgzfile:
+    """
+    Class to duplicate methods of zipfile.ZipFile
+    """
+    def __init__(self, buffer):
+        self.buffer = buffer
+        self.tgz_obj = tarfile.open(None, fileobj=buffer)
+
+    def namelist(self):
+        """
+        Get the files and directories of the zipfile.
+        """
+        return self.tgz_obj.getnames()
+
+    def extractall(self, path, members=None):
+        """
+        Extract all of the files into path.
+        """
+        self.tgz_obj.extractall(path)
+
+    def read(self, name):
+        return self.tgz_obj.extractfile(name).read()
+    
 #-------------------------------------------------------------------------
 #
 # ZipInstallFileDialog
@@ -100,7 +151,23 @@ def add_zip_files_filter(chooser):
 #-------------------------------------------------------------------------
 class ZipInstallFileDialog(ManagedWindow):
 
+    def extension_ok(self, filename):
+        if filename.endswith(".tar.gz"): return True
+        if filename.endswith(".tgz"): return True
+        if filename.lower().endswith(".zip"): return True
+        return False
 
+    def open_file(self, path):
+        content = open(path,"rb").read()
+        buffer = BytesIO(content)
+        if path.lower().endswith(".zip"):
+            return ZipFile(buffer)
+        elif path.endswith(".tar.gz") or path.endswith(".tgz"):
+            return Tgzfile(buffer)
+            #return tarfile.open(None, fileobj=buffer)
+        else:
+            return None
+    
     def __init__(self, dbstate, uistate, plugins, callback=None):
         """
         A dialog to import a file into Gramps
@@ -125,8 +192,10 @@ class ZipInstallFileDialog(ManagedWindow):
         import_dialog.set_local_only(False)
 
         # Always add automatic (match all files) filter
-        add_zip_files_filter(import_dialog)   # *.zip
-        add_all_files_filter(import_dialog)   # *
+        add_supported_files_filter(import_dialog)   # .zip and .tgz
+        add_tgz_files_filter(import_dialog)         # *.tgz
+        add_zip_files_filter(import_dialog)         # *.zip
+        add_all_files_filter(import_dialog)         # *
 
         import_dialog.set_current_folder(config.get('paths.recent-import-dir'))
         while True:
@@ -144,24 +213,25 @@ class ZipInstallFileDialog(ManagedWindow):
                 #    continue
 
                 (the_path, the_file) = os.path.split(filename)
-                basename, extension = os.path.splitext(the_file)
                 
                 config.set('paths.recent-import-dir', the_path)
 
-                if extension != ".zip":
+                if not self.extension_ok(the_file):
                     ErrorDialog(_("Error"),
                         _("Could not open file: %s") % the_file + ": " +
-                        _('File type "%s" is not a ZIP file.\n\n') % extension,
+                        _('File is not a .zip or .tgz file.\n\n'),
                         parent=self.uistate.window)
                     continue
 
-                #dirname = os.path.join(USER_PLUGINS, basename)
-                #if os.path.exists(dirname):
-                #    ErrorDialog(_("Error"),
-                #        _("Plugin already exists: %s") % basename,
-                #        parent=self.uistate.window)
-                #    continue
-                plugindata = self.get_plugin_data(filename)
+                try:
+                    plugindata = self.get_plugin_data(filename)
+                except Exception as e:
+                    traceback.print_exc()
+                    ErrorDialog(_("Error"),
+                        _("Could not process file %s") % filename + ": " + str(e),
+                        parent=self.uistate.window)
+                    continue
+                plugin_info = None
                 for plugin_id in plugindata:
                     plugin_info = plugindata[plugin_id]
                     plugin_name = plugin_info['name']
@@ -182,9 +252,19 @@ class ZipInstallFileDialog(ManagedWindow):
                             print(plugin_info)
                     else:
                         old_plugin = None
+                if not plugin_info:  # some error, possibly invalid gpr file?
+                    continue
                 self.backup_zipfname = None
                 self.gramps_view_installed = False
-                dirname = self.install_plugin_dialog(filename, plugin_info, old_plugin)
+                try:
+                    dirname = self.install_plugin_dialog(filename, plugin_info, old_plugin)
+                except Exception as e:
+                    traceback.print_exc()
+                    ErrorDialog(_("Error"),
+                        _("Could not process file %s") % filename + ": " + str(e),
+                        parent=self.uistate.window)
+                    continue
+                    
                 msg = _("Plugin '%s' installed in\n    %s") % (plugin_name,dirname) 
                 if self.backup_zipfname:
                     msg += _("\nOld version saved in\n    %s") % self.backup_zipfname 
@@ -295,10 +375,9 @@ class ZipInstallFileDialog(ManagedWindow):
             if overwrite:
                 self.delete_plugin(old_plugin)
         dirname = self.generate_dirname(plugin_id, plugin_version)   
-        zf = ZipFile(filename)
+        zf = self.open_file(filename)
         zf.extractall(dirname)
         self.uistate.viewmanager.do_reg_plugins(self.dbstate, self.uistate, rescan=True)
-        print("done")
         return dirname
     
     def do_backup(self, old_plugin):
@@ -364,11 +443,17 @@ class ZipInstallFileDialog(ManagedWindow):
         return dirname
     
     def get_plugin_data(self, filename):
-        zf = ZipFile(filename)
+        zf = self.open_file(filename)
+        gpr_files = []
         for name in zf.namelist():
             print(name)
             if name.endswith(".gpr.py"):
-                return self.process_gpr(zf, name)
+                gpr_files.append(name)
+        if len(gpr_files) == 0:
+            raise RuntimeError(_("File does not contain a .gpr.py file"))
+        if len(gpr_files) > 1:
+            raise RuntimeError(_("File contains multiple .gpr.py files; this is not supported"))
+        return self.process_gpr(zf, gpr_files[0])
 
     def process_gpr(self, zf, name):
         s = zf.read(name)
