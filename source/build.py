@@ -14,7 +14,6 @@ grampsversions = [("5.0","gramps50"), ("5.1","gramps51"), ("5.2","gramps52")]
 languages = ["en","fi","sv"]
 
 def ignore(fname):
-    if fname.endswith(".gpr.py"): return True
     if fname.endswith("/__pycache__"): return True
     if fname.endswith("~"): return True
     if fname.endswith(".script"): return True
@@ -49,6 +48,7 @@ def need_rebuild(addon):
         tgz_modtime = os.stat(tgz).st_mtime
         for fname in get_files(addon):
             #print("fname:",fname)
+            if fname.endswith(".gpr.py"): continue
             modtime = os.stat(fname).st_mtime
             if modtime > tgz_modtime:
                 print("modified:", grampsver, fname) 
