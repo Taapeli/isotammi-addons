@@ -1,6 +1,6 @@
 # SuperTool
-v1.1.0<br>
-21 Jul 2021<br>
+v1.1.5<br>
+19 Nov 2021<br>
 Author: kari.kujansuu@gmail.com<br>
 
  [Introduction](#introduction)
