@@ -745,16 +745,12 @@ def execute(dbstate, obj, code, proxyclass, envvars=None, exectype=None):
     filterfactory = Filterfactory(dbstate.db)
     if proxyclass:
         env["filter"] = filterfactory.getfilter(proxyclass.namespace)
-    if envvars:
-        env.update(envvars)
     env["env"] = env
     if exectype == "exec":
-        #code = process_includes(code)
-        res = exec(code, env, env)
+        res = exec(code, env, envvars)
     else:
-        #code = code.replace("\n", " ")
-        res = eval(code, env, env)
-    return res, env
+        res = eval(code, env, envvars)
+    return res, envvars
 
 
 def execute_no_category(dbstate, obj, code, envvars=None, exectype=None):

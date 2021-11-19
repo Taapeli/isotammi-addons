@@ -416,15 +416,13 @@ class GrampsEngine:
         # type: (Any,str,Dict[str,Any]) -> Tuple[bool, Dict[str,Any]]
         return self.category.execute_func(self.dbstate, obj, cond, env)
 
-    def generate_values(self, init_env):
+    def generate_values(self, env):
         # type: (Dict[str,Any]) -> Iterator[Tuple[Any,Dict[str,Any],List[Any]]]
         self.total_objects = len(self.selected_handles)
         for handle in self.selected_handles:
             if self.step:
                 if self.step():  # user clicked 'Cancel', stop
                     return
-            env = {}
-            env.update(init_env)
             obj = self.category.getfunc(handle)
             obj.commit_ok = True
             try:
@@ -471,22 +469,22 @@ class GrampsEngine:
         #         if not self.category.execute_func:
         #             return
         self.object_count = 0
-        init_env = {}  # type: Dict[str,Any]
-        init_env["trans"] = trans
-        init_env["uistate"] = self.uistate
+        env = {}  # type: Dict[str,Any]
+        env["trans"] = trans
+        env["uistate"] = self.uistate
         if self.query.initial_statements_compiled:
-            value, init_env = self.category.execute_func(
-                self.dbstate, None, self.query.initial_statements_compiled, init_env, "exec"
+            value, env = self.category.execute_func(
+                self.dbstate, None, self.query.initial_statements_compiled, env, "exec"
             )
 
-        for obj, env, values in self.generate_values(init_env):
+        for obj, env, values in self.generate_values(env):
             if not self.query.summary_only:
                 yield values
 
         if self.query.summary_only:
             if self.query.expressions_compiled:
                 res, env = self.category.execute_func(
-                    self.dbstate, None, self.query.expressions_compiled, init_env
+                    self.dbstate, None, self.query.expressions_compiled, env
                 )
                 if type(res) != tuple:
                     res = (res,)
