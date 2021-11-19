@@ -63,6 +63,10 @@
             "Birth event"
         ],
         [
+            "children",
+            "List of person's children"
+        ],
+        [
             "citations",
             "List of citations"
         ],
@@ -79,6 +83,10 @@
             "List of families where this person is a parent"
         ],
         [
+            "father",
+            "Person's father"
+        ],
+        [
             "gender",
             "Gender as a string: M, F or U"
         ],
@@ -89,6 +97,10 @@
         [
             "handle",
             "Gramps internal handle"
+        ],
+        [
+            "mother",
+            "Person's mother"
         ],
         [
             "name",
@@ -115,8 +127,16 @@
             "List of families where this person is a child"
         ],
         [
+            "parents",
+            "List of person's parents"
+        ],
+        [
             "person",
             "This Gramps Person object (same as 'obj')"
+        ],
+        [
+            "spouses",
+            "List of person's spouses"
         ],
         [
             "tags",

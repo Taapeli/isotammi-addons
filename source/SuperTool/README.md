@@ -542,21 +542,26 @@ property             | description                                      | type
 ---------------------|------------------------------------------------- | ----------------------
 attributes           | Attributes as a list of tuples (name,value)      | list of (string,string)
 birth                | Birth event                                      | EventProxy
+children             | List of person's children                        | list of PersonProxy objects
 citations            | List of citations                                | list of CitationProxy objects
 death                | Death event                                      | EventProxy
 events               | List of all events attached to this person       | list of EventProxy objects
 families             | List of families where this person is a parent   | list of FamilyProxy objects
+father               | Person's father                                  | PersonProxy object (or Nullproxy)
 gender               | Gender as as string: male, female or unknown     | string
 gramps_id            | Gramps id, e.g. I0123                            | string
 handle               | Gramps internal handle                           | string
+mother               | Person's mother                                  | PersonProxy object (or Nullproxy)
 name                 | Primary name as string                           | string
 nameobjs             | List of Gramps internal Name objects             | list of Name objects
 names                | List of names as strings                         | list of strings
 notes                | List of notes                                    | list of NoteProxy objects
 obj                  | This Gramps Person object (same as 'person')     | Person object
 parent_families      | List of families where this person is a child    | list of FamilyProxy objects
+parents              | List of person's parents                         | list of PersonProxy objects
 person               | This Gramps Person object (same as 'obj')        | Person object
 self                 | This PersonProxy object                          | PersonProxy
+spouses              | List of person's spouses                         | list of PersonProxy objects
 tags                 | List of tags as strings                          | list of strings
 
 

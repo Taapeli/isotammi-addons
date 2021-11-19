@@ -547,9 +547,48 @@ class PersonProxy(CommonProxy, AttributeProxy):
             yield FamilyProxy(self.db, handle)
 
     @listproperty
+    def children(self):
+        for handle in self.person.get_family_handle_list():
+            f = FamilyProxy(self.db, handle)
+            for c in f.children:
+                    yield c
+
+    @listproperty
+    def spouses(self):
+        for handle in self.person.get_family_handle_list():
+            f = FamilyProxy(self.db, handle)
+            if f.father and f.father.handle != self.handle:
+                yield f.father
+            if f.mother and f.mother.handle != self.handle:
+                yield f.mother
+
+    @listproperty
     def parent_families(self):
         for handle in self.person.get_parent_family_handle_list():
             yield FamilyProxy(self.db, handle)
+
+    @listproperty
+    def parents(self):
+        for handle in self.person.get_parent_family_handle_list():
+            f = FamilyProxy(self.db, handle)
+            father = f.father
+            if father: yield father
+            mother = f.mother
+            if mother: yield mother
+
+    @property
+    def mother(self):
+        for handle in self.person.get_parent_family_handle_list():
+            f = FamilyProxy(self.db, handle)
+            return f.mother
+        return NullProxy()
+
+    @property
+    def father(self):
+        for handle in self.person.get_parent_family_handle_list():
+            f = FamilyProxy(self.db, handle)
+            return f.father
+        return NullProxy()
 
     @listproperty
     def citations(self):
