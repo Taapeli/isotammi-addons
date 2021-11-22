@@ -375,7 +375,7 @@ class GrampsEngine:
     def __init__(
         self,
         dbstate,
-        uistate,
+        user,
         category,
         selected_handles,
         query,
@@ -384,7 +384,8 @@ class GrampsEngine:
         # type: (DbState, DisplayState, Category, List[str], Query, Callable) -> None
         self.dbstate = dbstate
         self.db = dbstate.db
-        self.uistate = uistate
+        self.user = user
+        self.uistate = user.uistate
         self.category = category
         self.selected_handles = selected_handles
         self.query = query
@@ -471,6 +472,7 @@ class GrampsEngine:
         self.object_count = 0
         env = {}  # type: Dict[str,Any]
         env["trans"] = trans
+        env["user"] = self.user
         env["uistate"] = self.uistate
         if self.query.initial_statements_compiled:
             value, env = self.category.execute_func(
@@ -903,7 +905,7 @@ class SuperTool(ManagedWindow):
         ) as step:
             gramps_engine = GrampsEngine(
                 self.dbstate,
-                self.uistate,
+                self.user,
                 self.category,
                 selected_handles,
                 query,
@@ -1333,7 +1335,7 @@ class Tool(tool.Tool):
             selected_handles = []
         gramps_engine = GrampsEngine(
             self.dbstate,
-            self.uistate,
+            self.user,
             category,
             selected_handles,
             query,

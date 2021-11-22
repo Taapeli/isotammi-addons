@@ -635,6 +635,7 @@ referrers(category)  | Function returning objects of type 'category' that refer 
 today                | Function that returns today's date                                                    |
 trans                | Current transaction                                                                   |
 uistate              | UI state  object                                                                      | 
+user                 | Gramps internal user object                                                           | 
 uniq                 | Function that returns unique elements from a list                                     | 
 
 ### --

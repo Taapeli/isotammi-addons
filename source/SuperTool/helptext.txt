@@ -5,6 +5,10 @@
             "UI state  object"
         ],
         [
+            "user",
+            "Gramps internal user object"
+        ],
+        [
             "db",
             "Database object"
         ],
