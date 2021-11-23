@@ -429,16 +429,15 @@ class GrampsEngine:
             try:
                 if self.query.statements_compiled:
                     value, env = self.category.execute_func(
-                        # self.dbstate, obj, self.query.statements, env, "exec"
                         self.dbstate,
                         obj,
                         self.query.statements_compiled,
                         env,
                         "exec",
                     )
-    
+                if self.query.summary_only:
+                    continue
                 if self.query.filter_compiled:
-                    # ok, env = self.evaluate_condition(obj, self.query.filter, env)
                     ok, env = self.evaluate_condition(obj, self.query.filter_compiled, env)
                     if not ok:
                         continue

@@ -737,8 +737,8 @@ class DummyTxn:
 
         self.txn = _Txn
 
-def execute(dbstate, obj, code, proxyclass, envvars=None, exectype=None):
-    env = dict(
+def execute(dbstate, obj, code, proxyclass, env=None, exectype=None):
+    global_env = dict(
         uniq=uniq,
         makedate=makedate,
         today=today,
@@ -770,6 +770,9 @@ def execute(dbstate, obj, code, proxyclass, envvars=None, exectype=None):
         #commit=functools.partial(commit, dbstate.db, envvars["trans"]),
         getargs=supertool_utils.getargs_dialog,
     )
+    env.update(global_env)
+    env["env"] = env
+    env["code"] = code
     if obj:
         p = proxyclass(dbstate.db, obj.handle, obj)
         env["self"] = p
@@ -784,12 +787,11 @@ def execute(dbstate, obj, code, proxyclass, envvars=None, exectype=None):
     filterfactory = Filterfactory(dbstate.db)
     if proxyclass:
         env["filter"] = filterfactory.getfilter(proxyclass.namespace)
-    env["env"] = env
     if exectype == "exec":
-        res = exec(code, env, envvars)
+        res = exec(code, env)
     else:
-        res = eval(code, env, envvars)
-    return res, envvars
+        res = eval(code, env)
+    return res, env
 
 
 def execute_no_category(dbstate, obj, code, envvars=None, exectype=None):
