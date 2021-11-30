@@ -435,8 +435,6 @@ class GrampsEngine:
                         env,
                         "exec",
                     )
-                if self.query.summary_only:
-                    continue
                 if self.query.filter_compiled:
                     ok, env = self.evaluate_condition(obj, self.query.filter_compiled, env)
                     if not ok:
@@ -445,6 +443,9 @@ class GrampsEngine:
                 if self.query.commit_changes and obj.commit_ok:
                     self.category.commitfunc(obj, self.trans)
     
+                if self.query.summary_only:
+                    continue
+
                 self.object_count += 1
                 if self.query.expressions_compiled:
                     res, env = self.category.execute_func(
