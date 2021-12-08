@@ -509,6 +509,12 @@ class SuperTool(ManagedWindow):
         self.editfunc = None
         self.init()
 
+    def build_menu_names(self, obj): 
+        """
+        Needed by ManagedWindow to build the Windows menu
+        """
+        return ('SuperTool','SuperTool')
+
     def build_help(self):  # temporary helper; not used
         self.help_notebook = Gtk.Notebook()
         page = 0
