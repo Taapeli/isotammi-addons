@@ -146,22 +146,40 @@ class NullProxy:
     def __getattr__(self, attrname):
         return NullProxy()
 
+    def __getitem__(self, i):
+        return NullProxy()
+
     def __add__(self, other):
         return NullProxy()
 
     def __sub__(self, other):
         return 0
 
+    def __eq__(self, other):
+        return False
+
     def __lt__(self, other):
         return False
 
+    def __gt__(self, other):
+        return False
+
+    def __le__(self, other):
+        return False
+
+    def __ge__(self, other):
+        return False
+
+    def __ne__(self, other):
+        return False
+    
     def __repr__(self):
         return ""
 
     def __bool__(self):
         return False
 
-    def __call__(self):
+    def __call__(self, *args, **kwargs):
         return NullProxy()
 
     def __iter__(self):
