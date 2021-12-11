@@ -34,6 +34,7 @@ import traceback
 import types
 
 from contextlib import contextmanager
+from _sqlite3 import Row
 
 try:
     from typing import Any
@@ -371,6 +372,16 @@ class ScriptFile:
             traceback.print_exc()
             return {}
 
+class Result:
+    def __init__(self):
+        self.rows = []
+    def add_row(self, row):
+        self.rows.append(row)
+    def fetch_rows(self):
+        for row in self.rows:
+            yield [None] + row + [None]
+        self.rows = []
+        
 class GrampsEngine:
     def __init__(
         self,
@@ -476,15 +487,20 @@ class GrampsEngine:
         env["uistate"] = self.uistate
         env["dbstate"] = self.dbstate
         env["db"] = self.db
+        result = Result()
+        env["result"] = result
 
         if self.query.initial_statements_compiled:
             value, env = self.category.execute_func(
                 self.dbstate, None, self.query.initial_statements_compiled, env, "exec"
             )
+            yield from result.fetch_rows()
 
         for obj, env, values in self.generate_values(env):
             if not self.query.summary_only:
+                yield from result.fetch_rows()
                 yield values
+        yield from result.fetch_rows()
 
         if self.query.summary_only:
             if self.query.expressions_compiled:
