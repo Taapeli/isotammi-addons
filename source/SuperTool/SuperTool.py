@@ -470,10 +470,13 @@ class GrampsEngine:
         #         if not self.category.execute_func:
         #             return
         self.object_count = 0
-        env = {}  # type: Dict[str,Any]
+        env = supertool_utils.get_globals()  # type: Dict[str,Any]
         env["trans"] = trans
         env["user"] = self.user
         env["uistate"] = self.uistate
+        env["dbstate"] = self.dbstate
+        env["db"] = self.db
+
         if self.query.initial_statements_compiled:
             value, env = self.category.execute_func(
                 self.dbstate, None, self.query.initial_statements_compiled, env, "exec"

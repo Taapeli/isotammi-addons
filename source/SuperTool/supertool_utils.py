@@ -22,8 +22,15 @@
 # Standard Python modules
 #
 # -------------------------------------------------------------------------
+import functools
 import os
 import sys
+
+import collections
+import os
+import re
+import sys
+
 
 # -------------------------------------------------------------------------
 #
@@ -75,6 +82,12 @@ CATEGORIES = [
     "Notes",
 ]
 
+def gentolist(orig):
+    @functools.wraps(orig)
+    def f(*args):
+        return list(orig(*args))
+
+    return f
 
 def get_categories():
     return CATEGORIES
@@ -296,3 +309,100 @@ def getargs_dialog(**kwargs):
     dialog.destroy()
     return SimpleNamespace(**values)
 
+
+def uniq(items):
+    return list(set(items))
+
+
+def makedate(year, month=0, day=0, about=False):
+    d = GrampsDate()
+    d.set_yr_mon_day(year, month, day)
+    if about:
+        d.set_modifier(GrampsDate.MOD_ABOUT)
+    return DateProxy(d)
+
+
+def today():
+    return DateProxy(Today())
+
+
+def size(x):
+    return len(list(x))
+
+
+@gentolist
+def old_flatten(lists):
+    for sublist in lists:
+        for item in sublist:
+            yield item
+
+from types import GeneratorType
+
+@gentolist
+def flatten(a):
+    if type(a) in [list, GeneratorType]:
+        for x in a:
+            yield from flatten(x)
+    else:
+        yield a
+
+def commit(db, trans, proxyobj): # not used, possible future use
+    print("commit", trans, proxyobj.name)
+    if trans is not None:
+        proxyobj._commit(db, trans)
+
+
+
+
+class DummyTxn:
+    "Implements nested transactions"
+
+    def __init__(self, trans):
+        if trans is None:
+            raise SupertoolException("Need a transaction (check 'Commit changes')")
+        self.trans = trans
+
+        class _Txn:
+            def __init__(self, msg, db):
+                pass
+
+            def __enter__(self):
+                return trans
+
+            def __exit__(self, *args):
+                return False
+
+        self.txn = _Txn
+        
+def get_globals():
+    from gramps.gen.lib import Date as GrampsDate
+    return dict(
+        uniq=uniq,
+        makedate=makedate,
+        today=today,
+        size=size,
+        len=size,
+        flatten=flatten,
+        os=os,
+        sys=sys,
+        re=re,
+        collections=collections,
+        defaultdict=collections.defaultdict,
+        functools=functools,
+        Person=Person,
+        Family=Family,
+        Place=Place,
+        Event=Event,
+        Repository=Repository,
+        Source=Source,
+        Citation=Citation,
+        Note=Note,
+        Date=GrampsDate,
+#         NameType=NameType,
+#         PlaceType=PlaceType,
+#         EventType=EventType,
+        Media=Media,
+        DummyTxn=DummyTxn,
+        #commit=functools.partial(commit, dbstate.db, envvars["trans"]),
+        getargs=getargs_dialog,
+    )

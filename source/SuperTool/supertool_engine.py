@@ -1,7 +1,7 @@
 #
 # Gramps - a GTK+/GNOME based genealogy program
 #
-# Copyright (C) 2020 Kari Kujansuu
+# Copyright (C) 2021 Kari Kujansuu
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -23,11 +23,7 @@
 # Standard Python modules
 #
 # -------------------------------------------------------------------------
-import collections
 import functools
-import os
-import re
-import sys
 
 # -------------------------------------------------------------------------
 #
@@ -37,34 +33,14 @@ import sys
 from gramps.gen.const import GRAMPS_LOCALE as glocale, CUSTOM_FILTERS
 from gramps.gen.display.name import displayer as name_displayer
 from gramps.gen.display.place import displayer as place_displayer
-from gramps.gen.utils.string import gender as gender_map
-
-from gramps.gen.lib import Citation
-from gramps.gen.lib import Date as GrampsDate
-from gramps.gen.lib import Event
-from gramps.gen.lib import EventType
-from gramps.gen.lib import Family
-from gramps.gen.lib import Media
-from gramps.gen.lib import NameType
-from gramps.gen.lib import Note
 from gramps.gen.lib import Person
-from gramps.gen.lib import Place
-from gramps.gen.lib import PlaceType
-from gramps.gen.lib import Repository
-from gramps.gen.lib import Source
-
-from gramps.gen.lib.date import Today
-from gramps.gen.filters import FilterList
 
 _ = glocale.translation.gettext
-
-import supertool_utils
 
 gender_map = {
     Person.MALE: "M",
     Person.FEMALE: "F",
 }
-
 
 class SupertoolException(RuntimeError):
     pass
@@ -675,48 +651,6 @@ class MediaProxy(CommonProxy, AttributeProxy):
     def _commit(self, db, trans):
         db.commit_media(self.obj, trans)
 
-def uniq(items):
-    return list(set(items))
-
-
-def makedate(year, month=0, day=0, about=False):
-    d = GrampsDate()
-    d.set_yr_mon_day(year, month, day)
-    if about:
-        d.set_modifier(GrampsDate.MOD_ABOUT)
-    return DateProxy(d)
-
-
-def today():
-    return DateProxy(Today())
-
-
-def size(x):
-    return len(list(x))
-
-
-@gentolist
-def old_flatten(lists):
-    for sublist in lists:
-        for item in sublist:
-            yield item
-
-from types import GeneratorType
-
-@gentolist
-def flatten(a):
-    if type(a) in [list, GeneratorType]:
-        for x in a:
-            yield from flatten(x)
-    else:
-        yield a
-
-def commit(db, trans, proxyobj): # not used, possible future use
-    print("commit", trans, proxyobj.name)
-    if trans is not None:
-        proxyobj._commit(db, trans)
-
-
 class Filterfactory:
     filterdb = None
 
@@ -735,60 +669,7 @@ class Filterfactory:
         return filterfunc
 
 
-class DummyTxn:
-    "Implements nested transactions"
-
-    def __init__(self, trans):
-        if trans is None:
-            raise SupertoolException("Need a transaction (check 'Commit changes')")
-        self.trans = trans
-
-        class _Txn:
-            def __init__(self, msg, db):
-                pass
-
-            def __enter__(self):
-                return trans
-
-            def __exit__(self, *args):
-                return False
-
-        self.txn = _Txn
-
 def execute(dbstate, obj, code, proxyclass, env=None, exectype=None):
-    global_env = dict(
-        uniq=uniq,
-        makedate=makedate,
-        today=today,
-        size=size,
-        len=size,
-        flatten=flatten,
-        os=os,
-        sys=sys,
-        re=re,
-        dbstate=dbstate,
-        db=dbstate.db,
-        collections=collections,
-        defaultdict=collections.defaultdict,
-        functools=functools,
-        Person=Person,
-        Family=Family,
-        Place=Place,
-        Event=Event,
-        Repository=Repository,
-        Source=Source,
-        Citation=Citation,
-        Note=Note,
-        Date=GrampsDate,
-        NameType=NameType,
-        PlaceType=PlaceType,
-        EventType=EventType,
-        Media=Media,
-        DummyTxn=DummyTxn,
-        #commit=functools.partial(commit, dbstate.db, envvars["trans"]),
-        getargs=supertool_utils.getargs_dialog,
-    )
-    env.update(global_env)
     env["env"] = env
     env["code"] = code
     if obj:
