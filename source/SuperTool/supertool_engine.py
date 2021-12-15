@@ -219,6 +219,7 @@ class CommonProxy(Proxy):
 
 class NoteProxy(Proxy):
     namespace = "Note"
+    _attrs = set()
 
     def __init__(self, db, handle, note=None):
         Proxy.__init__(self, db, handle)
@@ -238,6 +239,7 @@ class NoteProxy(Proxy):
 
 class CitationProxy(Proxy, AttributeProxy):
     namespace = "Citation"
+    _attrs = set()
 
     def __init__(self, db, handle, citation=None):
         Proxy.__init__(self, db, handle)
@@ -288,6 +290,7 @@ class CitationProxy(Proxy, AttributeProxy):
 
 class SourceProxy(Proxy, AttributeProxy):
     namespace = "Source"
+    _attrs = set()
 
     def __init__(self, db, handle, source=None):
         Proxy.__init__(self, db, handle)
@@ -325,6 +328,7 @@ class SourceProxy(Proxy, AttributeProxy):
 
 class RepositoryProxy(Proxy):
     namespace = "Repository"
+    _attrs = set()
 
     def __init__(self, db, handle, repository=None):
         Proxy.__init__(self, db, handle)
@@ -355,6 +359,7 @@ class RepositoryProxy(Proxy):
 
 class PlaceProxy(CommonProxy):
     namespace = "Place"
+    _attrs = set()
 
     def __init__(self, db, place_handle, place=None):
         CommonProxy.__init__(self, db, place_handle)
@@ -410,6 +415,7 @@ class PlaceProxy(CommonProxy):
 
 class EventProxy(CommonProxy, AttributeProxy):
     namespace = "Event"
+    _attrs = set()
 
     def __init__(self, db, event_handle, event=None, role=None):
         CommonProxy.__init__(self, db, event_handle)
@@ -483,6 +489,7 @@ class EventProxy(CommonProxy, AttributeProxy):
 
 class PersonProxy(CommonProxy, AttributeProxy):
     namespace = "Person"
+    _attrs = set()
 
     def __init__(self, db, person_handle, person=None):
         CommonProxy.__init__(self, db, person_handle)
@@ -518,6 +525,7 @@ class PersonProxy(CommonProxy, AttributeProxy):
 
     @property
     def birth(self):
+        print("birth")
         eventref = self.person.get_birth_ref()
         if not eventref:
             return NullProxy()
@@ -592,6 +600,7 @@ class PersonProxy(CommonProxy, AttributeProxy):
 
 class FamilyProxy(CommonProxy, AttributeProxy):
     namespace = "Family"
+    _attrs = set()
 
     def __init__(self, db, family_handle, family=None):
         CommonProxy.__init__(self, db, family_handle)
@@ -633,6 +642,7 @@ class FamilyProxy(CommonProxy, AttributeProxy):
 
 class MediaProxy(CommonProxy, AttributeProxy):
     namespace = "Media"
+    _attrs = set()
 
     def __init__(self, db, media_handle, media=None):
         CommonProxy.__init__(self, db, media_handle)
@@ -668,6 +678,11 @@ class Filterfactory:
 
         return filterfunc
 
+def get_attrs(proxyclass, p):
+    if proxyclass._attrs: return         
+    for name in dir(proxyclass) + list(p.__dict__.keys()):  # this contains the @property methods
+        if not name.startswith("_"):
+            proxyclass._attrs.add(name)
 
 def execute(dbstate, obj, code, proxyclass, env=None, exectype=None):
     env["env"] = env
@@ -675,14 +690,11 @@ def execute(dbstate, obj, code, proxyclass, env=None, exectype=None):
     if obj:
         p = proxyclass(dbstate.db, obj.handle, obj)
         env["self"] = p
-        for name in dir(proxyclass) + list(
-            p.__dict__.keys()
-        ):  # this contains the @property methods
-            if name.startswith("_"):
-                continue
-            # print(">>",name)
-            value = getattr(p, name)
-            env[name] = value
+        env.obj = p
+        get_attrs(proxyclass, p)
+        env.attrs = proxyclass._attrs.copy()
+    else:
+        env.attrs = set()
     filterfactory = Filterfactory(dbstate.db)
     if proxyclass:
         env["filter"] = filterfactory.getfilter(proxyclass.namespace)

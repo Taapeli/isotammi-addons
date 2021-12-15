@@ -373,10 +373,23 @@ class DummyTxn:
                 return False
 
         self.txn = _Txn
+
+class Lazyenv(dict):
+    def __init__(self, **kwargs):
+        dict.__init__(self, **kwargs)
+        self.obj = None
+        self.attrs = set()
+    def __getitem__(self, attrname):
+        if attrname in self.attrs:
+            value = getattr(self.obj, attrname) # nullproxy)
+            return value
+        return dict.__getitem__(self, attrname)
+        #return self.env[attrname]
+
         
 def get_globals():
     from gramps.gen.lib import Date as GrampsDate
-    return dict(
+    return Lazyenv(
         uniq=uniq,
         makedate=makedate,
         today=today,
