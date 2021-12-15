@@ -375,13 +375,28 @@ class ScriptFile:
 class Result:
     def __init__(self):
         self.rows = []
+        self.coltypes = []
+        self.headers = []
+        self.max = 0
+        self.read_limit = 0
     def add_row(self, row):
         self.rows.append(row)
     def fetch_rows(self):
         for row in self.rows:
             yield [None] + row + [None]
         self.rows = []
-        
+    def set_coltypes(self, coltypes):
+        self.coltypes = [str] + coltypes # add str for IDs
+    def get_coltypes(self):
+        return  self.coltypes 
+    def set_headers(self, headers):
+        self.headers = ["ID"] + headers
+    def get_headers(self):
+        return self.headers 
+    def set_max(self, maxcount=0, read_limit=0):
+        self.max = maxcount             # max number of object to display
+        self.read_limit = read_limit    # max number of objects to retrieve
+
 class GrampsEngine:
     def __init__(
         self,
@@ -428,13 +443,17 @@ class GrampsEngine:
         # type: (Any,str,Dict[str,Any]) -> Tuple[bool, Dict[str,Any]]
         return self.category.execute_func(self.dbstate, obj, cond, env)
 
-    def generate_values(self, env):
+    def generate_values(self, env, result):
         # type: (Dict[str,Any]) -> Iterator[Tuple[Any,Dict[str,Any],List[Any]]]
         self.total_objects = len(self.selected_handles)
-        for handle in self.selected_handles:
+        for n,handle in enumerate(self.selected_handles):
+            if result.read_limit and n >= result.read_limit:
+                return
+
             if self.step:
                 if self.step():  # user clicked 'Cancel', stop
                     return
+
             obj = self.category.getfunc(handle)
             obj.commit_ok = True
             try:
@@ -454,10 +473,16 @@ class GrampsEngine:
                 if self.query.commit_changes and obj.commit_ok:
                     self.category.commitfunc(obj, self.trans)
     
+                for values in result.fetch_rows():
+                    yield None, env, values
+                    
+                if result.max and self.object_count >= result.max:
+                    return
+                self.object_count += 1
+
                 if self.query.summary_only:
                     continue
-
-                self.object_count += 1
+                
                 if self.query.expressions_compiled:
                     res, env = self.category.execute_func(
                         self.dbstate,
@@ -474,7 +499,7 @@ class GrampsEngine:
                 e.gramps_id = obj.gramps_id
                 raise e
             
-    def get_values(self, trans):
+    def get_values(self, trans, result):
         # type: (DbTxn) -> Generator
         self.trans = trans
 
@@ -487,7 +512,6 @@ class GrampsEngine:
         env["uistate"] = self.uistate
         env["dbstate"] = self.dbstate
         env["db"] = self.db
-        result = Result()
         env["result"] = result
 
         if self.query.initial_statements_compiled:
@@ -496,11 +520,11 @@ class GrampsEngine:
             )
             yield from result.fetch_rows()
 
-        for obj, env, values in self.generate_values(env):
+        for obj, env, values in self.generate_values(env, result):
             if not self.query.summary_only:
-                yield from result.fetch_rows()
+                #yield from result.fetch_rows()
                 yield values
-        yield from result.fetch_rows()
+        #yield from result.fetch_rows()
 
         if self.query.summary_only:
             if self.query.expressions_compiled:
@@ -570,29 +594,37 @@ class SuperTool(ManagedWindow):
         self.help_loaded = True
         print(json.dumps(data, indent=4))
 
-    def build_listview(self, res):
-        # type: (Tuple[Union[int,str,float],...]) -> None
+    def build_listview(self, values, result):
+        # type: (Tuple[Union[int,str,float],...], Result) -> None
         self.listview = Gtk.TreeView()
-        numcols = len(res)
+        numcols = len(values)
         renderer = Gtk.CellRendererText()
-        coltypes = []  # type: List[Union[Type[int],Type[str],Type[float]]]
-        for colnum in range(numcols - 1):
-            if colnum == 0:
-                title = "ID"
-                coltypes.append(str)
-            else:
-                title = "Value %s" % colnum
-                coltype = type(res[colnum])
+
+        coltypes = result.get_coltypes()  # type: List[Union[Type[int],Type[str],Type[float]]]
+        if not coltypes:
+            coltypes = [str] # for ID
+            for colnum in range(1, numcols - 1): # exclude ID and handle 
+                coltype = type(values[colnum])
                 if coltype in {int, str, float}:
                     coltypes.append(coltype)
                 else:
                     coltypes.append(str)
+        coltypes.append(str)  # for handle
+
+        headers = result.get_headers() # type List[str]
+        for colnum in range(numcols - 1):
+            if headers:
+                title = headers[colnum]
+            else:
+                if colnum == 0:
+                    title = "ID"
+                else:
+                    title = "Value %s" % colnum
             col = Gtk.TreeViewColumn(title, renderer, text=colnum, weight_set=True)
             col.set_clickable(True)
             col.set_resizable(True)
             col.set_sort_column_id(colnum)
             self.listview.append_column(col)
-        coltypes.append(str)  # for handle
 
         self.output_window.set_size_request(600, 400)
         self.output_window.add(self.listview)
@@ -925,6 +957,8 @@ class SuperTool(ManagedWindow):
         else:
             selected_handles = []
 
+        result = Result()
+
         with self.progress(
             "SuperTool", "Executing " + self.title.get_text(), len(selected_handles)
         ) as step:
@@ -936,11 +970,11 @@ class SuperTool(ManagedWindow):
                 query,
                 step,
             )
-            for values in gramps_engine.get_values(self.trans):
+            for values in gramps_engine.get_values(self.trans, result):
                 if not self.listview:
                     # can build this only after the column types are known
                     # (we assume the types are the same for all rows)
-                    self.build_listview(values)
+                    self.build_listview(values, result)
 
                 self.store.append(None, values)
                 n += 1
@@ -1365,10 +1399,11 @@ class Tool(tool.Tool):
             selected_handles,
             query,
         )
+        result = Result()
         if output_filename:
             f = csv.writer(open(output_filename, "w"))
         with DbTxn("Generating values", self.db) as trans:
-            for values in gramps_engine.get_values(trans):
+            for values in gramps_engine.get_values(trans, result):
                 if output_filename:
                     f.writerow(values)
                 else:
