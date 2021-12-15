@@ -406,6 +406,7 @@ class GrampsEngine:
         selected_handles,
         query,
         step=None,
+        env=None,
     ):
         # type: (DbState, DisplayState, Category, List[str], Query, Callable) -> None
         self.dbstate = dbstate
@@ -416,6 +417,9 @@ class GrampsEngine:
         self.selected_handles = selected_handles
         self.query = query
         self.step = step
+        if env is None: 
+            env = {}
+        self.env = env
         self.query.initialize()
 
     def generate_rows(self, res):
@@ -513,6 +517,7 @@ class GrampsEngine:
         env["dbstate"] = self.dbstate
         env["db"] = self.db
         env["result"] = result
+        env.update(self.env)
 
         if self.query.initial_statements_compiled:
             value, env = self.category.execute_func(
