@@ -520,6 +520,18 @@ class PersonProxy(CommonProxy, AttributeProxy):
         return [self.person.get_primary_name()] + self.person.get_alternate_names()
 
     @property
+    def surname(self):
+        return self.person.get_primary_name().get_surname()
+
+    @property
+    def firstname(self):
+        return self.person.get_primary_name().get_first_name()
+
+    @property
+    def suffix(self):
+        return self.person.get_primary_name().get_suffix()
+
+    @property
     def gender(self):
         return gender_map.get(self.person.gender, "U")
 
