@@ -519,6 +519,13 @@ class GrampsEngine:
         env["result"] = result
         env.update(self.env)
 
+        if self.uistate:
+            handle = self.uistate.get_active('Person')
+            from supertool_engine import PersonProxy
+            env["active_person"] = PersonProxy(self.db, handle)
+        else:
+            env["active_person"] = None
+
         if self.query.initial_statements_compiled:
             value, env = self.category.execute_func(
                 self.dbstate, None, self.query.initial_statements_compiled, env, "exec"
