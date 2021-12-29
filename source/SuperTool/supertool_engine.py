@@ -387,6 +387,11 @@ class PlaceProxy(CommonProxy):
     def longname(self):
         return place_displayer.display(self.db, self.place)
 
+    @listproperty
+    def altnames(self):
+        for pn in self.place.get_alternative_names():
+            yield pn.get_value()
+
     @property
     def type(self):
         placetype = self.place.get_type()
@@ -537,7 +542,6 @@ class PersonProxy(CommonProxy, AttributeProxy):
 
     @property
     def birth(self):
-        print("birth")
         eventref = self.person.get_birth_ref()
         if not eventref:
             return NullProxy()
@@ -710,6 +714,7 @@ def execute(dbstate, obj, code, proxyclass, env=None, exectype=None):
     filterfactory = Filterfactory(dbstate.db)
     if proxyclass:
         env["filter"] = filterfactory.getfilter(proxyclass.namespace)
+
     if exectype == "exec":
         res = exec(code, env)
     else:
