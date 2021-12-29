@@ -47,6 +47,8 @@ from gramps.gen.lib import Place
 from gramps.gen.lib import Repository
 from gramps.gen.lib import Source
 
+from gramps.gen.lib import Date as GrampsDate
+
 from gramps.gui.editors import EditCitation
 from gramps.gui.editors import EditEvent
 from gramps.gui.editors import EditFamily
@@ -388,7 +390,6 @@ class Lazyenv(dict):
 
         
 def get_globals():
-    from gramps.gen.lib import Date as GrampsDate
     return Lazyenv(
         uniq=uniq,
         makedate=makedate,
