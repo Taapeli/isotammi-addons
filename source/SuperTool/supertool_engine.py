@@ -120,13 +120,13 @@ class AttributeProxy:
 @functools.total_ordering
 class NullProxy:
     def __getattr__(self, attrname):
-        return NullProxy()
+        return nullproxy
 
     def __getitem__(self, i):
-        return NullProxy()
+        return nullproxy
 
     def __add__(self, other):
-        return NullProxy()
+        return nullproxy
 
     def __sub__(self, other):
         return 0
@@ -156,7 +156,7 @@ class NullProxy:
         return False
 
     def __call__(self, *args, **kwargs):
-        return NullProxy()
+        return nullproxy
 
     def __iter__(self):
         return self
@@ -196,7 +196,7 @@ class DateProxy:
             return int(self.dateobj - other.dateobj)
         if isinstance(other, int):
             return DateProxy(self.dateobj - other)
-        return NullProxy()
+        return nullproxy
 
     def __repr__(self):
         return str(self.dateobj)
@@ -261,7 +261,7 @@ class CitationProxy(Proxy, AttributeProxy):
     def source(self):
         handle = self.obj.get_reference_handle()
         if not handle:
-            return NullProxy()
+            return nullproxy
         return SourceProxy(self.db, handle)
 
     @listproperty
@@ -380,7 +380,7 @@ class PlaceProxy(CommonProxy):
     def name(self):
         placename = self.place.get_name()
         if placename is None:
-            return NullProxy()
+            return nullproxy
         return placename.get_value()
 
     @property
@@ -447,14 +447,14 @@ class EventProxy(CommonProxy, AttributeProxy):
     def place(self):
         handle = self.event.get_place_handle()
         if not handle:
-            return NullProxy()
+            return nullproxy
         return PlaceProxy(self.db, handle)
 
     @property
     def placename(self):
         place_handle = self.event.get_place_handle()
         if not place_handle:
-            return NullProxy()
+            return nullproxy
         place = self.db.get_place_from_handle(place_handle)
         return place_displayer.display_event(self.db, self.event)
 
@@ -548,14 +548,14 @@ class PersonProxy(CommonProxy, AttributeProxy):
     def birth(self):
         eventref = self.person.get_birth_ref()
         if not eventref:
-            return NullProxy()
+            return nullproxy
         return EventProxy(self.db, eventref.ref)
 
     @property
     def death(self):
         eventref = self.person.get_death_ref()
         if not eventref:
-            return NullProxy()
+            return nullproxy
         return EventProxy(self.db, eventref.ref)
 
     @listproperty
@@ -603,14 +603,14 @@ class PersonProxy(CommonProxy, AttributeProxy):
         for handle in self.person.get_parent_family_handle_list():
             f = FamilyProxy(self.db, handle)
             return f.mother
-        return NullProxy()
+        return nullproxy
 
     @property
     def father(self):
         for handle in self.person.get_parent_family_handle_list():
             f = FamilyProxy(self.db, handle)
             return f.father
-        return NullProxy()
+        return nullproxy
 
     @listproperty
     def citations(self):
@@ -644,14 +644,14 @@ class FamilyProxy(CommonProxy, AttributeProxy):
     def father(self):
         handle = self.family.get_father_handle()
         if handle is None:
-            return NullProxy()
+            return nullproxy
         return PersonProxy(self.db, handle)
 
     @property
     def mother(self):
         handle = self.family.get_mother_handle()
         if handle is None:
-            return NullProxy()
+            return nullproxy
         return PersonProxy(self.db, handle)
 
     @listproperty
