@@ -431,7 +431,11 @@ class EventProxy(CommonProxy, AttributeProxy):
         self.obj = self.event
         self.gramps_id = self.event.gramps_id
         self.type = self.event.get_type().xml_str()
-        self.date = DateProxy(self.event.get_date_object())
+        dateobj = self.event.get_date_object()
+        if dateobj.sortval:
+            self.date = DateProxy(dateobj)
+        else:
+            self.date = nullproxy
         self.description = self.event.description
         self.role = role
 
