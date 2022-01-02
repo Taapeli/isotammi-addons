@@ -1384,7 +1384,13 @@ class Tool(tool.Tool):
         if not os.path.exists(script_filename):
             print("Script file '{}' does not exist".format(script_filename))
             return
-        output_filename = self.options.handler.options_dict.get("output")
+        output_param = self.options.handler.options_dict.get("output")
+        if output_param.endswith(":a"):
+            output_filename = output_param[:-2]
+            open_mode = "a"
+        else:
+            output_filename = output_param
+            open_mode = "w"
         # print("script_filename:", script_filename)
         scriptfile = ScriptFile()
         # print("scriptfile:", scriptfile)
@@ -1413,7 +1419,7 @@ class Tool(tool.Tool):
         )
         result = Result()
         if output_filename:
-            f = csv.writer(open(output_filename, "w"))
+            f = csv.writer(open(output_filename, open_mode))
         with DbTxn("Generating values", self.db) as trans:
             for values in gramps_engine.get_values(trans, result):
                 if output_filename:
