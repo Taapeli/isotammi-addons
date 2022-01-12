@@ -5,6 +5,10 @@
             "UI state  object"
         ],
         [
+            "active_person",
+            "Active person"
+        ],
+        [
             "user",
             "Gramps internal user object"
         ],
@@ -91,6 +95,10 @@
             "Person's father"
         ],
         [
+            "firstname",
+            "First name in the person's primary name"
+        ],
+        [
             "gender",
             "Gender as a string: M, F or U"
         ],
@@ -141,6 +149,14 @@
         [
             "spouses",
             "List of person's spouses"
+        ],
+        [
+            "suffix",
+            "Suffix in the person's primary name"
+        ],
+        [
+            "surname",
+            "Surname in the person's primary name"
         ],
         [
             "tags",
@@ -279,6 +295,10 @@
         [
             "self",
             "This PlaceProxy object"
+        ],
+        [
+            "altnames",
+            "List of alternate names for this place"
         ],
         [
             "citations",

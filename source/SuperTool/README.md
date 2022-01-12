@@ -29,6 +29,7 @@ Author: kari.kujansuu@gmail.com<br>
 <br> [Proxy objects](#proxy-objects)
 <br> [Date arithmetic](#date-arithmetic)
 <br> [Include files](#include-files)
+<br> [The 'result' object](#the-result-object)
 <br> [Settings](#settings)
 <br> [More examples](#more-examples)
 - [Reference](#reference)
@@ -102,6 +103,8 @@ For example, in the Person/People category the following variables are defined f
 
 * gramps_id
 * name
+* surname
+* firstname
 * names
 * nameobjs
 * birth
@@ -151,7 +154,6 @@ The last predefined variable (person/obj) refers to the actual Gramps Person obj
 In addition to the variables mentioned above, the following general/global variables and functions are also defined:
 
 * os, sys, re, functools, collections etc - standard Python modules that might be useful (you can explicitly import any standard module but these are available without importing)
-* commit - commits database changes
 * db - reference to the database object
 * trans - the current transaction
 * Person, Family, Event etc. - these are the Gramps internal classes
@@ -203,7 +205,7 @@ There is also a "Copy" button which will copy the result list to clipboard in th
 
 ## Title field
 
-The first input field ("Title") gives a name to the query. This title is saved in the script file (see below) and should be a short description of the operation that is performed. The title is also used as the name of the custom filter created with the [Save as filter](#saving-the-query-as-a-custom-filter) command (see below).
+The first input field ("Title") gives a name to the query. This title is used as the default name for a saved script file (see below) and should be a short description of the operation that is performed. The title is also used as the name of the custom filter created with the [Save as filter](#saving-the-query-as-a-custom-filter) command (see below).
 
 ## Initialization statements
 
@@ -259,6 +261,8 @@ If the user presses "Cancel" then the query is canceled:
 This feature is quite rudimentary: only simple string values are supported. The feature may be enhanced or changed in the future. It does work with 
 [saved filters](#saving-the-query-as-a-custom-filter) so this is a way to parameterize filters. But canceling a getargs call when called from a filter does not work cleanly - it will throw an unexpected exception.
 
+The 'getargs' function can also be used in the command line mode. 
+
 ## Modifying the database
 
 You can modify the database by supplying suitable Python statements in the "Statements executed for each object" section. To be able to do that you of course have to know which Gramps functions to call to make the modifications correctly. That is, you need to know something about Gramps internals. See e.g. the documentation at https://www.gramps-project.org/docs/gen/gen_lib.html.
@@ -269,7 +273,7 @@ For example, this will set the gender of selected people to FEMALE:
 
 ![SuperTool](SuperTool-set-gender.png)
 
-Note that you cannot change the properties of the objects by simply assigning new values to properties of *Proxy* objects. For example, in the People category, this does not work:
+Note that you cannot change the properties of the objects by simply assigning new values to properties of *Proxy* objects (see below). For example, in the People category, this does not work:
 
 ```python
 gender = Person.FEMALE
@@ -293,7 +297,7 @@ All changes must also be "committed". If you check the "Commit changes" checkbox
    db.commit_person(person, trans)
 ```
 
-But this is not necessary or recommended. However, if you make changes to *other* objects than the currently selected objects then you must call  a commit method. For example, if you process objects in the Family category and make changes to children of the family then you must commit the changes explicitly, e.g. something like this:
+But this is not necessary or recommended. However, if you make changes to *other* objects than the currently selected objects then you must call a commit method. For example, if you process objects in the Family category and make changes to children of the family then you must commit the changes explicitly, e.g. something like this:
 
     for child in children:
         if some-condition:
@@ -351,9 +355,12 @@ Then in the subsequent sections you can use the filter for example like:
  
 ## Running from the command line
 
-The tool can also be run from the command line. In that case you have to first save a query in a script file with the "Save" command. That file is used as input file for the tool. Output will go to a CSV file. Of course you also have to supply a family tree (database) name. For example this command will process the family tree named "example_tree", use the script file "old_people.script" and the output will go to a csv file named old_people.csv:
+The tool can also be run from the command line. In that case you have to first save a query in a script file with the "Save" command. That file is used as input file for the tool. Output will go to the screen or to a CSV file. Of course you also have to supply a family tree (database) name or an input file. For example this command will process the family tree named "example_tree", use the script file "old_people.script" and the output will go to a csv file named old_people.csv:
 
     gramps -O example_tree -a tool -p name=SuperTool,script=old_people.script,output=old_people.csv
+
+This example will read a .gramps file, create a temporary family tree and the run the script:
+    gramps -i example_tree.gramps -a tool -p name=SuperTool,script=old_people.script,output=old_people.csv
 
 The reference section will list all parameters that can be used in the command line mode. In this mode the tool always processes all objects of the given type. The type is read from the script file where it was stored when the file was saved.
 
@@ -400,6 +407,15 @@ Dates can also be compared:
         ...
 ```
 
+In many cases you should first check that a date exists (ie. the corresponding event has a defined date). Otherwise the date comparisons and arithmetic might not work as expected. This can be done like this:
+
+```python
+    # died under the age of one year
+    if birth.date and death.date and death.date <= birth.date + 1:
+        ...
+```
+
+
 ## Include files
 
 The Python statement parts can include code from a file with the syntax
@@ -421,6 +437,26 @@ The text from the specified file is included 'as-is' to the point where the incl
 The included code cannot contain @include statements.
 
 This is intended to allow including possibly complex auxiliary functions without cluttering the user interface. The included code naturally has access to all pre-defined variables. The SuperTool installation will eventually contain a few include files with generally useful functions. 
+
+## The 'result' object
+
+This is an experimental feature. There is a pre-defined variable 'result' which is an object with the following methods:
+- add_row()
+- set_coltypes()
+- set headers()
+- set_max()
+
+Normally the rows displayed will correspond to the processed Gramps objects. With 'result.add_row(data)' you can add arbitrary data to the result. The 'data' argument must be a list with values to be displayed. The number of types of the values must be consistent: there must be the same number of values in each call of add_row and the number must be the same as the number of items in the "Expressions to display" field (if any). The types (str, int or float) must also match.
+
+Normally the types of the columns are detected when the first row is generated. The subsequent rows must use the same types. The 'set_coltypes' can be called in advance to set the column types. It is not clear if this is ever needed, though :-)
+
+Normally the column headers are "Value 1", "Value 2" etc. With 'set_headers' you can specify different headers. For example;
+ 
+```python
+    result.set_headers(["Name", "Age"])
+```
+ 
+With 'set_max' you can specify the maximum number of rows displayed. The default maximum is 1000 rows as explained above and you cannot set the maximum greater that 1000. This maximum takes effect after the 'Filter' is processed. The method has also a second parameter 'read_limit' that specifies the maximum number of objects to process before filtering.
 
 ## Settings
 
@@ -547,6 +583,7 @@ citations            | List of citations                                | list o
 death                | Death event                                      | EventProxy
 events               | List of all events attached to this person       | list of EventProxy objects
 families             | List of families where this person is a parent   | list of FamilyProxy objects
+firstname            | First name in the person's primary name          | string
 father               | Person's father                                  | PersonProxy object (or Nullproxy)
 gender               | Gender as as string: male, female or unknown     | string
 gramps_id            | Gramps id, e.g. I0123                            | string
@@ -562,6 +599,8 @@ parents              | List of person's parents                         | list o
 person               | This Gramps Person object (same as 'obj')        | Person object
 self                 | This PersonProxy object                          | PersonProxy
 spouses              | List of person's spouses                         | list of PersonProxy objects
+suffix               | Suffix name in the person's primary name         | string
+surname              | Surname in the person's primary name             | string
 tags                 | List of tags as strings                          | list of strings
 
 
@@ -569,6 +608,7 @@ tags                 | List of tags as strings                          | list o
 
 property             | description                                  | type
 -------------------- | ------------------------------------------   | --------------------
+altnames             | List of alternate names                      | list of strings
 citations            | List of citations                            | list of CitationProxy objects
 enclosed_by          | List of places that enclose this place       | list of PlaceProxy objects
 encloses             | List of places that this place encloses      | list of PlaceProxy objects
@@ -624,6 +664,7 @@ title                | Source title                                   | string
 
 property             | description                                                                           | 
 -------------------- | -----------------------------------------------------------------------------------   | 
+active_person        | Active person                                                                         | 
 db                   | Database object                                                                       | 
 dbstate              | Database state  object                                                                | 
 filter               | Function that returns a custom filter by name                                         | 
@@ -642,7 +683,30 @@ uniq                 | Function that returns unique elements from a list        
 
 ## Command line options
 
-to be added
+The basic command line syntax is like:
+
+    gramps -O example_tree -a tool -p name=SuperTool,script=old_people.script,output=old_people.csv
+
+or
+
+    gramps -i example_tree.gramps -a tool -p name=SuperTool,script=old_people.script,output=old_people.csv
+
+See "gramps -h" or https://gramps-project.org/wiki/index.php/Gramps_5.1_Wiki_Manual_-_Command_Line.
+
+Possible options in the "-p" (or --options) argument:
+
+    script
+        Specifies the script file to use. Required.
+
+    output
+        Specifies the output CSV file. Optional. If not used then the output will go to the screen.
+
+    category
+        Specifies the category (People, Families, Event etc). Overrides the category in the script file. Optional. 
+
+    args
+        Free form argument that the script can access (as variable 'args'). Optional. Like all options cannot contain spaces or commas. 
+
 
 ## Sample files
 
