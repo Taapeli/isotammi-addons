@@ -23,7 +23,7 @@ import shutil
 from _io import BytesIO
 import tarfile
 import time
-
+from xml.sax.saxutils import escape
 try:
     import gzip
     _gzip_ok = 1
@@ -180,12 +180,12 @@ class XmlWriter(GrampsXmlWriter):
         for itemname in configman.get_section_settings("researcher"):
             x = configman.get("researcher."+itemname)
             print(itemname,"=",x)
-            self.write_line(itemname, x, 4)
+            self.write_line(itemname, escape(x), 4)
         self.g.write("      </researcher-info>\n")
         print(self.material_type)
         self.write_line("material_type", self.material_type, 3)
         self.g.write("      <user_description>\n")
-        self.g.write(self.description+"\n")
+        self.g.write(escape(self.description)+"\n")
         self.g.write("      </user_description>\n")
         self.g.write("    </isotammi>\n")
 
