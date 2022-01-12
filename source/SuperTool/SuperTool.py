@@ -1410,12 +1410,15 @@ class Tool(tool.Tool):
             selected_handles = category.get_all_objects_func()
         else:
             selected_handles = []
+
+        args = self.options.handler.options_dict["args"]
         gramps_engine = GrampsEngine(
             self.dbstate,
             self.user,
             category,
             selected_handles,
             query,
+            env={"args":args}
         )
         result = Result()
         if output_filename:
@@ -1456,6 +1459,7 @@ class Options(tool.ToolOptions):
             script="",
             output="",
             category="",
+            args="",
         )
         self.options_help = dict(
             script=(
@@ -1479,4 +1483,5 @@ class Options(tool.ToolOptions):
                 ],
                 False,
             ),
+            args=("=str", "Any string argument", "string"),
         )
