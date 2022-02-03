@@ -382,10 +382,13 @@ class Lazyenv(dict):
         self.obj = None
         self.attrs = set()
     def __getitem__(self, attrname):
+        if attrname in self:
+            return dict.__getitem__(self, attrname)
         if attrname in self.attrs:
             value = getattr(self.obj, attrname) # nullproxy)
             return value
-        return dict.__getitem__(self, attrname)
+        raise KeyError
+        #return dict.__getitem__(self, attrname)
         #return self.env[attrname]
 
         
