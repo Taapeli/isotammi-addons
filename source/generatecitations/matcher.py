@@ -24,6 +24,8 @@ def matchline(notelines):
     if m: return m
     m = match_sshy(line)
     if m: return m
+    m = match_sshy2(line)
+    if m: return m
     m = match_svar(line)
     if m: return m
     m = match_kansalliskirjasto(notelines)
@@ -56,6 +58,19 @@ def match_sshy(line):
     details = "SSHY: {} / Viitattu {}".format(url,date)
     return Match(line,reponame,sourcetitle,citationpage,details,url,date)
 
+def match_sshy2(line):
+# Tampereen tuomiokirkkoseurakunta rippikirja 1795-1800 (TK630 I Aa:2)  N:o 1 Häggman, Kask, Grefvelin ; SSHY http://www.sukuhistoria.fi/sshy/sivut/jasenille/paikat.php?bid=15950&pnum=8 / Viitattu 03.02.2022
+# Alastaro rippikirja 1751-1757 (JK478 I Aa1:3)  Sivu 10 Laurois Nepponen ; SSHY http://www.sukuhistoria.fi/sshy/sivut/jasenille/paikat.php?bid=15846&pnum=13 / Viitattu 03.02.2022
+    regex_sshy = re.compile("(.+) (\w+ \d{4}-\d{4} \(.+\)) (.+); SSHY (http.+) / Viitattu (.+)")
+    m = regex_sshy.match(line)
+    if not m: return None
+    reponame = m.group(1)            
+    sourcetitle = "{} {}".format(reponame,m.group(2))
+    citationpage = m.group(3).strip()
+    url = m.group(4)
+    date = m.group(5)
+    details = "SSHY: {} / Viitattu {}".format(url,date)
+    return Match(line,reponame,sourcetitle,citationpage,details,url,date)
 
 def match_svar(line):
 # Hajoms kyrkoarkiv, Husförhörslängder, SE/GLA/13195/A I/12 (1861-1872), bildid: C0045710_00045
