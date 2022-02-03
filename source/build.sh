@@ -1,1 +1,1 @@
-python3.6 build.py
+python3.8 build.py
