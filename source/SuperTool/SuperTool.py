@@ -256,10 +256,12 @@ class Query:
         self.unwind_lists = False
         self.commit_changes = False
         self.summary_only = False
+        self.filename = None
+        self.dirname = None
 
     def initialize(self):
-        self.initial_statements_with_includes, self.initial_statements_files = process_includes(self.initial_statements)
-        self.statements_with_includes, self.statements_files = process_includes(self.statements)
+        self.initial_statements_with_includes, self.initial_statements_files = process_includes(self.initial_statements, self.dirname)
+        self.statements_with_includes, self.statements_files = process_includes(self.statements, self.dirname)
 
         self.initial_statements_compiled = compile_statements(
             self.initial_statements_with_includes, "initial_statements"
@@ -281,6 +283,8 @@ class ScriptFile:
     def load(self, filename, loadtitle=True):
         # type: (str, bool) -> Query
         query = Query()
+        query.filename = filename
+        query.dirname = os.path.split(filename)[0]
         if filename.endswith(".json"):
             data = self.__readdata_json(filename)
         else:

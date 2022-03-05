@@ -423,12 +423,12 @@ The Python statement parts can include code from a file with the syntax
     @include file-name
     
 This code must be the only text on a line and it must start from the first column and contain exactly the text "@include" (in lower case, with the at sign included). If the file name is not fully qualified (i.e an absolute path) then SuperTool will look at three places:
+* in the same folder/directory where the script file is (if the query is loaded from a script file)
 * in a folder/directory called "supertool" under the user's home directory ($HOME/supertool)
 * in the place where SuperTool is installed (i.e. $HOME/.gramps/gramps51/plugins/SuperTool on Linux)
 * the current directory for the Gramps process (usually the user's home directory)
 
-However, the first directory can be changed from [settings](#settings)
-.
+However, the "supertool" directory can be changed from [settings](#settings)
 
 So it is intended that the user can store often used include files in her own "supertool" folder.
 

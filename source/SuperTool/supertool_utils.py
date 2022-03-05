@@ -196,10 +196,15 @@ def get_category_info(db, category_name):
         info.proxyclass = engine.MediaProxy
     return info
 
-def find_fullname(fname, default_location):
+def find_fullname(fname, scriptfile_location, default_location):
     mydir = os.path.split(__file__)[0]
     fullnames = []
-    for dirname in [default_location, mydir]:
+    locations = []
+    if scriptfile_location:
+        locations.append(scriptfile_location)
+    locations.append(default_location)
+    locations.append(mydir)
+    for dirname in locations:
         fullname = os.path.join(dirname, fname)
         fullname = os.path.abspath(fullname)
         if fullname not in fullnames:
@@ -217,7 +222,7 @@ def find_fullname(fname, default_location):
     raise engine.SupertoolException(msg)
 
 
-def process_includes(code):
+def process_includes(code, scriptfile_location):
     # type (str) -> Tuple[str, List[Tuple(str,int,int)]]
     config.load()
     default_location = config.get("defaults.include_location")
@@ -233,7 +238,7 @@ def process_includes(code):
             if len(parts) == 1:
                 raise engine.SupertoolException("Include file name missing")
             fname = parts[1].strip()
-            fullname = find_fullname(fname, default_location)
+            fullname = find_fullname(fname, scriptfile_location, default_location)
             startline = len(newlines)+1
             for line2 in open(fullname):
                 newlines.append(line2)
