@@ -61,7 +61,7 @@ def match_sshy(line):
 def match_sshy2(line):
 # Tampereen tuomiokirkkoseurakunta rippikirja 1795-1800 (TK630 I Aa:2)  N:o 1 Häggman, Kask, Grefvelin ; SSHY http://www.sukuhistoria.fi/sshy/sivut/jasenille/paikat.php?bid=15950&pnum=8 / Viitattu 03.02.2022
 # Alastaro rippikirja 1751-1757 (JK478 I Aa1:3)  Sivu 10 Laurois Nepponen ; SSHY http://www.sukuhistoria.fi/sshy/sivut/jasenille/paikat.php?bid=15846&pnum=13 / Viitattu 03.02.2022
-    regex_sshy = re.compile("(.+) (\w+ \d{4}-\d{4} \(.+\)) (.+); SSHY (http.+) / Viitattu (.+)")
+    regex_sshy = re.compile("(.+) (\w+ \d{4}-\d{4} \(.+?\)) (.+); SSHY (http.+) / Viitattu (.+)")
     m = regex_sshy.match(line)
     if not m: return None
     reponame = m.group(1)            
