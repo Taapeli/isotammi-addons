@@ -326,11 +326,11 @@ def makedate(year, month=0, day=0, about=False):
     d.set_yr_mon_day(year, month, day)
     if about:
         d.set_modifier(GrampsDate.MOD_ABOUT)
-    return DateProxy(d)
+    return engine.DateProxy(d)
 
 
 def today():
-    return DateProxy(Today())
+    return engine.DateProxy(Today())
 
 
 def size(x):
