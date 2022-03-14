@@ -1,21 +1,21 @@
 {'t': 'Gramplet', 'i': 'isotammiconfig', 'n': 'Isotammen asetukset', 'v': '1.1.1', 'g': '5.0', 'd': 'Isotammen asetukset', 'z': 'IsotammiConfig.addon.tgz'}
 {'t': 'Gramplet', 'i': 'Multimergegramplet Gramplet', 'n': 'Multimerge Gramplet', 'v': '1.1.0', 'g': '5.0', 'd': 'Gramplet ', 'z': 'multimergegramplet.addon.tgz'}
 {'t': 'Tool', 'i': 'zipinstall', 'n': 'ZipInstall', 'v': '1.1.2', 'g': '5.0', 'd': 'Install a plugin from a ZIP file', 'z': 'zipinstall.addon.tgz'}
-{'t': 'Tool', 'i': 'generatecitations', 'n': 'Muodosta lähdeviitteet lisätietojen perusteella', 'v': '1.1.2', 'g': '5.0', 'd': 'Muodosta lähdeviitteet lisätietojen perusteella', 'z': 'generatecitations.addon.tgz'}
+{'t': 'Tool', 'i': 'generatecitations', 'n': 'Muodosta lähdeviitteet lisätietojen perusteella', 'v': '1.1.3', 'g': '5.0', 'd': 'Muodosta lähdeviitteet lisätietojen perusteella', 'z': 'generatecitations.addon.tgz'}
 {'t': 'Gramplet', 'i': 'PropertyEditor', 'n': 'OminaisuusMuokkain', 'v': '1.1.0', 'g': '5.0', 'd': 'Gramplet jolla voi muokata usean kohteen ominaisuuksia samalla kertaa', 'z': 'PropertyEditor.addon.tgz'}
 {'t': 'Tool', 'i': 'NameMergeTool', 'n': 'Name Merge Tool', 'v': '1.0.7', 'g': '5.0', 'd': 'Merge names', 'z': 'NameMergeTool.addon.tgz'}
 {'t': 'Exporter', 'i': 'isotammiexportxml', 'n': 'Isotammi XML export', 'v': '1.0.4', 'g': '5.0', 'd': 'Isotammi XML export', 'z': 'isotammiexportxml.addon.tgz'}
 {'t': 'Gramplet', 'i': 'PlaceTool', 'n': 'Paikkatyökalu', 'v': '1.1.3', 'g': '5.0', 'd': 'Gramplet, joka käsittelee useita paikkoja kerrallaan', 'z': 'PlaceTool.addon.tgz'}
-{'t': 'Tool', 'i': 'SuperTool', 'n': 'SuperTool', 'v': '1.1.9', 'g': '5.0', 'd': '', 'z': 'SuperTool.addon.tgz'}
-{'t': 'Rule', 'i': 'person-genfilter', 'n': 'Generic person filter', 'v': '1.1.9', 'g': '5.0', 'd': 'Generic person filter', 'z': 'SuperTool.addon.tgz'}
-{'t': 'Rule', 'i': 'family-genfilter', 'n': 'Generic family filter', 'v': '1.1.9', 'g': '5.0', 'd': 'Generic family filter', 'z': 'SuperTool.addon.tgz'}
-{'t': 'Rule', 'i': 'place-genfilter', 'n': 'Generic place filter', 'v': '1.1.9', 'g': '5.0', 'd': 'Generic place filter', 'z': 'SuperTool.addon.tgz'}
-{'t': 'Rule', 'i': 'event-genfilter', 'n': 'Generic event filter', 'v': '1.1.9', 'g': '5.0', 'd': 'Generic event filter', 'z': 'SuperTool.addon.tgz'}
-{'t': 'Rule', 'i': 'citation-genfilter', 'n': 'Generic citation filter', 'v': '1.1.9', 'g': '5.0', 'd': 'Generic citation filter', 'z': 'SuperTool.addon.tgz'}
-{'t': 'Rule', 'i': 'source-genfilter', 'n': 'Generic source filter', 'v': '1.1.9', 'g': '5.0', 'd': 'Generic source filter', 'z': 'SuperTool.addon.tgz'}
-{'t': 'Rule', 'i': 'repository-genfilter', 'n': 'Generic repository filter', 'v': '1.1.9', 'g': '5.0', 'd': 'Generic repository filter', 'z': 'SuperTool.addon.tgz'}
-{'t': 'Rule', 'i': 'note-genfilter', 'n': 'Generic note filter', 'v': '1.1.9', 'g': '5.0', 'd': 'Generic note filter', 'z': 'SuperTool.addon.tgz'}
-{'t': 'Rule', 'i': 'media-genfilter', 'n': 'Generic media filter', 'v': '1.1.9', 'g': '5.0', 'd': 'Generic media filter', 'z': 'SuperTool.addon.tgz'}
+{'t': 'Tool', 'i': 'SuperTool', 'n': 'SuperTool', 'v': '1.2.0', 'g': '5.0', 'd': '', 'z': 'SuperTool.addon.tgz'}
+{'t': 'Rule', 'i': 'person-genfilter', 'n': 'Generic person filter', 'v': '1.2.0', 'g': '5.0', 'd': 'Generic person filter', 'z': 'SuperTool.addon.tgz'}
+{'t': 'Rule', 'i': 'family-genfilter', 'n': 'Generic family filter', 'v': '1.2.0', 'g': '5.0', 'd': 'Generic family filter', 'z': 'SuperTool.addon.tgz'}
+{'t': 'Rule', 'i': 'place-genfilter', 'n': 'Generic place filter', 'v': '1.2.0', 'g': '5.0', 'd': 'Generic place filter', 'z': 'SuperTool.addon.tgz'}
+{'t': 'Rule', 'i': 'event-genfilter', 'n': 'Generic event filter', 'v': '1.2.0', 'g': '5.0', 'd': 'Generic event filter', 'z': 'SuperTool.addon.tgz'}
+{'t': 'Rule', 'i': 'citation-genfilter', 'n': 'Generic citation filter', 'v': '1.2.0', 'g': '5.0', 'd': 'Generic citation filter', 'z': 'SuperTool.addon.tgz'}
+{'t': 'Rule', 'i': 'source-genfilter', 'n': 'Generic source filter', 'v': '1.2.0', 'g': '5.0', 'd': 'Generic source filter', 'z': 'SuperTool.addon.tgz'}
+{'t': 'Rule', 'i': 'repository-genfilter', 'n': 'Generic repository filter', 'v': '1.2.0', 'g': '5.0', 'd': 'Generic repository filter', 'z': 'SuperTool.addon.tgz'}
+{'t': 'Rule', 'i': 'note-genfilter', 'n': 'Generic note filter', 'v': '1.2.0', 'g': '5.0', 'd': 'Generic note filter', 'z': 'SuperTool.addon.tgz'}
+{'t': 'Rule', 'i': 'media-genfilter', 'n': 'Generic media filter', 'v': '1.2.0', 'g': '5.0', 'd': 'Generic media filter', 'z': 'SuperTool.addon.tgz'}
 {'t': 'Tool', 'i': 'NameEditorTool', 'n': 'Nimien  muokkaustyökalu', 'v': '1.0.2', 'g': '5.0', 'd': 'Muokkaa nimiä', 'z': 'NameEditorTool.addon.tgz'}
 {'t': 'Gramplet', 'i': 'Dates', 'n': 'Päivämäärät', 'v': '1.1.3', 'g': '5.0', 'd': 'Päivämäärät', 'z': 'Dates.addon.tgz'}
 {'t': 'Gramplet', 'i': 'DeepConnectionsGraph', 'n': 'Syväsuhteet kaaviona', 'v': '1.1.3', 'g': '5.0', 'd': 'DeepConnectionsGraph Gramplet', 'z': 'DeepConnectionsGraph.addon.tgz'}
