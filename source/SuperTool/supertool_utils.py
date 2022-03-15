@@ -225,7 +225,7 @@ def find_fullname(fname, scriptfile_location, default_location):
     raise engine.SupertoolException(msg)
 
 
-def process_includes(code, scriptfile_location):
+def process_includes(code, scriptfile_location=None):
     # type (str) -> Tuple[str, List[Tuple(str,int,int)]]
     config.load()
     default_location = config.get("defaults.include_location")
