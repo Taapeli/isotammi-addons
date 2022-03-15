@@ -122,7 +122,7 @@ class GenericFilterRule(Rule):
         self.statements, files = supertool_utils.process_includes(self.statements)
         self.statements = compile(self.statements, "statements", 'exec')
 
-        self.init_env = {}  # type: Dict[str,Any]
+        self.init_env = supertool_utils.Lazyenv()  # type: Dict[str,Any]
         self.init_env["trans"] = None
         self.init_env["uistate"] = user.uistate
         s = self.initial_statements
@@ -135,7 +135,7 @@ class GenericFilterRule(Rule):
         self.db = db
         dbstate = self  # self emulates dbstate
         try:
-            env = {}
+            env = supertool_utils.Lazyenv()
             env.update(self.init_env)
             s = self.statements
             if s:
