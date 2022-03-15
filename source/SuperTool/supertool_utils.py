@@ -49,15 +49,18 @@ from gramps.gen.lib import Source
 
 from gramps.gen.lib import Date as GrampsDate
 
-from gramps.gui.editors import EditCitation
-from gramps.gui.editors import EditEvent
-from gramps.gui.editors import EditFamily
-from gramps.gui.editors import EditMedia
-from gramps.gui.editors import EditNote
-from gramps.gui.editors import EditPerson
-from gramps.gui.editors import EditPlace
-from gramps.gui.editors import EditRepository
-from gramps.gui.editors import EditSource
+try:
+    from gramps.gui.editors import EditCitation
+    from gramps.gui.editors import EditEvent
+    from gramps.gui.editors import EditFamily
+    from gramps.gui.editors import EditMedia
+    from gramps.gui.editors import EditNote
+    from gramps.gui.editors import EditPerson
+    from gramps.gui.editors import EditPlace
+    from gramps.gui.editors import EditRepository
+    from gramps.gui.editors import EditSource
+except:
+    pass # command line mode, no GUI
 
 from gramps.gen.config import config as configman
 
