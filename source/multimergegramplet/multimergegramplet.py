@@ -425,9 +425,10 @@ class MultiMergeGramplet(Gramplet):
         query = context.mergeclass(context.dbstate, phoenix, titanic)
         if self.category == "Notes":
             if self.option == 2:
-                phoenix.set(phoenix.get() + "\n\n" + titanic.get())
+                phoenix.append("\n\n")
+                phoenix.append(titanic.get_styledtext())
         query.execute()
-        
+
     def automerge(self, obj):
         context = self.build_context()
         objs = {}
