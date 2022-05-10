@@ -416,10 +416,10 @@ class MultiMergeGramplet(Gramplet):
                 phoenix = context.getfunc(self.primary_handle)  # must retrieve a fresh copy
                 titanic = context.getfunc(handle)
                 self.domerge(context, phoenix, titanic)
-            if phoenix:
-                self.uistate.set_active(
-                    phoenix.get_handle(), context.objclass
-                )  # put cursor on the combined object
+        if phoenix:
+            self.uistate.set_active(
+                phoenix.get_handle(), context.objclass
+            )  # put cursor on the combined object
 
     def domerge(self, context, phoenix, titanic):
         query = context.mergeclass(context.dbstate, phoenix, titanic)
