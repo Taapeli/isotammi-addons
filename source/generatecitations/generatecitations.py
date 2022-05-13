@@ -252,7 +252,7 @@ class GenerateCitations(tool.Tool):
 
                         note = Note()
                         note.set(citation.note)
-                        note.set_type(NoteType.LINK)
+                        note.set_type(NoteType.CITATION)
                         note_handle = self.db.add_note(note, trans)
                         citation.add_note(note_handle)
                         citation.newnote = note
