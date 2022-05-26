@@ -22,6 +22,8 @@ def matchline(notelines):
     line = notelines[0]
     m = match_narc(line)
     if m: return m
+    m = match_narc1(line)
+    if m: return m
     m = match_sshy(line)
     if m: return m
     m = match_sshy2(line)
@@ -31,6 +33,19 @@ def matchline(notelines):
     m = match_kansalliskirjasto(notelines)
     if m: return m
     return None
+
+def match_narc1(line): 
+# Kaatuneiden henkilöasiakirjat (kokoelma) - Perhonen Onni Aleksi, 16.10.1907; Kansallisarkisto: https://astia.narc.fi/uusiastia/kortti_aineisto.html?id=2684857838 / Viitattu 26.5.2022"
+    regex_narc = re.compile(r"(.+?) - (.+?); Kansallisarkisto: (.+) / Viitattu (.+)")  # now I have two problems
+    m = regex_narc.match(line)
+    if not m: return None
+    reponame = m.group(1)            
+    sourcetitle = maketitle(reponame,m.group(2))
+    citationpage = m.group(2)
+    url = m.group(3)
+    date = m.group(4)
+    details = "Kansallisarkisto: {} / Viitattu {}".format(url,date)
+    return Match(line,reponame,sourcetitle,citationpage,details,url,date)
 
 def match_narc(line): 
 # Liperin seurakunnan arkisto - Syntyneiden ja kastettujen luettelot 1772-1811 (I C:3), jakso 3: kastetut 1772 tammikuu; Kansallisarkisto: http://digi.narc.fi/digi/view.ka?kuid=6593368 / Viitattu 22.10.2018
@@ -47,7 +62,7 @@ def match_narc(line):
 
 def match_sshy(line):
 # Tampereen tuomiokirkkoseurakunta - rippikirja, 1878-1887 (MKO166-181 I Aa:17) > 39: Clayhills tjenstespersoner; SSHY: http://www.sukuhistoria.fi/sshy/sivut/jasenille/paikat.php?bid=18233&pnum=39 / Viitattu 6.11.2018
-    regex_sshy = re.compile("(.+) - (.+) > (.+?): (.*); SSHY: (.+) / Viitattu (.+)")  # now I have two problems
+    regex_sshy = re.compile(r"(.+) - (.+) > (.+?): (.*); SSHY: (.+) / Viitattu (.+)")  # now I have two problems
     m = regex_sshy.match(line)
     if not m: return None
     reponame = m.group(1)            
@@ -61,7 +76,7 @@ def match_sshy(line):
 def match_sshy2(line):
 # Tampereen tuomiokirkkoseurakunta rippikirja 1795-1800 (TK630 I Aa:2)  N:o 1 Häggman, Kask, Grefvelin ; SSHY http://www.sukuhistoria.fi/sshy/sivut/jasenille/paikat.php?bid=15950&pnum=8 / Viitattu 03.02.2022
 # Alastaro rippikirja 1751-1757 (JK478 I Aa1:3)  Sivu 10 Laurois Nepponen ; SSHY http://www.sukuhistoria.fi/sshy/sivut/jasenille/paikat.php?bid=15846&pnum=13 / Viitattu 03.02.2022
-    regex_sshy = re.compile("(.+) (\w+ \d{4}-\d{4} \(.+?\)) (.+); SSHY (http.+) / Viitattu (.+)")
+    regex_sshy = re.compile(r"(.+) (\w+ \d{4}-\d{4} \(.+?\)) (.+); SSHY (http.+) / Viitattu (.+)")
     m = regex_sshy.match(line)
     if not m: return None
     reponame = m.group(1)            
