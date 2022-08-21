@@ -7,10 +7,13 @@ Gramplet to merge multiple objects in one step. This applies to
 
 - people
 - families
+- events
 - places
+- citations
 - sources
 - repositories
 - notes
+- media
 
 ### Installation
 
