@@ -24,6 +24,7 @@
 # Author: kari.kujansuu@gmail.com
 # Gramplet to merge multiple objects at the same time. See README.
 
+
 import json
 import pprint
 import re
