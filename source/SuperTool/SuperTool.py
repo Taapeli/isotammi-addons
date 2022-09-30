@@ -432,7 +432,7 @@ class GrampsEngine:
             if type(value) in {int, str, float}:
                 return value
             else:
-                return str(value)
+                return repr(value)
 
         if not res:
             yield []
