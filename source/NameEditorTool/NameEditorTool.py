@@ -48,6 +48,7 @@ from gramps.gui.plug import tool
 from gramps.gui.views.listview import ListView
 
 from gramps.gen.db import DbTxn
+from gramps.gen.lib import Surname
 from gramps.gen.display.name import displayer as name_displayer
 
 from gramps.gen.const import GRAMPS_LOCALE as glocale
@@ -96,6 +97,9 @@ def getrow(person, nameindex, rownum):
     displayname = name.get_name()
     firstname = name.get_first_name()
     surnames = name.get_surname_list()
+    if len(surnames) == 0: # could happen e.g. if imported from an invalid GEDCOM
+        print("No surnames:",person.gramps_id,displayname,[sn.surname for sn in surnames])
+        surnames = [Surname()] # make up an empty surname
     for surname in surnames:
         prefix = surname.get_prefix()
         suffix = name.get_suffix()
