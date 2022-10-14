@@ -42,6 +42,17 @@ def test_sshy2b():
 	assert m.reponame == "Alastaro"
 	assert m.citationpage == "Sivu 10 Laurois Nepponen"
 
+def test_sshy2c():
+	text = "Turun suomalainen syntyneet-vihityt-kuolleet 1721-1744 (AP I C1:2)   ; SSHY http://www.sukuhistoria.fi/sshy/sivut/jasenille/paikat.php?bid=24277&pnum=144 / Viitattu 14.10.2022"
+	m = matcher.matchline([text])
+	assert m is not None
+	pprint(m.__dict__)
+	assert m.reponame == "Turun suomalainen"
+	assert m.sourcetitle == "Turun suomalainen syntyneet-vihityt-kuolleet 1721-1744 (AP I C1:2)"
+	assert m.citationpage == ""
+
+
+
 def test_svar():
 	text = "Hajoms kyrkoarkiv, Husförhörslängder, SE/GLA/13195/A I/12 (1861-1872), bildid: C0045710_00045"
 	m = matcher.matchline([text])
@@ -60,6 +71,15 @@ Kansalliskirjaston Digitoidut aineistot""".splitlines()
 	pprint(m.__dict__)
 	assert m.reponame == "Kansalliskirjaston Digitoidut aineistot"
 	assert m.citationpage == "18.11.1911, nro 138, s. 4"
+
+
+def test_astia():
+	text = "Turun tuomiokirkkoseurakunnan arkisto. I C SYNTYNEIDEN JA KASTETTUJEN LUETTELOT. I C1 Suomalaisen seurakunnan syntyneet. Suomalaisen seurakunnan syntyneiden ja kastettujen luettelo  (1721-1743). Tiedosto 146. Kansallisarkisto. Viitattu 14.10.2022."
+	m = matcher.matchline([text])
+	#assert m is not None
+	#assert m.reponame == ""
+	#assert m.citationpage == ""
+	
 
 def test_xxx():
 	text = ""
