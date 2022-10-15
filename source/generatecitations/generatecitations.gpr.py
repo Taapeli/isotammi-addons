@@ -1,7 +1,8 @@
 #
 # Gramps - a GTK+/GNOME based genealogy program
 #
-# Copyright (C) 2015      Nick Hall
+# Copyright (C) 2015-2016 Nick Hall
+#               2018-2022 Kari Kujansuu
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -23,7 +24,6 @@ Gramps registration file
 """
 from gramps.version import major_version
 from gramps.gui import plug
-#from gramps.gui.plug import tool
 plug.tool.tool_categories["Isotammi"] = ("Isotammi", _("Isotammi tools"))
 
 #------------------------------------------------------------------------

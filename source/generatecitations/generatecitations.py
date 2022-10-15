@@ -2,6 +2,7 @@
 # Gramps - a GTK+/GNOME based genealogy program
 #
 # Copyright (C) 2015-2016 Nick Hall
+#               2018-2022 Kari Kujansuu
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -19,7 +20,8 @@
 #
 # generatecitations.py: 2018-2019 kari.kujansuu@gmail.com
 
-"""Tools/Database Processing/Generate citations from event notes"""
+"""Generate citations from notes"""
+
 from collections import defaultdict
 import pprint
 import traceback
@@ -29,10 +31,10 @@ from gramps.gui.utils import ProgressMeter
 from gramps.gui.dialog import OkDialog
 from gramps.gen.db import DbTxn
 from gramps.gen.lib import Citation, Source, Repository, RepoRef, Note, NoteType, Person, Family, Event, Place, Media, Tag
+from gramps.gen.lib.repotype import RepositoryType
 from gramps.gen.lib.notebase import NoteBase
 from gramps.gen.lib.citationbase import CitationBase
 from gramps.gen.const import GRAMPS_LOCALE as glocale
-#_ = glocale.translation.gettext
 
 try:
     _trans = glocale.get_addon_translator(__file__)
@@ -233,7 +235,7 @@ class GenerateCitations(tool.Tool):
                     for citation in obj.citations:
                         source = citation.source
                         repo = source.repo
-                        
+                        repo.set_type(RepositoryType.ARCHIVE)
                         citation_handle = self.db.add_citation(citation, trans)
                         source_handle = self.db.add_source(source, trans)
                         repo_handle = self.db.add_repository(repo, trans)
