@@ -27,62 +27,62 @@ msgstr ""
 msgid "Generate source citations from notes"
 msgstr ""
 
-#: generatecitations/generatecitations.py:117
+#: generatecitations/generatecitations.py:119
 msgid "Error occurred, please report this message:"
 msgstr ""
 
-#: generatecitations/generatecitations.py:183
+#: generatecitations/generatecitations.py:185
 msgid "Generating citations"
 msgstr ""
 
-#: generatecitations/generatecitations.py:230
+#: generatecitations/generatecitations.py:232
 msgid "Add citations"
-msgstr ""
-
-#: generatecitations/generatecitations.py:285
-#, python-brace-format
-msgid "Total objects processed: {total_objects}"
-msgstr ""
-
-#: generatecitations/generatecitations.py:286
-#, python-brace-format
-msgid "Total notes: {total_notes}"
 msgstr ""
 
 #: generatecitations/generatecitations.py:287
 #, python-brace-format
-msgid "Matching notes: {matching_notes}"
+msgid "Total objects processed: {total_objects}"
 msgstr ""
 
 #: generatecitations/generatecitations.py:288
 #, python-brace-format
-msgid "Unique matching notes: {unique_matching_notes}"
+msgid "Total notes: {total_notes}"
 msgstr ""
 
 #: generatecitations/generatecitations.py:289
 #, python-brace-format
-msgid "Skipped notes: {skipped}"
+msgid "Matching notes: {matching_notes}"
 msgstr ""
 
 #: generatecitations/generatecitations.py:290
 #, python-brace-format
-msgid "Citations added: {citations_added}"
+msgid "Unique matching notes: {unique_matching_notes}"
 msgstr ""
 
 #: generatecitations/generatecitations.py:291
 #, python-brace-format
-msgid "Sources added: {sources_added}"
+msgid "Skipped notes: {skipped}"
 msgstr ""
 
 #: generatecitations/generatecitations.py:292
 #, python-brace-format
-msgid "Repositories added: {repos_added}"
+msgid "Citations added: {citations_added}"
+msgstr ""
+
+#: generatecitations/generatecitations.py:293
+#, python-brace-format
+msgid "Sources added: {sources_added}"
 msgstr ""
 
 #: generatecitations/generatecitations.py:294
-msgid "You can undo all changes with Ctrl-Z."
+#, python-brace-format
+msgid "Repositories added: {repos_added}"
 msgstr ""
 
 #: generatecitations/generatecitations.py:296
+msgid "You can undo all changes with Ctrl-Z."
+msgstr ""
+
+#: generatecitations/generatecitations.py:298
 msgid "All events processed"
 msgstr ""

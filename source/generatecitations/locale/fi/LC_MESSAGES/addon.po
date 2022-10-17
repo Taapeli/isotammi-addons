@@ -28,62 +28,62 @@ msgstr "Isotammi-työkalut"
 msgid "Generate source citations from notes"
 msgstr "Muodosta lähdeviitteet lisätietojen perusteella"
 
-#: generatecitations/generatecitations.py:117
+#: generatecitations/generatecitations.py:119
 msgid "Error occurred, please report this message:"
 msgstr "Tapahtui virhe, raportoi tämä virheilmoitus:"
 
-#: generatecitations/generatecitations.py:183
+#: generatecitations/generatecitations.py:185
 msgid "Generating citations"
 msgstr "Generoidaan lainauksia"
 
-#: generatecitations/generatecitations.py:230
+#: generatecitations/generatecitations.py:232
 msgid "Add citations"
 msgstr "Lisätään lainauksia"
 
-#: generatecitations/generatecitations.py:285
+#: generatecitations/generatecitations.py:287
 #, python-brace-format
 msgid "Total objects processed: {total_objects}"
 msgstr "Objekteja käsitelty: {total_objects} kpl"
 
-#: generatecitations/generatecitations.py:286
+#: generatecitations/generatecitations.py:288
 #, python-brace-format
 msgid "Total notes: {total_notes}"
 msgstr "Lisätietoja kaikkiaan: {total_notes}"
 
-#: generatecitations/generatecitations.py:287
+#: generatecitations/generatecitations.py:289
 #, python-brace-format
 msgid "Matching notes: {matching_notes}"
 msgstr "Käsiteltyjä lisätietoja: {matching_notes}"
 
-#: generatecitations/generatecitations.py:288
+#: generatecitations/generatecitations.py:290
 #, python-brace-format
 msgid "Unique matching notes: {unique_matching_notes}"
 msgstr "Erilaisia lisätietoja: {unique_matching_notes}"
 
-#: generatecitations/generatecitations.py:289
+#: generatecitations/generatecitations.py:291
 #, python-brace-format
 msgid "Skipped notes: {skipped}"
 msgstr "Ohitettuja lisätietoja: {skipped}"
 
-#: generatecitations/generatecitations.py:290
+#: generatecitations/generatecitations.py:292
 #, python-brace-format
 msgid "Citations added: {citations_added}"
 msgstr "Lainauksia lisätty: {citations_added}"
 
-#: generatecitations/generatecitations.py:291
+#: generatecitations/generatecitations.py:293
 #, python-brace-format
 msgid "Sources added: {sources_added}"
 msgstr "Lähteitä lisätty: {sources_added}"
 
-#: generatecitations/generatecitations.py:292
+#: generatecitations/generatecitations.py:294
 #, python-brace-format
 msgid "Repositories added: {repos_added}"
 msgstr "Arkistoja lisätty: {repos_added}"
 
-#: generatecitations/generatecitations.py:294
+#: generatecitations/generatecitations.py:296
 msgid "You can undo all changes with Ctrl-Z."
 msgstr "Voit peruuttaa kaikki muutokset painamalla Ctrl-Z."
 
-#: generatecitations/generatecitations.py:296
+#: generatecitations/generatecitations.py:298
 msgid "All events processed"
 msgstr "Kaikki tapahtumat käsitelty"

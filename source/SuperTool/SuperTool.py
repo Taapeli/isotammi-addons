@@ -432,7 +432,7 @@ class GrampsEngine:
             if type(value) in {int, str, float}:
                 return value
             else:
-                return repr(value)
+                return str(value)
 
         if not res:
             yield []
@@ -1457,7 +1457,7 @@ class Options(tool.ToolOptions):
 
     def __init__(self, name, person_id=None):
         tool.ToolOptions.__init__(self, name, person_id)
-        print("person_id:", person_id)
+        #print("person_id:", person_id)
 
         self.options_dict = dict(
             script="",
