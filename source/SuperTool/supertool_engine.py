@@ -33,6 +33,7 @@ import functools
 from gramps.gen.const import GRAMPS_LOCALE as glocale, CUSTOM_FILTERS
 from gramps.gen.display.name import displayer as name_displayer
 from gramps.gen.display.place import displayer as place_displayer
+from gramps.gen.filters import FilterList
 from gramps.gen.lib import Person
 
 _ = glocale.translation.gettext
@@ -688,8 +689,8 @@ class Filterfactory:
         self.db = db
 
     def getfilter(self, namespace):
-        def filterfunc(filtername):
-            if not Filterfactory.filterdb:
+        def filterfunc(filtername, namespace=namespace):
+            if 1 or not Filterfactory.filterdb:
                 Filterfactory.filterdb = FilterList(CUSTOM_FILTERS)
                 Filterfactory.filterdb.load()
             filter_dict = Filterfactory.filterdb.get_filters_dict(namespace)

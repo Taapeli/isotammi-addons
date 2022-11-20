@@ -1,6 +1,6 @@
 # SuperTool
-v1.1.5<br>
-19 Nov 2021<br>
+v1.2.5<br>
+20 Nov 2022<br>
 Author: kari.kujansuu@gmail.com<br>
 
  [Introduction](#introduction)
@@ -350,6 +350,12 @@ Then in the subsequent sections you can use the filter for example like:
 
 ```python
     if my_ancestors(obj) and ...
+```
+
+A filter in a different namespace can also be accessed by including the 'namespace' parameter:
+
+```python
+    my_ancestors = filter("my ancestors", namespace="Person")
 ```
 
  
