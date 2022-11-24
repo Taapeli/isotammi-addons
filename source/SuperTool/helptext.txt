@@ -42,7 +42,11 @@
         ],
         [
             "namespace",
-            "Category, e.g. 'Person'"
+            "E.g. 'Person', 'Family' etc."
+        ],
+        [
+            "category",
+            "Category, e.g. 'Dashboard', 'People' etc." 
         ],
         [
             "filter",

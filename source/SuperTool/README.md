@@ -160,6 +160,9 @@ In addition to the variables mentioned above, the following general/global varia
 * len, uniq, flatten - some auxiliary functions
 * makedate, today - date helper functions
 * filter - a function that returns a custom filter by name
+* getargs - ask the user for input 
+* category - Dashboard, People, Families etc.
+* namespace - Person, Family, Event etc.
 
 ## Help feature
 
@@ -368,7 +371,9 @@ The tool can also be run from the command line. In that case you have to first s
 This example will read a .gramps file, create a temporary family tree and the run the script:
     gramps -i example_tree.gramps -a tool -p name=SuperTool,script=old_people.script,output=old_people.csv
 
-The reference section will list all parameters that can be used in the command line mode. In this mode the tool always processes all objects of the given type. The type is read from the script file where it was stored when the file was saved.
+The reference section will list all parameters that can be used in the command line mode. In this mode the tool always processes all objects of the given category (People, Families etc). The category is read from the script file where it was stored when the file was saved. The type can be overridden with the parameter "category", for example
+
+    gramps -i example_tree.gramps -a tool -p name=SuperTool,script=old_people.script,output=old_people.csv,category=People
 
 ## Proxy objects
 
@@ -656,8 +661,7 @@ author               | Author                                         | string
 citations            | List of citations                              | list of CitationProxy objects
 gramps_id            | Gramps id, e.g. S0123                          | string
 handle               | Gramps internal handle                         | string
-namespace            | Category, e.g. 'Person'                                                               | 
-notes                | List of notes                                  | list of NoteProxy objects
+    notes                | List of notes                                  | list of NoteProxy objects
 obj                  | This Gramps Source object (same as 'source')   | Source
 pubinfo              | Publication info                               | string
 repositories         | List of repositories                           | list of RepositoryProxy objects
@@ -670,14 +674,15 @@ title                | Source title                                   | string
 
 property             | description                                                                           | 
 -------------------- | -----------------------------------------------------------------------------------   | 
-active_person        | Active person                                                                         | 
+active_person        | Active person                                                                         |
+category             | Category, e.g. 'Dashboard', 'People' etc.                                             |
 db                   | Database object                                                                       | 
 dbstate              | Database state  object                                                                | 
 filter               | Function that returns a custom filter by name                                         | 
 flatten              | Function that returns elements from nested lists                                      | 
 getargs              | Function that asks the user for parameters to be used in the query                    | 
 makedate             | Function to construct a date literal; e.g. makedate(1800, 12, 31) or makedate(1800)   | 
-namespace            | Category, e.g. 'Person'                                                               |
+namespace            | E.g. 'Person', 'Family' etc. None for unsupported categories (Dashboard etc.)         |
 referrers(category)  | Function returning objects of type 'category' that refer to this object               |
 today                | Function that returns today's date                                                    |
 trans                | Current transaction                                                                   |
@@ -708,7 +713,7 @@ Possible options in the "-p" (or --options) argument:
         Specifies the output CSV file. Optional. If not used then the output will go to the screen.
 
     category
-        Specifies the category (People, Families, Event etc). Overrides the category in the script file. Optional. 
+        Specifies the category (People, Families, Events etc). Overrides the category in the script file. Optional. 
 
     args
         Free form argument that the script can access (as variable 'args'). Optional. Like all options cannot contain spaces or commas. 

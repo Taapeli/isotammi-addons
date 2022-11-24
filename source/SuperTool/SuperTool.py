@@ -521,6 +521,9 @@ class GrampsEngine:
         env["dbstate"] = self.dbstate
         env["db"] = self.db
         env["result"] = result
+        env["category"] = self.category.category_name
+        env["namespace"] = self.category.objclass
+
         env.update(self.env)
 
         env["active_person"] = None
@@ -1422,7 +1425,7 @@ class Tool(tool.Tool):
             category,
             selected_handles,
             query,
-            env={"args":args}
+            env={"args":args, "category":category_name, "namespace":category.objclass}
         )
         result = Result()
         if output_filename:

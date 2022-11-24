@@ -105,6 +105,7 @@ def get_category_info(db, category_name):
 
     info = Category()
 
+    info.category_name = category_name
     info.objclass = None
     info.execute_func = engine.execute_no_category
     if category_name == "People":
