@@ -66,7 +66,7 @@ from gramps.gen.filters._filterlist import FilterList
 from gramps.gen.filters import reload_custom_filters
 from gramps.gen.plug import PluginRegister
 
-from gramps.gui.dialog import OkDialog
+from gramps.gui.dialog import OkDialog, ErrorDialog
 from gramps.gui.glade import Glade
 from gramps.gui.managedwindow import ManagedWindow
 from gramps.gui.plug import tool
@@ -326,7 +326,11 @@ class ScriptFile:
         data["commit_changes"] = str(query.commit_changes)
         data["summary_only"] = str(query.summary_only)
 
-        self.__writedata(filename, data)
+        try:
+            self.__writedata(filename, data)
+        except Exception as e:
+            msg = traceback.format_exc()
+            ErrorDialog("Saving the file failed", msg)
 
     def __writedata(self, filename, data):
         # type: (str, Dict[str,str]) -> None
@@ -363,6 +367,8 @@ class ScriptFile:
                 data[key] = value.rstrip()
             return data
         except:
+            msg = traceback.format_exc()
+            ErrorDialog("Reading the file failed", msg)
             return {}
 
     def __readdata_json(self, filename):
@@ -875,12 +881,17 @@ class SuperTool(ManagedWindow):
                 config.set("defaults.delimiter", delimiter)
                 config.save()
 
-                writer = csv.writer(
-                    open(self.csv_filename, "w", encoding=encoding, newline=""),
-                    delimiter=delimiter,
-                )
-                for row in self.store:
-                    writer.writerow(row[0:-1])  # don't write the handle
+                try:
+                    writer = csv.writer(
+                        open(self.csv_filename, "w", encoding=encoding, newline=""),
+                        delimiter=delimiter,
+                    )
+                    for row in self.store:
+                        writer.writerow(row[0:-1])  # don't write the handle
+                except Exception as e:
+                    msg = traceback.format_exc()
+                    ErrorDialog("Saving the file failed", msg)
+
                 break
 
         choose_file_dialog.destroy()
