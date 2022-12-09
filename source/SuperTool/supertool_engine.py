@@ -43,6 +43,8 @@ gender_map = {
     Person.FEMALE: "F",
 }
 
+from supertool_utils import makedate
+
 class SupertoolException(RuntimeError):
     pass
 
