@@ -10,7 +10,7 @@ The tool is given a .csv file as input, with the following column headings:
 * Abbrev
 * Pubinfo
 * Repository
-* Attributename
+* Attributetype
 * Attributevalue
 
 The headings are not case-sensitive. The order of the columns does not matter and you do not need to use all of them. Other columns are ignored.
@@ -35,7 +35,7 @@ The CSV file should use the UTF-8 encoding and comma as the column delimiter.
 
 Here is an example of a CSV file:
 
-1|Title              | Author |Abbrev |Pubinfo|Repository |Attributename |Attributevalue |
+1|Title              | Author |Abbrev |Pubinfo|Repository |Attributetype |Attributevalue |
 -|------------------ |--------|-------|-------|-----------|--------------|---------------|
 2|The New York Times |        |NYT    |       |Newspapers |City          |New York       |
 3|                   |        |       |       |           |Founded       |1851           |
