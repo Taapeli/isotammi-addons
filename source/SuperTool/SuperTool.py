@@ -83,8 +83,8 @@ _ = _trans.gettext
 # Local modules
 #
 # -------------------------------------------------------------------------
-import supertool_utils
 import supertool_engine as engine
+import supertool_utils
 from supertool_utils import compile_statements, compile_expression, process_includes
 
 config = configman.register_manager("supertool")
@@ -284,7 +284,6 @@ class ScriptFile:
         # type: (str, bool) -> Query
         query = Query()
         query.filename = filename
-        query.dirname = os.path.split(filename)[0]
         if filename.endswith(".json"):
             data = self.__readdata_json(filename)
         else:
@@ -296,6 +295,7 @@ class ScriptFile:
             title = name.replace(SCRIPTFILE_EXTENSION, "")
         query.title = title
 
+        query.dirname = data.get("dirname", "")
         query.initial_statements = data.get("initial_statements", "")
         query.statements = data.get("statements", "")
         query.filter = data.get("filter", "")
@@ -310,9 +310,11 @@ class ScriptFile:
         query.summary_only = summary_only == "True"
         return query
 
-    def save(self, filename, query):
+    def save(self, filename, query, save_dirname=False):
         # type: (str, Query) -> None
         data = {}
+        if save_dirname:
+            data["dirname"] = query.dirname
         data["title"] = query.title
         data["category"] = query.category
         data["initial_statements"] = query.initial_statements
@@ -366,6 +368,8 @@ class ScriptFile:
             if key:
                 data[key] = value.rstrip()
             return data
+        except FileNotFoundError:
+            return {}
         except:
             msg = traceback.format_exc()
             ErrorDialog("Reading the file failed", msg)
@@ -574,6 +578,7 @@ class SuperTool(ManagedWindow):
         self.getfunc = None
         self.execute_func = None
         self.editfunc = None
+        self.query = Query()
         self.init()
 
     def build_menu_names(self, obj): 
@@ -708,6 +713,7 @@ class SuperTool(ManagedWindow):
         self.unwind_lists.set_active(False)
         self.commit_checkbox.set_active(False)
         self.summary_checkbox.set_active(False)
+        self.query = Query()
 
     def copy(self, _widget):
         # type: (Gtk.Widget) -> None
@@ -1146,12 +1152,15 @@ class SuperTool(ManagedWindow):
 
     def loadconfig(self):
         # type: () -> None
-        self.loadstate(self.get_configfile(), loadtitle=False)
+        self.loadstate(self.get_configfile(), loadtitle=False, set_dirname=False)
 
-    def loadstate(self, filename, loadtitle=True):
+    def loadstate(self, filename, loadtitle=True, set_dirname=True):
         # type: (str, bool) -> None
         scriptfile = ScriptFile()
-        query = scriptfile.load(filename)
+        self.query = scriptfile.load(filename)
+        query = self.query
+        if set_dirname:
+            query.dirname = os.path.split(filename)[0]
         if query.category and query.category != self.category_name:
             msg = "Warning: saved query is for category '{}'. Current category is '{}'."
             msg = msg.format(query.category, self.category_name)
@@ -1289,11 +1298,11 @@ class SuperTool(ManagedWindow):
 
     def saveconfig(self):
         # type: () -> Query
-        return self.savestate(self.get_configfile())
+        return self.savestate(self.get_configfile(), save_dirname=True)
 
-    def savestate(self, filename):
+    def savestate(self, filename, save_dirname=False):
         # type: (str) -> Query
-        query = Query()
+        query = self.query
         query.category = self.category_name
         query.title = self.title.get_text()
         if self.selected_objects.get_active():
@@ -1313,7 +1322,7 @@ class SuperTool(ManagedWindow):
         query.summary_only = self.summary_checkbox.get_active()
 
         scriptfile = ScriptFile()
-        scriptfile.save(filename, query)
+        scriptfile.save(filename, query, save_dirname)
         return query
         # self.writedata(filename, data)
 

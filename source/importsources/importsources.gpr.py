@@ -1,7 +1,7 @@
 #
 # Gramps - a GTK+/GNOME based genealogy program
 #
-# Copyright (C) 2020      Kari Kujansuu
+# Copyright (C) 2020-2022 Kari Kujansuu
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -18,6 +18,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
 
+
 """
 Gramps registration file
 """
@@ -27,21 +28,22 @@ plug.tool.tool_categories["Isotammi"] = ("Isotammi", _("Isotammi tools"))
 
 #------------------------------------------------------------------------
 #
-# NameMergeTool  
+# importsources  
 #
 #------------------------------------------------------------------------
 
 register(TOOL, 
-    id    = 'NameMergeTool',
-    name  = _("Name Merge Tool"),
-    description =  _("Merge names"),
-    version = '1.0.9',
-    gramps_target_version = major_version,
-    status = STABLE,
-    fname = 'NameMergeTool.py',
-    authors = ["Kari.Kujansuu@gmail.com"],
-    category = "Isotammi",
-    toolclass = 'Tool',
-    optionclass = 'Options',
-    tool_modes = [TOOL_MODE_GUI]
+id    = 'importsources',
+name  = _("Import Sources"),
+description =  _("Import Sources from a CSV file"),
+version = '0.0.3',
+gramps_target_version = major_version,
+status = STABLE,
+fname = 'importsources.py',
+authors = ["KKu"],
+category = "Isotammi",
+toolclass = 'Tool',
+optionclass = 'Options',
+tool_modes = [TOOL_MODE_GUI, TOOL_MODE_CLI]
 )
+
