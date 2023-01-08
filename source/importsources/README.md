@@ -29,7 +29,7 @@ If the column has an id in square brackets (of the form [Rxxxx]), then the sourc
 If there is another value in the column, then it is interpreted as the name of the repository, in which case a new repository is created with this name and the source is attached to it. However, if the same name is used multiple times, the tool only creates one repository. If the name is already used by an existing repository, the tool cannot connect the new name to it but this can be fixed later by merging the repositories in question.
 
 You can attach multiple repositories and attribute values to one source. 
-This is done by adding new rows that only contain repository and/or attribute information below the row for the source.
+This is done by adding new rows below the row for the source. Those rows should only contain repository and/or attribute information. 
 
 The CSV file should use the UTF-8 encoding and comma as the column delimiter.
 
@@ -37,10 +37,10 @@ Here is an example of a CSV file:
 
 1|Title              | Author |Abbrev |Pubinfo|Repository |Attributename |Attributevalue |
 -|------------------ |--------|-------|-------|-----------|--------------|---------------|
-3|The New York Times |        |NYT    |       |Newspapers |City          |New York       |
-4|                   |        |       |       |           |Founded       |1851           |
-5|The Washington Post|        |WP     |       |Newspapers |City          |Washington     |
-6|                   |        |       |       |R0123      |              |               |
+2|The New York Times |        |NYT    |       |Newspapers |City          |New York       |
+3|                   |        |       |       |           |Founded       |1851           |
+4|The Washington Post|        |WP     |       |Newspapers |City          |Washington     |
+5|                   |        |       |       |R0123      |              |               |
 
 
 
