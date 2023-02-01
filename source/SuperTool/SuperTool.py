@@ -34,7 +34,7 @@ import traceback
 import types
 
 from contextlib import contextmanager
-from _sqlite3 import Row
+from pathlib import Path
 
 try:
     from typing import Any
@@ -1421,6 +1421,7 @@ class Tool(tool.Tool):
         scriptfile = ScriptFile()
         # print("scriptfile:", scriptfile)
         query = scriptfile.load(script_filename)
+        query.dirname = str(Path(script_filename).parent)
         # print("query:", query)
         # print(self.options.handler.options_dict)
         category_name = self.options.handler.options_dict.get("category")
