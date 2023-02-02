@@ -313,7 +313,7 @@ class ScriptFile:
     def save(self, filename, query, save_dirname=False):
         # type: (str, Query) -> None
         data = {}
-        if save_dirname:
+        if save_dirname and query.dirname:
             data["dirname"] = query.dirname
         data["title"] = query.title
         data["category"] = query.category
