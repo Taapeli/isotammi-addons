@@ -1,6 +1,6 @@
 # SuperTool
-v1.2.5<br>
-20 Nov 2022<br>
+v1.2.9<br>
+02 Feb 2023<br>
 Author: kari.kujansuu@gmail.com<br>
 
  [Introduction](#introduction)
@@ -336,6 +336,8 @@ You can also save the query as a Gramps custom filter that is then immediately a
 This can be used to create more complicated filters than is possible with the regular filter editor and built-in rules.
 
 The filters can use the 'getargs' function, see [Parameterized queries](#parameterized-queries).
+
+Some 'global variables' are not available in a custom filter: trans, uistate and result are always None. The 'dbstate' variable exists but does not refer to the real dbstate object and it only contains the 'db' attribute.
 
 Note that the custom filter requires that SuperTool is installed - so if you remove this tool then such filters also stop working.
 

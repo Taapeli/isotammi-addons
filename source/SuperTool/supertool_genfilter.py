@@ -109,10 +109,12 @@ class GenericFilterRule(Rule):
 
     def prepare(self, db, user):
         # things we want to do just once, not for every handle
-
         self.db = db
-        dbstate = self  # self emulates dbstate
+        self.user = user
+        dbstate = self  # self emulates dbstate (i.e. contains dbstate.db)
         self.rule = self.list[0].replace("<br>", " ").strip()
+
+        cat_info = supertool_utils.get_category_info(db, self.category_name)
 
         self.initial_statements = self.list[1].replace("<br>", "\n").strip()
         self.initial_statements, files = supertool_utils.process_includes(self.initial_statements)
@@ -122,9 +124,17 @@ class GenericFilterRule(Rule):
         self.statements, files = supertool_utils.process_includes(self.statements)
         self.statements = compile(self.statements, "statements", 'exec')
 
-        self.init_env = supertool_utils.Lazyenv()  # type: Dict[str,Any]
+        self.init_env = supertool_utils.get_globals()  # type: Dict[str,Any]
         self.init_env["trans"] = None
-        self.init_env["uistate"] = user.uistate
+        self.init_env["user"] = user
+        self.init_env["uistate"] = None # user.uistate is None!
+        self.init_env["dbstate"] = dbstate
+        self.init_env["db"] = db
+
+        self.init_env["result"] = None
+        self.init_env["category"] = self.category_name
+        self.init_env["namespace"] = cat_info.objclass
+
         s = self.initial_statements
         if s:
             value, self.init_env = self.execute_func(
@@ -150,52 +160,61 @@ class GenericFilterRule(Rule):
 class GenericFilterRule_Family(GenericFilterRule):
     def __init__(self, *args):
         GenericFilterRule.__init__(self, *args)
+        self.category_name = "Families"
         self.execute_func = engine.execute_family
 
 
 class GenericFilterRule_Person(GenericFilterRule):
     def __init__(self, *args):
         GenericFilterRule.__init__(self, *args)
+        self.category_name = "People"
         self.execute_func = engine.execute_person
 
 
 class GenericFilterRule_Place(GenericFilterRule):
     def __init__(self, *args):
         GenericFilterRule.__init__(self, *args)
+        self.category_name = "Places"
         self.execute_func = engine.execute_place
 
 
 class GenericFilterRule_Event(GenericFilterRule):
     def __init__(self, *args):
         GenericFilterRule.__init__(self, *args)
+        self.category_name = "Events"
         self.execute_func = engine.execute_event
 
 
 class GenericFilterRule_Source(GenericFilterRule):
     def __init__(self, *args):
         GenericFilterRule.__init__(self, *args)
+        self.category_name = "Sources"
         self.execute_func = engine.execute_source
 
 
 class GenericFilterRule_Citation(GenericFilterRule):
     def __init__(self, *args):
         GenericFilterRule.__init__(self, *args)
+        self.category_name = "Citations"
         self.execute_func = engine.execute_citation
 
 
 class GenericFilterRule_Repository(GenericFilterRule):
     def __init__(self, *args):
         GenericFilterRule.__init__(self, *args)
+        self.category_name = "Repositories"
         self.execute_func = engine.execute_repository
 
 
 class GenericFilterRule_Note(GenericFilterRule):
     def __init__(self, *args):
         GenericFilterRule.__init__(self, *args)
+        self.category_name = "Notes"
         self.execute_func = engine.execute_note
 
 
 class GenericFilterRule_Media(GenericFilterRule):
     def __init__(self, *args):
         GenericFilterRule.__init__(self, *args)
+        self.category_name = "Media"
         self.execute_func = engine.execute_media
