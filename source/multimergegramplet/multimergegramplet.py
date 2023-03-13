@@ -138,9 +138,19 @@ class MultiMergeGramplet(Gramplet):
             if self.category == "Places":
                 self.but_same_titles = Gtk.RadioButton.new_with_label_from_widget(None, _("With same titles"))
                 self.but_same_names = Gtk.RadioButton.new_with_label_from_widget(self.but_same_titles, _("With same names"))
+                self.but_type_match = Gtk.CheckButton(_("Types must match"))
+                self.but_type_match.set_active(True) 
+                self.but_type_match.set_tooltip_text(_("If checked then places are merged only if they both have the same type")) 
                 grid.attach(self.but_same_titles, 1, 0, 1, 1)
                 grid.attach(self.but_same_names , 1, 1, 1, 1)
+                grid.attach(self.but_type_match , 1, 2, 1, 1)
 
+            if self.category == "Sources":
+                self.but_author_match = Gtk.CheckButton(_("Authors must match"))
+                self.but_author_match.set_active(True) 
+                self.but_author_match.set_tooltip_text(_("If checked then sources are merged only if they have both the same title and same author")) 
+                grid.attach(self.but_author_match, 1, 0, 1, 1)
+                
             vbox.pack_start(grid, False, True, 0)
             self.page = vbox
             self.output_window = None
@@ -333,7 +343,7 @@ class MultiMergeGramplet(Gramplet):
             dbstate = dbstate
             )
         
-    def __apply(self, obj):
+    def __apply(self, _widget):
         # from /gramps 5.1/gramps/gui/merge/mergeplace.py
         context = self.build_context()
         selected_handles = self.uistate.viewmanager.active_page.selected_handles()
@@ -430,28 +440,20 @@ class MultiMergeGramplet(Gramplet):
                 phoenix.append(titanic.get_styledtext())
         query.execute()
 
-    def automerge(self, obj):
+    def automerge(self, _widget):
         context = self.build_context()
         objs = {}
-        merged = {} #defaultdict(list)
+        merged = {} 
         title = _("Auto merging {}").format(self.category)
         with self.nested_txn(title, self.dbstate.db, context.mergemodule) as trans:
-            #for place in self.dbstate.db.iter_places():
             if self.but_selected_places.get_active():
                 handles = self.uistate.viewmanager.active_page.selected_handles()
             else:
-                #handles = self.dbstate.db.get_place_handles()
                 handles = context.gethandlesfunc()
             for handle in handles:
-                #place = self.dbstate.db.get_place_from_handle(handle)
                 obj = context.getfunc(handle)
                 obj_title = context.titlefunc(obj) 
-                #print(handle,obj_title)
-                objname = self.get_objname(context, obj)
-                if self.category == "xPlaces":
-                    objkey = (objname, obj.get_type().xml_str())
-                else:
-                    objkey = objname
+                objkey = self.get_objkey(context, obj)
                 if objkey in objs:
                     basehandle = objs[objkey]
                     p = context.getfunc(basehandle)
@@ -463,15 +465,22 @@ class MultiMergeGramplet(Gramplet):
                     objs[objkey] = handle
         self.display_results(merged)
             
-    def get_objname(self, context, obj):
+    def get_objkey(self, context, obj):
         if self.category == "Places":
             if self.but_same_names.get_active():
                 placename = obj.get_name().get_value()
             else:
                 placename = place_displayer.display(self.dbstate.db, obj)
-            return placename
+            if self.but_type_match.get_active():
+                return (placename, obj.get_type().xml_str())
+            else:
+                return placename
         if self.category == "Sources":
-            return obj.get_title()
+            stitle = obj.get_title()
+            if self.but_author_match.get_active():
+                return (stitle, obj.get_author())
+            else:
+                return stitle
         if self.category == "Repositories":
             return obj.get_name()
         raise RuntimeError("Unsupported category: " + self.category)
@@ -484,7 +493,8 @@ class MultiMergeGramplet(Gramplet):
         box = Gtk.VBox()
         box.set_margin_left(10)
         box.set_margin_top(15)
-        self.label_msg.set_label(_("Merged {} places:").format(len(merged)))
+            
+        self.label_msg.set_label(_("Merged {} {}:").format(len(merged), self.category.lower()))
         for name in sorted(merged):
             hdr = Gtk.Expander(label=name)
             hdr.set_resize_toplevel(True)
