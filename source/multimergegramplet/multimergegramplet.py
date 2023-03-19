@@ -83,6 +83,161 @@ class DummyTxn:
 
         self.txn = _Txn
 
+@contextmanager
+def nested_txn(title, db, mergemodule):
+    with DbTxn(title, db) as trans:
+        saved_dbtxn = mergemodule.DbTxn
+        mergemodule.DbTxn = DummyTxn(trans).txn
+        try:
+            yield trans
+        finally:
+            mergemodule.DbTxn = saved_dbtxn
+
+
+class Options:
+    pass
+
+def build_context(dbstate, category):
+        
+    def person_name(person_handle, db):
+        if not person_handle:
+            return ""
+        person = db.get_person_from_handle(person_handle)
+        return name_displayer.display(person)
+
+    def get_person_title(obj):
+        return "{gramps_id}: {name}".format(
+            gramps_id=obj.get_gramps_id(), name=name_displayer.display(obj)
+        )
+
+    def get_family_title(obj):
+        husb = person_name(obj.get_father_handle(), db=dbstate)
+        wife = person_name(obj.get_mother_handle(), db=dbstate)
+        return "{gramps_id}: {husb}, {wife}".format(
+            gramps_id=obj.get_gramps_id(), husb=husb, wife=wife
+        )
+
+    def get_place_title(obj):
+        return "{gramps_id}: {name}".format(
+            gramps_id=obj.get_gramps_id(), 
+                #name=obj.get_name().get_value()
+                name=place_displayer.display(dbstate.db, obj)
+        )
+
+    def get_citation_title(obj):
+        return "{gramps_id}: {name}".format(
+            gramps_id=obj.get_gramps_id(), name=obj.get_page()
+        )
+
+    def get_event_title(obj):
+        return "{gramps_id}: {type}".format(
+            gramps_id=obj.get_gramps_id(), type=obj.get_type()
+        )
+
+    def get_source_title(obj):
+        return "{gramps_id}: {name}".format(
+            gramps_id=obj.get_gramps_id(), name=obj.get_title()
+        )
+
+    def get_repository_title(obj):
+        return "{gramps_id}: {name}".format(
+            gramps_id=obj.get_gramps_id(), name=obj.get_name()
+        )
+
+    def get_media_title(obj):
+        return "{gramps_id}: {name}".format(
+            gramps_id=obj.get_gramps_id(), name=obj.get_description()
+        )
+
+    def get_note_title(obj):
+        return "{gramps_id}: {text}".format(
+            gramps_id=obj.get_gramps_id(), text=obj.get()[0:20].replace("\n", " ")
+        )
+
+        
+    gethandlesfunc = None
+    if category == "People":
+        import gramps.gen.merge.mergepersonquery as mergemodule
+        mergeclass = mergemodule.MergePersonQuery
+        objclass = "Person"
+        getfunc = dbstate.db.get_person_from_handle
+        titlefunc = get_person_title
+        dbstate = (
+            dbstate.db
+        )  # MergePersonQuery has a different argument than the others
+
+    if category == "Families":
+        import gramps.gen.merge.mergefamilyquery as mergemodule
+        mergeclass = mergemodule.MergeFamilyQuery
+        objclass = "Family"
+        getfunc = dbstate.db.get_family_from_handle
+        titlefunc = get_family_title
+        dbstate = (
+            dbstate.db
+        )  # MergeFamilyQuery has a different argument than the rest
+
+    if category == "Places":
+        import gramps.gen.merge.mergeplacequery as mergemodule
+        mergeclass = mergemodule.MergePlaceQuery
+        objclass = "Place"
+        gethandlesfunc = dbstate.db.get_place_handles
+        getfunc = dbstate.db.get_place_from_handle
+        titlefunc = get_place_title
+
+    if category == "Events":
+        import gramps.gen.merge.mergeeventquery as mergemodule
+        mergeclass = mergemodule.MergeEventQuery
+        objclass = "Event"
+        getfunc = dbstate.db.get_event_from_handle
+        titlefunc = get_event_title
+
+    if category == "Citations":
+        import gramps.gen.merge.mergecitationquery as mergemodule
+        mergeclass = mergemodule.MergeCitationQuery
+        objclass = "Citation"
+        getfunc = dbstate.db.get_citation_from_handle
+        titlefunc = get_citation_title
+
+    if category == "Sources":
+        import gramps.gen.merge.mergesourcequery as mergemodule
+        mergeclass = mergemodule.MergeSourceQuery
+        objclass = "Source"
+        gethandlesfunc = dbstate.db.get_source_handles
+        getfunc = dbstate.db.get_source_from_handle
+        titlefunc = get_source_title
+
+    if category == "Repositories":
+        import gramps.gen.merge.mergerepositoryquery as mergemodule
+        mergeclass = mergemodule.MergeRepositoryQuery
+        objclass = "Repository"
+        gethandlesfunc = dbstate.db.get_repository_handles
+        getfunc = dbstate.db.get_repository_from_handle
+        titlefunc = get_repository_title
+
+    if category == "Media":
+        import gramps.gen.merge.mergemediaquery as mergemodule
+        mergeclass = mergemodule.MergeMediaQuery
+        objclass = "Media"
+        getfunc = dbstate.db.get_media_from_handle
+        titlefunc = get_media_title
+
+    if category == "Notes":
+        import gramps.gen.merge.mergenotequery as mergemodule
+        mergeclass = mergemodule.MergeNoteQuery
+        objclass = "Note"
+        getfunc = dbstate.db.get_note_from_handle
+        titlefunc = get_note_title
+
+    return SimpleNamespace(
+        mergemodule = mergemodule,
+        mergeclass = mergeclass,
+        objclass = objclass,
+        gethandlesfunc = gethandlesfunc,
+        getfunc = getfunc,
+        titlefunc = titlefunc,
+        dbstate = dbstate,
+        )
+
 
 class MultiMergeGramplet(Gramplet):
     def init(self):
@@ -91,7 +246,9 @@ class MultiMergeGramplet(Gramplet):
         self.gui.get_container_widget().remove(self.gui.textview)
         self.gui.get_container_widget().add_with_viewport(self.root)
         self.selected_handle = None
+        self.note_option = None
         self.set_tooltip(_("Merge multiple objects"))
+        self.options = Options()
 
     def db_changed(self):
         self.__clear(None)
@@ -170,62 +327,7 @@ class MultiMergeGramplet(Gramplet):
         self.primary_handle = value
 
     def cb_set_option(self, obj, value):
-        self.option = value
-
-    def person_name(self, person_handle):
-        if not person_handle:
-            return ""
-        person = self.dbstate.db.get_person_from_handle(person_handle)
-        return name_displayer.display(person)
-
-    def get_person_title(self, obj):
-        return "{gramps_id}: {name}".format(
-            gramps_id=obj.get_gramps_id(), name=name_displayer.display(obj)
-        )
-
-    def get_family_title(self, obj):
-        husb = self.person_name(obj.get_father_handle())
-        wife = self.person_name(obj.get_mother_handle())
-        return "{gramps_id}: {husb}, {wife}".format(
-            gramps_id=obj.get_gramps_id(), husb=husb, wife=wife
-        )
-
-    def get_place_title(self, obj):
-        return "{gramps_id}: {name}".format(
-            gramps_id=obj.get_gramps_id(), 
-                #name=obj.get_name().get_value()
-                name=place_displayer.display(self.dbstate.db, obj)
-        )
-
-    def get_citation_title(self, obj):
-        return "{gramps_id}: {name}".format(
-            gramps_id=obj.get_gramps_id(), name=obj.get_page()
-        )
-
-    def get_event_title(self, obj):
-        return "{gramps_id}: {type}".format(
-            gramps_id=obj.get_gramps_id(), type=obj.get_type()
-        )
-
-    def get_source_title(self, obj):
-        return "{gramps_id}: {name}".format(
-            gramps_id=obj.get_gramps_id(), name=obj.get_title()
-        )
-
-    def get_repository_title(self, obj):
-        return "{gramps_id}: {name}".format(
-            gramps_id=obj.get_gramps_id(), name=obj.get_name()
-        )
-
-    def get_media_title(self, obj):
-        return "{gramps_id}: {name}".format(
-            gramps_id=obj.get_gramps_id(), name=obj.get_description()
-        )
-
-    def get_note_title(self, obj):
-        return "{gramps_id}: {text}".format(
-            gramps_id=obj.get_gramps_id(), text=obj.get()[0:20].replace("\n", " ")
-        )
+        self.options.note_option = value
 
     def compute_possible_handles(self, selected_handles):
         has_father_handle = False
@@ -252,100 +354,10 @@ class MultiMergeGramplet(Gramplet):
 
         return new_handles
 
-    def build_context(self):
-        gethandlesfunc = None
-        if self.category == "People":
-            import gramps.gen.merge.mergepersonquery as mergemodule
-            mergeclass = mergemodule.MergePersonQuery
-            objclass = "Person"
-            getfunc = self.dbstate.db.get_person_from_handle
-            titlefunc = self.get_person_title
-            dbstate = (
-                self.dbstate.db
-            )  # MergePersonQuery has a different argument than the others
-
-        if self.category == "Families":
-            import gramps.gen.merge.mergefamilyquery as mergemodule
-            mergeclass = mergemodule.MergeFamilyQuery
-            objclass = "Family"
-            getfunc = self.dbstate.db.get_family_from_handle
-            titlefunc = self.get_family_title
-            dbstate = (
-                self.dbstate.db
-            )  # MergeFamilyQuery has a different argument than the rest
-
-        if self.category == "Places":
-            import gramps.gen.merge.mergeplacequery as mergemodule
-            mergeclass = mergemodule.MergePlaceQuery
-            objclass = "Place"
-            gethandlesfunc = self.dbstate.db.get_place_handles
-            getfunc = self.dbstate.db.get_place_from_handle
-            titlefunc = self.get_place_title
-            dbstate = self.dbstate
-
-        if self.category == "Events":
-            import gramps.gen.merge.mergeeventquery as mergemodule
-            mergeclass = mergemodule.MergeEventQuery
-            objclass = "Event"
-            getfunc = self.dbstate.db.get_event_from_handle
-            titlefunc = self.get_event_title
-            dbstate = self.dbstate
-
-        if self.category == "Citations":
-            import gramps.gen.merge.mergecitationquery as mergemodule
-            mergeclass = mergemodule.MergeCitationQuery
-            objclass = "Citation"
-            getfunc = self.dbstate.db.get_citation_from_handle
-            titlefunc = self.get_citation_title
-            dbstate = self.dbstate
-
-        if self.category == "Sources":
-            import gramps.gen.merge.mergesourcequery as mergemodule
-            mergeclass = mergemodule.MergeSourceQuery
-            objclass = "Source"
-            gethandlesfunc = self.dbstate.db.get_source_handles
-            getfunc = self.dbstate.db.get_source_from_handle
-            titlefunc = self.get_source_title
-            dbstate = self.dbstate
-
-        if self.category == "Repositories":
-            import gramps.gen.merge.mergerepositoryquery as mergemodule
-            mergeclass = mergemodule.MergeRepositoryQuery
-            objclass = "Repository"
-            gethandlesfunc = self.dbstate.db.get_repository_handles
-            getfunc = self.dbstate.db.get_repository_from_handle
-            titlefunc = self.get_repository_title
-            dbstate = self.dbstate
-
-        if self.category == "Media":
-            import gramps.gen.merge.mergemediaquery as mergemodule
-            mergeclass = mergemodule.MergeMediaQuery
-            objclass = "Media"
-            getfunc = self.dbstate.db.get_media_from_handle
-            titlefunc = self.get_media_title
-            dbstate = self.dbstate
-
-        if self.category == "Notes":
-            import gramps.gen.merge.mergenotequery as mergemodule
-            mergeclass = mergemodule.MergeNoteQuery
-            objclass = "Note"
-            getfunc = self.dbstate.db.get_note_from_handle
-            titlefunc = self.get_note_title
-            dbstate = self.dbstate
-
-        return SimpleNamespace(
-            mergemodule = mergemodule,
-            mergeclass = mergeclass,
-            objclass = objclass,
-            gethandlesfunc = gethandlesfunc,
-            getfunc = getfunc,
-            titlefunc = titlefunc,
-            dbstate = dbstate
-            )
         
     def __apply(self, _widget):
         # from /gramps 5.1/gramps/gui/merge/mergeplace.py
-        context = self.build_context()
+        context = build_context(self.dbstate, self.category)
         selected_handles = self.uistate.viewmanager.active_page.selected_handles()
 
         if len(selected_handles) < 2:
@@ -395,7 +407,7 @@ class MultiMergeGramplet(Gramplet):
                 box2.set_margin_left(20)
                 # box2.pack_start(Gtk.VSeparator(), False, True, 0)
                 group = None
-                self.option = 1
+                self.options.note_option = 1
                 group = Gtk.RadioButton.new_with_label_from_widget(
                     group, _("Use text from primary note only")
                 )
@@ -418,73 +430,21 @@ class MultiMergeGramplet(Gramplet):
             if result != Gtk.ResponseType.OK:
                 return
 
+        engine = MultiMergeEngine(context, self.dbstate, self.category, selected_handles, self.options)
         title = _("Merging {} {}").format(len(selected_handles), self.category)
-        with self.nested_txn(title, self.dbstate.db, context.mergemodule) as trans:
+        with nested_txn(title, self.dbstate.db, context.mergemodule) as trans:
             phoenix = None
             for handle in selected_handles:
                 if handle == self.primary_handle:
                     continue  # don't merge with self
                 phoenix = context.getfunc(self.primary_handle)  # must retrieve a fresh copy
                 titanic = context.getfunc(handle)
-                self.domerge(context, phoenix, titanic)
+                engine.domerge(context, phoenix, titanic)
         if phoenix:
             self.uistate.set_active(
                 phoenix.get_handle(), context.objclass
             )  # put cursor on the combined object
 
-    def domerge(self, context, phoenix, titanic):
-        query = context.mergeclass(context.dbstate, phoenix, titanic)
-        if self.category == "Notes":
-            if self.option == 2:
-                phoenix.append("\n\n")
-                phoenix.append(titanic.get_styledtext())
-        query.execute()
-
-    def automerge(self, _widget):
-        context = self.build_context()
-        objs = {}
-        merged = {} 
-        title = _("Auto merging {}").format(self.category)
-        with self.nested_txn(title, self.dbstate.db, context.mergemodule) as trans:
-            if self.but_selected_places.get_active():
-                handles = self.uistate.viewmanager.active_page.selected_handles()
-            else:
-                handles = context.gethandlesfunc()
-            for handle in handles:
-                obj = context.getfunc(handle)
-                obj_title = context.titlefunc(obj) 
-                objkey = self.get_objkey(context, obj)
-                if objkey in objs:
-                    basehandle = objs[objkey]
-                    p = context.getfunc(basehandle)
-                    if objkey not in merged:
-                        merged[objkey] = [context.titlefunc(p)]
-                    merged[objkey].append(obj_title)
-                    self.domerge(context, p, obj)
-                else:
-                    objs[objkey] = handle
-        self.display_results(merged)
-            
-    def get_objkey(self, context, obj):
-        if self.category == "Places":
-            if self.but_same_names.get_active():
-                placename = obj.get_name().get_value()
-            else:
-                placename = place_displayer.display(self.dbstate.db, obj)
-            if self.but_type_match.get_active():
-                return (placename, obj.get_type().xml_str())
-            else:
-                return placename
-        if self.category == "Sources":
-            stitle = obj.get_title()
-            if self.but_author_match.get_active():
-                return (stitle, obj.get_author())
-            else:
-                return stitle
-        if self.category == "Repositories":
-            return obj.get_name()
-        raise RuntimeError("Unsupported category: " + self.category)
-        
     def display_results(self, merged):
         if self.output_window: self.output_window.destroy()
         self.output_window = Gtk.ScrolledWindow()
@@ -496,7 +456,14 @@ class MultiMergeGramplet(Gramplet):
             
         self.label_msg.set_label(_("Merged {} {}:").format(len(merged), self.category.lower()))
         for name in sorted(merged):
-            hdr = Gtk.Expander(label=name)
+            if type(name) == tuple:
+                if name[1]:
+                    label = name[0] + " [" + name[1] + "]"
+                else:
+                    label = name[0]
+            else:
+                label = name
+            hdr = Gtk.Expander(label=label)
             hdr.set_resize_toplevel(True)
             msg = "\n".join(sorted(merged[name]))
             label2 = Gtk.Label(msg)
@@ -509,13 +476,78 @@ class MultiMergeGramplet(Gramplet):
         self.page.pack_start(self.output_window, False, True, 0)
         self.page.show_all()
         
+    def automerge(self, _widget):
+        context = build_context(self.dbstate, self.category)
+        if self.but_selected_places.get_active():
+            handles = self.uistate.viewmanager.active_page.selected_handles()
+        else:
+            handles = context.gethandlesfunc()
+        self.options.note_option = self.note_option
+        if self.category == "Places":
+            self.options.same_names = self.but_same_names.get_active()
+            self.options.same_types = self.but_type_match.get_active() 
+        if self.category == "Sources":
+            self.options.same_authors=self.but_author_match.get_active()
+            
+        engine = MultiMergeEngine(context, self.dbstate, self.category, handles, self.options)
+        merged = engine.automerge()
+        self.display_results(merged)
         
-    @contextmanager
-    def nested_txn(self, title, db, mergemodule):
-        with DbTxn(title, db) as trans:
-            saved_dbtxn = mergemodule.DbTxn
-            mergemodule.DbTxn = DummyTxn(trans).txn
-            try:
-                yield trans
-            finally:
-                mergemodule.DbTxn = saved_dbtxn
+class MultiMergeEngine:
+    def __init__(self, context, dbstate, category, handles, options):
+        self.dbstate = dbstate
+        self.context = context
+        self.category = category
+        self.handles = handles
+        self.options = options
+
+    def automerge(self):
+        context = self.context
+        objs = {}
+        merged = {} 
+        title = _("Auto merging {}").format(self.category)
+        with nested_txn(title, self.dbstate.db, context.mergemodule) as trans:
+            for handle in self.handles:
+                obj = context.getfunc(handle)
+                obj_title = context.titlefunc(obj) 
+                objkey = self.get_objkey(context, obj)
+                if objkey in objs:
+                    basehandle = objs[objkey]
+                    p = context.getfunc(basehandle)
+                    if objkey not in merged:
+                        merged[objkey] = [context.titlefunc(p)]
+                    merged[objkey].append(obj_title)
+                    self.domerge(context, p, obj)
+                else:
+                    objs[objkey] = handle
+        return merged
+            
+    def domerge(self, context, phoenix, titanic):
+        query = context.mergeclass(context.dbstate, phoenix, titanic)
+        if self.category == "Notes":
+            if self.options.note_option == 2:
+                phoenix.append("\n\n")
+                phoenix.append(titanic.get_styledtext())
+        query.execute()
+
+    def get_objkey(self, context, obj):
+        if self.category == "Places":
+            if self.options.same_names:
+                placename = obj.get_name().get_value()
+            else:
+                placename = place_displayer.display(self.dbstate.db, obj)
+            if self.options.same_types:
+                return (placename, obj.get_type().xml_str())
+            else:
+                return placename
+        if self.category == "Sources":
+            stitle = obj.get_title()
+            if self.options.same_authors:
+                return (stitle, obj.get_author())
+            else:
+                return stitle
+        if self.category == "Repositories":
+            return obj.get_name()
+        raise RuntimeError("Unsupported category: " + self.category)
+        
+        
