@@ -715,6 +715,10 @@ class SuperTool(ManagedWindow):
         self.summary_checkbox.set_active(False)
         self.query = Query()
 
+    def close(self, *args):
+        self.exit(None) 
+        super().close(*args)
+        
     def copy(self, _widget):
         # type: (Gtk.Widget) -> None
         clipboard = Gtk.Clipboard.get(Gdk.SELECTION_CLIPBOARD)
@@ -1037,9 +1041,16 @@ class SuperTool(ManagedWindow):
 
     def exit(self, _widget):
         self.saveconfig()
+
+        self.dbstate.disconnect(self.database_changed_key)
+        self.dbstate.disconnect(self.no_database_key)
+        self.uistate.viewmanager.notebook.disconnect(self.switch_page_key)
+
         if self.help_win:
             self.help_win.close()
-        self.close()
+        if _widget:
+            self.close()
+                
 
     def get_attributes(self, objclass, proxyclass):
         obj = objclass()
@@ -1079,13 +1090,10 @@ class SuperTool(ManagedWindow):
         window = self.create_gui()
         self.select_category()
         self.loadconfig()
-        # self.load_attributes()
-        self.dbstate.connect("no-database", self.db_closed)
-        self.dbstate.connect("database-changed", self.db_changed)
-        self.uistate.viewmanager.notebook.connect("switch-page", self.pageswitch)
+        self.no_database_key = self.dbstate.connect("no-database", self.db_closed)
+        self.database_changed_key = self.dbstate.connect("database-changed", self.db_changed)
+        self.switch_page_key = self.uistate.viewmanager.notebook.connect("switch-page", self.pageswitch)
         self.set_window(window, None, _("SuperTool"))
-        # self.window.set_sensitive(self.category.objclass is not None)
-        # self.btn_help.set_sensitive(True)
         self.help_loaded = False
 
         config.load()
@@ -1101,9 +1109,6 @@ class SuperTool(ManagedWindow):
     def load(self, _widget):
         # type: (Gtk.Widget) -> None
         choose_file_dialog = ScriptOpenFileChooserDialog(self.uistate)
-        choose_file_dialog.set_current_name(
-            self.category_name + "-query" + SCRIPTFILE_EXTENSION
-        )
         if self.last_filename:
             choose_file_dialog.set_filename(self.last_filename)
 
@@ -1329,6 +1334,8 @@ class SuperTool(ManagedWindow):
     def select_category(self):
         # type: () -> None
         self.execute_func = None
+        if self.uistate.viewmanager.active_page is None: return
+        if not self.db.is_open(): return
         self.category_name = self.uistate.viewmanager.active_page.get_category()
         self.category = supertool_utils.get_category_info(self.db, self.category_name)
 
