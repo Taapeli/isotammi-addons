@@ -1,6 +1,6 @@
 # Gramps - a GTK+/GNOME based genealogy program
 #
-# Copyright (C) 2021       Kari Kujansuu
+# Copyright (C) 2021-2023       Kari Kujansuu
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -22,14 +22,14 @@
 # Standard Python modules
 #
 # -------------------------------------------------------------------------
-import functools
-import os
-import sys
-
 import collections
+import functools
 import os
 import re
 import sys
+
+from pprint import pprint
+
 
 
 # -------------------------------------------------------------------------
@@ -37,17 +37,56 @@ import sys
 # Gramps modules
 #
 # -------------------------------------------------------------------------
+from gramps.gen.lib import Address
+from gramps.gen.lib import Attribute
+from gramps.gen.lib import AttributeType
+from gramps.gen.lib import ChildRef
+from gramps.gen.lib import ChildRefType
 from gramps.gen.lib import Citation
-from gramps.gen.lib import Event
-from gramps.gen.lib import Family
-from gramps.gen.lib import Media
-from gramps.gen.lib import Note
-from gramps.gen.lib import Person
-from gramps.gen.lib import Place
-from gramps.gen.lib import Repository
-from gramps.gen.lib import Source
-
 from gramps.gen.lib import Date as GrampsDate
+from gramps.gen.lib import DateError
+from gramps.gen.lib import Event
+from gramps.gen.lib import EventRef
+from gramps.gen.lib import EventRoleType
+from gramps.gen.lib import EventType
+from gramps.gen.lib import Family
+from gramps.gen.lib import FamilyRelType
+#from gramps.gen.lib import GenderStats
+from gramps.gen.lib import GrampsType
+from gramps.gen.lib import LdsOrd
+from gramps.gen.lib import Location
+from gramps.gen.lib import MarkerType
+from gramps.gen.lib import Media
+from gramps.gen.lib import MediaRef
+from gramps.gen.lib import Name
+from gramps.gen.lib import NameOriginType
+from gramps.gen.lib import NameType
+from gramps.gen.lib import Note
+from gramps.gen.lib import NoteType
+from gramps.gen.lib import Person
+from gramps.gen.lib import PersonRef
+from gramps.gen.lib import Place
+from gramps.gen.lib import PlaceName
+from gramps.gen.lib import PlaceRef
+from gramps.gen.lib import PlaceType
+#from gramps.gen.lib import PrimaryObject
+from gramps.gen.lib import RepoRef
+from gramps.gen.lib import Repository
+from gramps.gen.lib import RepositoryType
+#from gramps.gen.lib import Researcher
+#from gramps.gen.lib import SecondaryObject
+from gramps.gen.lib import Source
+from gramps.gen.lib import SourceMediaType
+from gramps.gen.lib import Span
+from gramps.gen.lib import SrcAttribute
+from gramps.gen.lib import SrcAttributeType
+from gramps.gen.lib import StyledText
+from gramps.gen.lib import StyledTextTag
+from gramps.gen.lib import StyledTextTagType
+from gramps.gen.lib import Surname
+from gramps.gen.lib import Tag
+from gramps.gen.lib import Url
+from gramps.gen.lib import UrlType
 
 try:
     from gramps.gui.editors import EditCitation
@@ -63,6 +102,9 @@ except:
     pass # command line mode, no GUI
 
 from gramps.gen.config import config as configman
+from gramps.gen.db import DbTxn
+from gramps.gen.lib.date import Today
+from gramps.gen.user import User
 
 # -------------------------------------------------------------------------
 #
@@ -415,20 +457,143 @@ def get_globals():
         collections=collections,
         defaultdict=collections.defaultdict,
         functools=functools,
-        Person=Person,
-        Family=Family,
-        Place=Place,
-        Event=Event,
-        Repository=Repository,
-        Source=Source,
+        pprint=pprint,
+
+        Address=Address,
+        Attribute=Attribute,
+        AttributeType=AttributeType,
+        ChildRef=ChildRef,
+        ChildRefType=ChildRefType,
         Citation=Citation,
-        Note=Note,
         Date=GrampsDate,
-#         NameType=NameType,
-#         PlaceType=PlaceType,
-#         EventType=EventType,
+        DateError=DateError,
+        Event=Event,
+        EventRef=EventRef,
+        EventRoleType=EventRoleType,
+        EventType=EventType,
+        Family=Family,
+        FamilyRelType=FamilyRelType,
+#        GenderStats=GenderStats,
+        GrampsType=GrampsType,
+        LdsOrd=LdsOrd,
+        Location=Location,
+        MarkerType=MarkerType,
         Media=Media,
+        MediaRef=MediaRef,
+        Name=Name,
+        NameOriginType=NameOriginType,
+        NameType=NameType,
+        Note=Note,
+        NoteType=NoteType,
+        Person=Person,
+        PersonRef=PersonRef,
+        Place=Place,
+        PlaceName=PlaceName,
+        PlaceRef=PlaceRef,
+        PlaceType=PlaceType,
+#        PrimaryObject=PrimaryObject,
+        RepoRef=RepoRef,
+        Repository=Repository,
+        RepositoryType=RepositoryType,
+#        Researcher=Researcher,
+#        SecondaryObject=SecondaryObject,
+        Source=Source,
+        SourceMediaType=SourceMediaType,
+        Span=Span,
+        SrcAttribute=SrcAttribute,
+        SrcAttributeType=SrcAttributeType,
+        StyledText=StyledText,
+        StyledTextTag=StyledTextTag,
+        StyledTextTagType=StyledTextTagType,
+        Surname=Surname,
+        Tag=Tag,
+        Url=Url,
+        UrlType=UrlType,
+        
         DummyTxn=DummyTxn,
         #commit=functools.partial(commit, dbstate.db, envvars["trans"]),
         getargs=getargs_dialog,
+        null=engine.nullproxy,
     )
+
+class Response:
+    def __init__(self, rows):
+        self.rows = rows
+
+
+def supertool_execute( *, 
+    category, 
+    dbstate, 
+    trans=None,
+    handles=None, 
+    initial_statements=None, 
+    statements=None, 
+    filter=None, 
+    expressions=None, 
+    summary_only=False, 
+    unwind_lists=False, 
+    commit_changes=False, 
+    args=""):
+        dirname = os.path.dirname(__file__)
+        saved_path = sys.path[:]
+        try:
+            sys.path.append(dirname)
+            import SuperTool
+        finally:
+            sys.path = saved_path
+
+        if category not in CATEGORIES:
+            raise RuntimeError("Invalid category: " + category)
+        category_info = get_category_info(dbstate.db, category)
+        
+        if handles is None:
+            if category_info.objclass:
+                selected_handles = category_info.get_all_objects_func()
+            else:
+                selected_handles = []
+        else:
+            selected_handles = handles
+
+        user = User()
+        user.uistate = None
+        
+        query = SuperTool.Query()
+        if initial_statements:
+            query.initial_statements = initial_statements
+        if statements:
+            query.statements = statements
+        if filter:
+            query.filter = filter
+        if expressions:
+            query.expressions = expressions
+        query.category = category
+        query.scope = "all"
+        query.unwind_lists = unwind_lists
+        query.commit_changes = commit_changes
+        query.summary_only = summary_only
+        env = {
+            "args": args, 
+            #"category": category, 
+            #"namespace": category_info.objclass
+        }
+        env = Lazyenv(**env)
+        gramps_engine = SuperTool.GrampsEngine(
+            dbstate,
+            user,
+            category_info,
+            selected_handles,
+            query,
+            env=env,
+            raw_values=True,
+        )
+        result = SuperTool.Result()
+        rows = []
+        if trans is not None:
+            for values in gramps_engine.get_values(trans, result):
+                rows.append(values)
+        else:
+            with DbTxn("Generating values", dbstate.db) as trans:
+                for values in gramps_engine.get_values(trans, result):
+                    rows.append(values)
+        return Response(rows=rows)
+    

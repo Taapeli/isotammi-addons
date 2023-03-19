@@ -1,7 +1,7 @@
 #
 # Gramps - a GTK+/GNOME based genealogy program
 #
-# Copyright (C) 2021      Kari Kujansuu
+# Copyright (C) 2021-2023      Kari Kujansuu
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -421,6 +421,7 @@ class GrampsEngine:
         query,
         step=None,
         env=None,
+        raw_values=False,
     ):
         # type: (DbState, DisplayState, Category, List[str], Query, Callable) -> None
         self.dbstate = dbstate
@@ -434,11 +435,13 @@ class GrampsEngine:
         if env is None: 
             env = {}
         self.env = env
+        self.raw_values = raw_values
         self.query.initialize()
 
     def generate_rows(self, res):
         # type: (Tuple[Any,...]) -> Iterator[List[Any]]
         def cast(value):
+            if self.raw_values: return value
             if type(value) in {int, str, float}:
                 return value
             else:
@@ -533,6 +536,8 @@ class GrampsEngine:
         env["result"] = result
         env["category"] = self.category.category_name
         env["namespace"] = self.category.objclass
+        env["supertool_execute"] = lambda **kwargs: supertool_utils.supertool_execute(trans=trans,**kwargs)
+    
 
         env.update(self.env)
 
