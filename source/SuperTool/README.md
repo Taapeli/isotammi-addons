@@ -232,7 +232,7 @@ This example sets the variable "number_of_names" and then uses it in the filter 
 
 ## Supported object types
 
-The tools supports all object types (categories) that have a list view in the Gramps user interface: People, Families, Events, Places, Citations, Sources, Repositories, Media and Notes. 
+The tool supports all object types (categories) that have a list view in the Gramps user interface: People, Families, Events, Places, Citations, Sources, Repositories, Media and Notes. 
 
 For other categories (Dashboard, Relationships, Charts or Geography) the tool only has the input fields "Initialization statements" and "Expressions to display". The "Summary only" mode is always used.
 
@@ -307,7 +307,7 @@ But this is not necessary or recommended. However, if you make changes to *other
             child.obj.set_gender(Person.FEMALE)
             db.commit_person(child.obj, trans)
 
-Note that the argument to "commit" is the corresponding Proxy object, not the actual Gramps object.
+Note that the argument to "db.commit_person" is the actual Gramps object (child.obj), not the corresponding Proxy object (child).
 
 ## Deleting objects
 
@@ -365,12 +365,13 @@ A filter in a different namespace can also be accessed by including the 'namespa
 
  
 ## Running from the command line
-
+ 
 The tool can also be run from the command line. In that case you have to first save a query in a script file with the "Save" command. That file is used as input file for the tool. Output will go to the screen or to a CSV file. Of course you also have to supply a family tree (database) name or an input file. For example this command will process the family tree named "example_tree", use the script file "old_people.script" and the output will go to a csv file named old_people.csv:
 
     gramps -O example_tree -a tool -p name=SuperTool,script=old_people.script,output=old_people.csv
 
 This example will read a .gramps file, create a temporary family tree and the run the script:
+
     gramps -i example_tree.gramps -a tool -p name=SuperTool,script=old_people.script,output=old_people.csv
 
 The reference section will list all parameters that can be used in the command line mode. In this mode the tool always processes all objects of the given category (People, Families etc). The category is read from the script file where it was stored when the file was saved. The type can be overridden with the parameter "category", for example
@@ -445,7 +446,7 @@ However, the "supertool" directory can be changed from [settings](#settings)
 
 So it is intended that the user can store often used include files in her own "supertool" folder.
 
-The text from the specified file is included 'as-is' to the point where the include command was found. So this is not the same as importing the module - although the include file contains Python code and usually has the .py extension.
+The text from the specified file is included 'as-is' at the point where the include command was found. So this is not the same as importing the module - although the include file contains Python code and usually has the .py extension.
 
 The included code cannot contain @include statements.
 
@@ -459,7 +460,7 @@ This is an experimental feature. There is a pre-defined variable 'result' which 
 - set headers()
 - set_max()
 
-Normally the rows displayed will correspond to the processed Gramps objects. With 'result.add_row(data)' you can add arbitrary data to the result. The 'data' argument must be a list with values to be displayed. The number of types of the values must be consistent: there must be the same number of values in each call of add_row and the number must be the same as the number of items in the "Expressions to display" field (if any). The types (str, int or float) must also match.
+Normally the rows displayed will correspond to the processed Gramps objects. With 'result.add_row(data)' you can add arbitrary data to the result. The 'data' argument must be a list with values to be displayed. The number and types of the values must be consistent: there must be the same number of values in each call of add_row and the number must be the same as the number of items in the "Expressions to display" field (if any). The types (str, int or float) must also match.
 
 Normally the types of the columns are detected when the first row is generated. The subsequent rows must use the same types. The 'set_coltypes' can be called in advance to set the column types. It is not clear if this is ever needed, though :-)
 
@@ -732,6 +733,5 @@ to be added
 ## Script file format
 
 to be added
-
 
 
