@@ -430,6 +430,7 @@ class GrampsEngine:
         self.uistate = user.uistate
         self.category = category
         self.selected_handles = selected_handles
+        self.total_objects = len(self.selected_handles)
         self.query = query
         self.step = step
         if env is None: 
@@ -466,7 +467,6 @@ class GrampsEngine:
 
     def generate_values(self, env, result):
         # type: (Dict[str,Any]) -> Iterator[Tuple[Any,Dict[str,Any],List[Any]]]
-        self.total_objects = len(self.selected_handles)
         for n,handle in enumerate(self.selected_handles):
             if result.read_limit and n >= result.read_limit:
                 return
