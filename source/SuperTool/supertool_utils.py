@@ -590,10 +590,10 @@ def supertool_execute( *,
         rows = []
         if trans is not None:
             for values in gramps_engine.get_values(trans, result):
-                rows.append(values)
+                rows.append(values[1:-1])
         else:
             with DbTxn("Generating values", dbstate.db) as trans:
                 for values in gramps_engine.get_values(trans, result):
-                    rows.append(values)
+                    rows.append(values[1:-1])
         return Response(rows=rows)
     
