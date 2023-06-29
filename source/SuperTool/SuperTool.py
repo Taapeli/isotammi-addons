@@ -71,6 +71,7 @@ from gramps.gui.glade import Glade
 from gramps.gui.managedwindow import ManagedWindow
 from gramps.gui.plug import tool
 from gramps.gui.utils import ProgressMeter
+from gramps.gui.views.treemodels.treebasemodel import TreeBaseModel
 
 try:
     _trans = glocale.get_addon_translator(__file__)
@@ -96,6 +97,10 @@ config.register("defaults.include_location", "")
 
 SCRIPTFILE_EXTENSION = ".script"
 
+a = 9977
+b = 2
+pp(a)
+# help
 
 def get_text(textview):
     buf = textview.get_buffer()
@@ -536,7 +541,7 @@ class GrampsEngine:
         env["result"] = result
         env["category"] = self.category.category_name
         env["namespace"] = self.category.objclass
-        env["supertool_execute"] = lambda **kwargs: supertool_utils.supertool_execute(trans=trans,**kwargs)
+        env["supertool_execute"] = lambda **kwargs: supertool_utils.supertool_execute(dbstate=self.dbstate, trans=trans, **kwargs)
     
 
         env.update(self.env)
@@ -974,6 +979,12 @@ class SuperTool(ManagedWindow):
 
     def execute1(self, query):
         # type: (Query) -> None
+
+        def store_handle(model, path, iter, *data):
+            "Auxiliary function for treemodels...."
+            handle = model.get_handle_from_iter(iter)
+            if handle: selected_handles.append(handle)
+        
         self.errormsg.set_text("")
         t1 = time.time()
 
@@ -997,7 +1008,9 @@ class SuperTool(ManagedWindow):
                 store = self.uistate.viewmanager.active_page.model
                 for row in store:
                     handle = store.get_handle_from_iter(row.iter)
-                    selected_handles.append(handle)
+                    if handle: selected_handles.append(handle)
+                if isinstance(store, TreeBaseModel):
+                    store.foreach(store_handle)                               
         else:
             selected_handles = []
 
@@ -1044,6 +1057,7 @@ class SuperTool(ManagedWindow):
             self.btn_copy.hide()
         self.output_window.show()
 
+        
     def exit(self, _widget):
         self.saveconfig()
 
