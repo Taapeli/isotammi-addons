@@ -391,6 +391,14 @@ class ScriptFile:
             traceback.print_exc()
             return {}
 
+class Row:
+    def __init__(self, row, gramps_id, category, handle):
+        # type: (List, str, str, str) -> None
+        self.row = row
+        self.gramps_id = gramps_id
+        self.category = category
+        self.handle = handle
+        
 class Result:
     def __init__(self):
         self.rows = []
@@ -398,11 +406,13 @@ class Result:
         self.headers = []
         self.max = 0
         self.read_limit = 0
-    def add_row(self, row):
-        self.rows.append(row)
+    def add_row(self, row, gramps_id=None,category=None, handle=None):
+        # type: (List, str, str, str) -> None
+        self.rows.append(Row(row,gramps_id, category, handle))
     def fetch_rows(self):
+        # type: () -> List
         for row in self.rows:
-            yield [None] + row + [None]
+            yield [row.gramps_id] + row.row + [row.category,row.handle]
         self.rows = []
     def set_coltypes(self, coltypes):
         self.coltypes = [str] + coltypes # add str for IDs
@@ -519,8 +529,7 @@ class GrampsEngine:
                     if type(res) != tuple:
                         res = (res,)
                     for values in self.generate_rows(res):
-                        values.append(handle)
-                        yield obj, env, [obj.gramps_id] + values
+                        yield obj, env, [obj.gramps_id] + values + [self.category.category_name, handle]
             except Exception as e:
                 e.gramps_id = obj.gramps_id
                 raise e
@@ -573,7 +582,7 @@ class GrampsEngine:
                 if type(res) != tuple:
                     res = (res,)
                 for values in self.generate_rows(res):
-                    yield [None] + values + [None]
+                    yield [None] + values + [None, None]
 
 
 class SuperTool(ManagedWindow):
@@ -643,16 +652,17 @@ class SuperTool(ManagedWindow):
         coltypes = result.get_coltypes()  # type: List[Union[Type[int],Type[str],Type[float]]]
         if not coltypes:
             coltypes = [str] # for ID
-            for colnum in range(1, numcols - 1): # exclude ID and handle 
+            for colnum in range(1, numcols - 2): # exclude ID, category name and handle 
                 coltype = type(values[colnum])
                 if coltype in {int, str, float}:
                     coltypes.append(coltype)
                 else:
                     coltypes.append(str)
+        coltypes.append(str)  # for category name
         coltypes.append(str)  # for handle
 
         headers = result.get_headers() # type List[str]
-        for colnum in range(numcols - 1):
+        for colnum in range(numcols - 2):
             if headers:
                 title = headers[colnum]
             else:
@@ -681,9 +691,14 @@ class SuperTool(ManagedWindow):
             if event.type == Gdk.EventType.DOUBLE_BUTTON_PRESS and event.button == 1:
                 model, treeiter = self.listview.get_selection().get_selected()
                 row = list(model[treeiter])
+                category_name = row[-2]
                 handle = row[-1]
-                obj = self.category.getfunc(handle)
-                self.category.editfunc(self.dbstate, self.uistate, [], obj)
+                if category_name:
+                    category = supertool_utils.get_category_info(self.db, category_name)
+                else:
+                    category = self.category                
+                obj = category.getfunc(handle)
+                category.editfunc(self.dbstate, self.uistate, [], obj)
                 return True
         except:
             traceback.print_exc()
