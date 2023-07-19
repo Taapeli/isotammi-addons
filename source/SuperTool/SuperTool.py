@@ -25,6 +25,7 @@
 # -------------------------------------------------------------------------
 
 import csv
+import html
 import json
 import os
 import sys
@@ -1376,6 +1377,8 @@ class SuperTool(ManagedWindow):
 
     def set_error(self, msg, context="", codeline="", src="", fname="", linenum=""):
         # type: (str, str, str) -> None
+        msg = html.escape(msg)
+        codeline = html.escape(codeline)
         s = "<span font_family='monospace' color='red' size='larger'>{msg}</span>"
         if context:
             s += "\n<span font_family='sans-serif'>{context}</span>"
