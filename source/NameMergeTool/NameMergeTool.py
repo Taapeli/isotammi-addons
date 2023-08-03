@@ -116,7 +116,6 @@ def fetch_names(db):
         names = person_names(person)
         gender = person.get_gender()  # type: int
         pname = name_displayer.display(person)  # type: str
-        # print(name_displayer.display(person))
         for index, name in enumerate(names):
             firstnames = name.get_first_name()  # type: str
             surnames = name.get_surname_list()
@@ -124,7 +123,6 @@ def fetch_names(db):
                 print()
                 print("Monta sukunimeä:", pname)
             firstnames = firstnames.replace(".", ". ")
-            # firstnames = firstnames.replace(":",": ")
             for firstname in firstnames.split():
                 firstnameset[(firstname, gender)].append(
                     (pname, person_handle, person.gramps_id)
@@ -222,7 +220,6 @@ class MyListModel(Gtk.ListStore):
         treeview.get_selection().set_mode(Gtk.SelectionMode.MULTIPLE)
 
         renderer = Gtk.CellRendererText()
-        print(columns)
         for (title, colnum, width) in columns:
             col = Gtk.TreeViewColumn(title, renderer, text=colnum, weight_set=True)
             col.set_clickable(True)
@@ -399,9 +396,7 @@ class NameDialog(ManagedWindow, DbGUIElement):
 
     def keypress(self, obj, event):
         # type: (Gtk.Widget, Gdk.Event) -> None
-        print("keypress", obj, event.keyval)
         if event.keyval == Gdk.KEY_Escape:
-            print("esc")
             self.close()
 
     def change_nametype(self, obj):
@@ -478,7 +473,6 @@ class NameDialog(ManagedWindow, DbGUIElement):
     def on_personlist_selection_changed(self, selection):
         # type: (Gtk.TreeSelection) -> None
         model, treeiter = selection.get_selected()
-        print(treeiter)
         if treeiter is None:
             self.open_button.set_sensitive(False)
         else:
@@ -487,7 +481,6 @@ class NameDialog(ManagedWindow, DbGUIElement):
     def __open_selected(self, obj):
         # type: (Gtk.Widget) -> None
         model, treeiter = self.treeview.get_selection().get_selected()
-        print(treeiter)
         if not treeiter:
             return
         row = list(model[treeiter])
@@ -588,10 +581,7 @@ class NameDialog(ManagedWindow, DbGUIElement):
 
     def merge(self, obj):
         # type: (Any) -> None
-        print("merge")
         (model, rows) = self.nameview.get_selection().get_selected_rows()
-        # (model, rows) = self.selection.get_selected_rows()
-        # print(rows)
         names = []
         maxcount = 0
         maxindex = 0
@@ -609,24 +599,21 @@ class NameDialog(ManagedWindow, DbGUIElement):
         ok = self.select_primary(names, maxindex)
         if not ok:
             return
-        print(self.primary_name)
+        self.new_gender_code = gender_string_to_code(self.new_gender)
         title = _("Merging names")
         it1 = None
         count = 0
         merged_rows = []
         with DbTxn(title, self.db) as self.trans:
             for row in rows[::-1]:
-                # print()
                 ref = Gtk.TreeRowReference(model, row)
                 path = ref.get_path()  # essentially a row number?
                 it = model.get_iter(path)
-                # print(path,list(model[path]),list(model[it]))
                 row = list(model[path])
                 name = row[0]
                 gender = row[1]
                 count += row[2]
                 rownum = row[3]
-                print(name)
                 if (name, gender) == self.primary_name:
                     it1 = it
                     remaining_row = self.rows[rownum]
@@ -637,9 +624,11 @@ class NameDialog(ManagedWindow, DbGUIElement):
             if it1:
                 self.nameview.get_selection().unselect_all()
                 self.nameview.get_selection().select_iter(it1)
-                new_gender = self.merge_individuals(remaining_row, merged_rows)
-                if new_gender is not None:
-                    model[it1][1] = new_gender
+                self.merge_individuals(remaining_row, merged_rows)
+                if self.set_gender.get_active():
+                    model[it1][1] = self.new_gender
+                    rownum = model[it1][3]
+                    self.rows[rownum].gender = self.new_gender
                 model[it1][2] = count
                 self.namecount -= len(merged_rows)
                 self.lbl_namecount.set_text(str(self.namecount))
@@ -652,26 +641,19 @@ class NameDialog(ManagedWindow, DbGUIElement):
         # type: (Row,List[Row]) -> str
         remaining_name = remaining_row.name
         remaining_gender = remaining_row.gender
-        new_gender = ""
         if self.nametype != Nametype.SURNAME and self.set_gender.get_active():
-            for row in [remaining_row] + merged_rows:
-                gender = row.gender
-                if gender != "UNKNOWN":
-                    new_gender = gender
-                    break
-            new_gender_code = gender_string_to_code(new_gender)
-            if new_gender is not None and remaining_gender == "UNKNOWN":
+            if remaining_gender != self.new_gender:
                 # must update the gender for the "remaining" individuals also
                 for pname, person_handle, grampsid in remaining_row.plist:
                     person = self.db.get_person_from_handle(person_handle)
-                    self.replace_gender(person, new_gender_code)
+                    self.replace_gender(person, self.new_gender_code)
 
         for row in merged_rows:
             for pname, person_handle, grampsid in row.plist:
                 person = self.db.get_person_from_handle(person_handle)
                 self.replace_name(person, row.name, remaining_name)
-                if new_gender and row.gender == "UNKNOWN":
-                    self.replace_gender(person, new_gender_code)
+                if self.set_gender.get_active() and row.gender != self.new_gender:
+                    self.replace_gender(person, self.new_gender_code)
             remaining_row.plist.extend(row.plist)
             remaining_row.count = len(remaining_row.plist)
             if do_trace:
@@ -690,7 +672,6 @@ class NameDialog(ManagedWindow, DbGUIElement):
                         gendertype = "F"
                     print(ntype, gendertype, row.name, "=>", remaining_name, file=f)
 
-        return new_gender
 
     def replace_name(self, person, old_name, new_name):
         # type: (Person, str, str) -> None
@@ -735,26 +716,73 @@ class NameDialog(ManagedWindow, DbGUIElement):
         dialog = Gtk.Dialog(
             title=_("Select primary name"), parent=None, flags=Gtk.DialogFlags.MODAL
         )
-        lbl1 = Gtk.Label(_("Select primary name"))
+        lbl1 = Gtk.Label()
+        lbl1.set_markup("<b>" + _("Select primary name:") + "</b>")
+        lbl1.set_halign(Gtk.Align.START)
         dialog.vbox.pack_start(lbl1, False, False, 5)
         # self.primary_name = None
         group = None
+        self.new_gender = "UNKNOWN"
+        frame = Gtk.Frame()
+        vbox = Gtk.VBox()
         for index, (name, gender) in enumerate(names):
             group = Gtk.RadioButton.new_with_label_from_widget(
                 group, name + " - " + gender
             )
             group.connect("toggled", cb_set_primary_name, (name, gender))
-            dialog.vbox.pack_start(group, False, True, 0)
+            vbox.pack_start(group, False, True, 0)
             # first one is the default:
             if index == maxindex:
                 group.set_active(True)
                 self.primary_name = (name, gender)
+            if gender != "UNKNOWN":
+                self.new_gender = gender
+        frame.add(vbox)
+        dialog.vbox.pack_start(frame, False, True, 0)
+
+        if self.primary_name[1] != "UNKNOWN":
+            self.new_gender = self.primary_name[1]
+            
+        if self.set_gender.get_active():
+            frame = Gtk.Frame()
+            genderbox = Gtk.VBox()
+            
+            gender_male = Gtk.RadioButton.new_with_label_from_widget(
+                    None, _("Male")
+                )
+            gender_female = Gtk.RadioButton.new_with_label_from_widget(
+                    gender_male, _("Female")
+                )
+            gender_unknown = Gtk.RadioButton.new_with_label_from_widget(
+                    gender_male, _("Unknown")
+                )
+            genderbox.add(gender_male)
+            genderbox.add(gender_female)
+            genderbox.add(gender_unknown)
+            if self.new_gender == "MALE":
+                gender_male.set_active(True)
+            if self.new_gender == "FEMALE":
+                gender_female.set_active(True)
+            if self.new_gender == "UNKNOWN":
+                gender_unknown.set_active(True)
+    
+            dialog.vbox.add(Gtk.Label(""))
+            genderlabel = Gtk.Label()
+            genderlabel.set_markup("<b>" + _("Set Gender:") + "</b>")
+            genderlabel.set_halign(Gtk.Align.START)
+            dialog.vbox.add(genderlabel)
+            frame.add(genderbox)
+            dialog.vbox.add(frame)
 
         dialog.add_button("Ok", Gtk.ResponseType.OK)
         dialog.add_button("Cancel", Gtk.ResponseType.CANCEL)
         dialog.set_default_response(Gtk.ResponseType.OK)
         dialog.show_all()
         result = dialog.run()
+        self.new_gender = "UNKNOWN"
+        if self.set_gender.get_active():
+            if gender_male.get_active(): self.new_gender = "MALE"
+            if gender_female.get_active(): self.new_gender = "FEMALE"
         dialog.destroy()
         if result == Gtk.ResponseType.OK:
             return True
@@ -768,7 +796,6 @@ class Personlist(ManagedWindow):
         self.dbstate = dbstate
         self.db = dbstate.db
         self.plist = plist
-        # print(plist)
 
         ManagedWindow.__init__(self, self.uistate, [], self.__class__, modal=False)
         store = Gtk.ListStore(str, str, str)
