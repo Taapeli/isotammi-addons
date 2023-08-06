@@ -501,6 +501,7 @@ attributes           | Attributes as a list of tuples (name,value)        | list
 citation             | This Gramps Citation object (same as 'obj')        | Citation
 citators             | Objects referring to this citation                 | 
 confidence           | Confidence value (0-4)                             | integer
+date                 | Date of the citation                               | DateProxy
 gramps_id            | Gramps id, e.g. C0123                              | string
 handle               | Gramps internal handle                             | string
 notes                | List of notes                                      | list of NoteProxy objects

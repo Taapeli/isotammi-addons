@@ -254,6 +254,11 @@ class CitationProxy(Proxy, AttributeProxy):
         self.gramps_id = self.obj.gramps_id
         self.confidence = self.obj.confidence
         self.page = self.obj.page
+        dateobj = self.citation.get_date_object()
+        if dateobj.sortval:
+            self.date = DateProxy(dateobj)
+        else:
+            self.date = nullproxy
         # self.source = SourceProxy(self.db, self.obj.source_handle)
 
     def _commit(self, db, trans):

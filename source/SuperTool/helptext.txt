@@ -395,6 +395,10 @@
             "Confidence value"
         ],
         [
+            "date",
+            "Date for the citation"
+        ],
+        [
             "gramps_id",
             "Gramps id, e.g. C0123"
         ],
