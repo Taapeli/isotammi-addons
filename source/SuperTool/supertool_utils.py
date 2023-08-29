@@ -523,6 +523,14 @@ class Response:
         self.result = result
 
 
+dirname = os.path.dirname(__file__)
+saved_path = sys.path[:]
+try:
+    sys.path.append(dirname)
+    import SuperTool
+finally:
+    sys.path = saved_path
+
 def supertool_execute( *, 
     category, 
     dbstate, 
@@ -544,20 +552,6 @@ def supertool_execute( *,
         finally:
             sys.path = saved_path
 
-        if category not in CATEGORIES:
-            raise RuntimeError("Invalid category: " + category)
-        category_info = get_category_info(dbstate.db, category)
-        
-        if handles is None:
-            if category_info.objclass:
-                selected_handles = category_info.get_all_objects_func()
-            else:
-                selected_handles = []
-        else:
-            selected_handles = handles
-
-        user = User()
-        user.uistate = None
         
         query = SuperTool.Query()
         if initial_statements:
@@ -573,11 +567,37 @@ def supertool_execute( *,
         query.unwind_lists = unwind_lists
         query.commit_changes = commit_changes
         query.summary_only = summary_only
+        return supertool_execute_query(dbstate=dbstate, query=query, trans=trans, handles=handles, args=args) 
+
+def supertool_execute_script(*, dbstate, script, trans=None, handles=None, args=""): 
+        import SuperTool
+        scriptfile = SuperTool.ScriptFile()
+        query = scriptfile.load(script)
+        return supertool_execute_query(dbstate=dbstate, query=query, trans=trans, handles=handles, args=args) 
+
+def supertool_execute_query(*, dbstate, query, trans=None, handles=None, args=""): 
+        import SuperTool
         env = {
             "args": args, 
             #"category": category, 
             #"namespace": category_info.objclass
         }
+
+        if query.category not in CATEGORIES:
+            raise RuntimeError("Invalid category: " + query.category)
+        category_info = get_category_info(dbstate.db, query.category)
+        
+        if handles is None:
+            if category_info.objclass:
+                selected_handles = category_info.get_all_objects_func()
+            else:
+                selected_handles = []
+        else:
+            selected_handles = handles
+
+        user = User()
+        user.uistate = None
+        
         env = Lazyenv(**env)
         gramps_engine = SuperTool.GrampsEngine(
             dbstate,
