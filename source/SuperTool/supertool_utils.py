@@ -517,8 +517,10 @@ def get_globals():
     )
 
 class Response:
-    def __init__(self, rows):
+    def __init__(self, rows, query, result):
         self.rows = rows
+        self.query = query
+        self.result = result
 
 
 def supertool_execute( *, 
@@ -595,5 +597,5 @@ def supertool_execute( *,
             with DbTxn("Generating values", dbstate.db) as trans:
                 for values in gramps_engine.get_values(trans, result):
                     rows.append(values[1:-2])
-        return Response(rows=rows)
+        return Response(rows=rows, query=query, result=result)
     
