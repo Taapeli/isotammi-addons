@@ -67,6 +67,12 @@ RESETBUTTON = "reset-button"
 OPENBUTTON = "open-button"
 CLOSEBUTTON = "close-button"
 
+from gramps.gen.config import config as configman
+
+config = configman.register_manager("name_merge_tool")
+config.register("defaults.set_gender", "1")
+config.register("defaults.save_original_names", "0")
+
 
 class Nametype(Enum):
     FIRSTNAME = auto()
@@ -117,6 +123,7 @@ def fetch_names(db):
         gender = person.get_gender()  # type: int
         pname = name_displayer.display(person)  # type: str
         for index, name in enumerate(names):
+            if name.get_type() == "Original": continue
             firstnames = name.get_first_name()  # type: str
             surnames = name.get_surname_list()
             if len(surnames) > 1:
@@ -272,8 +279,17 @@ class NameDialog(ManagedWindow, DbGUIElement):
         # the previous line's "modal" would require that line to be changed
         DbGUIElement.__init__(self, dbstate.db)
 
+        
+
         try:
             self.draw_window()
+            config.load()
+            self.set_gender.set_active(
+                config.get("defaults.set_gender") == "1"
+            )
+            self.save_original_names.set_active(
+                config.get("defaults.save_original_names") == "1"
+            )
             ok = True
         except:
             traceback.print_exc()
@@ -356,6 +372,8 @@ class NameDialog(ManagedWindow, DbGUIElement):
 
         self.set_gender = glade.get_child_object("set_gender")
         # self.set_gender.connect('clicked', self.find)
+
+        self.save_original_names = glade.get_child_object("save_original_names")
 
         refresh_button = glade.get_child_object("refresh_button")
         refresh_button.connect("clicked", self.refresh)
@@ -581,6 +599,14 @@ class NameDialog(ManagedWindow, DbGUIElement):
 
     def merge(self, obj):
         # type: (Any) -> None
+        config.set("defaults.set_gender", 
+           "1" if self.set_gender.get_active() else "0"
+        )
+        config.set("defaults.save_original_names", 
+           "1" if self.save_original_names.get_active() else "0"
+        )
+        config.save()
+
         (model, rows) = self.nameview.get_selection().get_selected_rows()
         names = []
         maxcount = 0
@@ -678,6 +704,8 @@ class NameDialog(ManagedWindow, DbGUIElement):
         names = person_names(person)
         pname = name_displayer.display(person)
         for name in names:
+            data1 = name.serialize()
+            if name.get_type() == "Original": continue
             if self.nametype == Nametype.FIRSTNAME:
                 firstnames = name.get_first_name()
                 firstnames = firstnames.replace(".", ". ")
@@ -697,6 +725,14 @@ class NameDialog(ManagedWindow, DbGUIElement):
             for surname in surnames:
                 if surname.get_surname() == old_name:
                     surname.set_surname(new_name)
+
+            data2 = name.serialize()
+            if self.save_original_names.get_active() and data1 != data2:
+                oldname = Name()
+                oldname.unserialize(data1)
+                oldname.set_type("Original")
+                person.add_alternate_name(oldname)
+
         new_pname = name_displayer.display(person)
         if do_logging:
             print(person.gramps_id, pname, "=>", new_pname)
