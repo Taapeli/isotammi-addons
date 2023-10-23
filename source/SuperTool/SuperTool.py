@@ -98,11 +98,6 @@ config.register("defaults.include_location", "")
 
 SCRIPTFILE_EXTENSION = ".script"
 
-a = 9977
-b = 2
-pp(a)
-# help
-
 def get_text(textview):
     buf = textview.get_buffer()
     text = buf.get_text(buf.get_start_iter(), buf.get_end_iter(), True)
