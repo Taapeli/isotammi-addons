@@ -491,7 +491,23 @@ to be added
 
 ## Variables (or attributes or properties...) supported for the various object types.
 
-These lists include the variables defined in the various Proxy classes. In addition, you can naturally use all properties and methods of the Gramps objects and Python libraries.
+This diagram shows attributes and the relationships between object types (i.e. proxy classes). For clarity, some of the relationship arrows have been omitted. 
+
+The notation
+
+    father: Person
+
+means that the "father" attribute refers to an object of type "Person" (actually PersonProxy, see [Proxy objects](#proxy-objects)).
+
+An asterisk after the type name means that the attribute is a list of objects, e.g.
+
+    events: Event*
+
+
+![SuperTool](supertool.svg)
+
+
+The lists below include the attributes defined in the various proxy classes. In addition, you can naturally use all properties and methods of the Gramps objects and Python libraries.
 
 ### Citations
 
@@ -665,7 +681,7 @@ author               | Author                                         | string
 citations            | List of citations                              | list of CitationProxy objects
 gramps_id            | Gramps id, e.g. S0123                          | string
 handle               | Gramps internal handle                         | string
-    notes                | List of notes                                  | list of NoteProxy objects
+notes                | List of notes                                  | list of NoteProxy objects
 obj                  | This Gramps Source object (same as 'source')   | Source
 pubinfo              | Publication info                               | string
 repositories         | List of repositories                           | list of RepositoryProxy objects
