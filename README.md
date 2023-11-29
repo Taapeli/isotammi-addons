@@ -13,6 +13,8 @@ tai tällä:
 * https://raw.githubusercontent.com/Taapeli/isotammi-addons/master/addons/gramps50
 (Gramps-versioille 5.0.x)
 
+Varmista että osoitteeseen ei tule ylimääräisiä merkkejä, esim. välilyöntejä alkuun tai loppuun.
+
 ![Asetukset](Asetukset.png)
 
 Napsauta "Tarkista laajennusten päivitykset nyt" - saat listan Isotammen Gramps-laajennuksista. Paina "Valitse kaikki" tai valikoi ne jotka haluat asentaa (ainakin "Isotammen asetukset"). Paina "Asenna laajennukset".
@@ -39,6 +41,8 @@ or with
 
 * https://raw.githubusercontent.com/Taapeli/isotammi-addons/master/addons/gramps50
 (for Gramps 5.0.x)
+
+Verify that there are no extra characters in this address, for example spaces at either end.
 
 ![Preferences](Preferences.png)
 
