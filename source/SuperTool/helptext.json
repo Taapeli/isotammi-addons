@@ -1,16 +1,103 @@
 {
-    "global": [
-        [
-            "uistate",
-            "UI state  object"
+    "Hint": [
+        [   "User Guide",
+            "A Python script execution shell tool. Allows quick manipulation of Gramps Tree data",
+            "https://github.com/Taapeli/isotammi-addons/blob/master/source/SuperTool/\"README.md",
+            "comprehensive documentation"
         ],
+        [
+            "shorthand variables",
+            "Each tab is a category specific shorthand equivalents for getting common Gramps tree data",
+            "https://github.com/Taapeli/isotammi-addons/blob/master/source/SuperTool/README.md#pre+defined-variables",
+            "tooltip"
+        ],
+        [
+            "diagram: class shorthand",
+            "simplified 'get' equivalants by class of object",
+            "https://github.com/Taapeli/isotammi-addons/blob/master/source/SuperTool/supertool.svg"
+        ],
+        [   "example scripts",
+            "a list of SuperTool scripts published in various forums",
+            "https://www.gramps-project.org/wiki/index.php/Addon:Isotammi_addons#SuperTool_Scripts"
+        ],
+        [
+            "General variables and functions",
+            "\"Initialization statements\" allow importing standard modules. These are available without importing ",
+            "https://github.com/Taapeli/isotammi-addons/blob/master/source/SuperTool/README.md#general-variables",
+            "os, sys, re, functools, collections, db, trans, len, uniq, flatten, makedate, today,filter"
+        ],
+        [
+            "SuperTool function: getargs()",
+            "(get arguments) parameter input dialog. Support parameterized queries ",
+            "https://github.com/Taapeli/isotammi-addons/blob/master/source/SuperTool/README.md#parameterized-queries",
+            "obj1=getargs2(par1='Label: ',par2=('One of: ', list, ['1a','2b','3c']),par3=('Private: ', bool, True))"
+        ],
+        [
+            "SuperTool function: getargs()",
+            "(get arguments) parameter input dialog. Support parameterized queries ",
+            "https://github.com/Taapeli/isotammi-addons/blob/master/source/SuperTool/README.md#parameterized-queries",
+            "obj1=getargs2(par1=\"Label: \",par2=(\"One of: \", list, [\"1a\",\"2b\",\"3c\"]),par3=(\"Private: \", bool, True))"
+        ],
+        [
+            "Gramps Developer API Guide",
+            "Gramps methods and module documentation",
+            "https://gramps-project.org/docs ",
+            "Searchable documentation in Sphinx markdown CMS"
+        ],
+        [
+            "diagram: Gramps data model",
+            "Gramps methods and modules for Primary and Secondary objects",
+            "https://gramps-project.org/wiki/index.php/Gramps_Data_Model",
+            "Searchable documentation in Sphinx markdown CMS"
+        ],
+        [
+            "diagram: Gramps API",
+            "UML block diagram of Gramps methods and module documentation",
+            "https://www.gramps-project.org/wiki/index.php/File:API.svg",
+            "Unified Modeling Language block diagram of API calls"
+        ],
+        [
+            "function: dir()",
+            "returns typical properties and methods",
+            "https://docs.python.org/3/library/functions.html#dir",
+            "Without arguments, return the list of names in the current local scope"
+        ],
+        [
+            "function: dir(obj)",
+            "returns all properties and methods of the specified object, without the values",
+            "https://www.w3schools.com/python/ref_func_dir.asp",
+            " With an argument, attempt to return a list of valid attributes for that object"
+        ],
+        [
+            "Python: dunder methods",
+            "\"double underscore\" (leading and trailing) or \"magic\" python methods",
+            "https://www.reddit.com/r/Python/comments/br9ok2/list_of_all_python_dunder_methods/"
+        ],
+        [
+            "Python: single underscore methods",
+            "weak \"internal use\" indicator (leading), avoid Python keyword conflicts (trailing)"
+        ],
+        [
+            "function: repr(obj)",
+            "returns a printable representation of an object in Python",
+            "https://docs.python.org/3/library/functions.html#repr",
+            "Return a string containing a printable representation of an object"
+        ],
+        [
+            "function: str(obj)",
+            "convert an object to its string representation",
+            "https://docs.python.org/3/library/stdtypes.html#str",
+            "type(object).__str__(object)"
+        ]
+    ],
+    "global": [
         [
             "active_person",
             "Active person"
         ],
         [
-            "user",
-            "Gramps internal user object"
+            "category",
+            "Category, e.g. 'Dashboard', 'People' etc."
         ],
         [
             "db",
@@ -21,51 +108,51 @@
             "Database state  object"
         ],
         [
-            "trans",
-            "Current transaction"
-        ],
-        [
-            "makedate",
-            "Function to construct a date literal; e.g. makedate(1800, 12, 31) or makedate(1800)"
-        ],
-        [
-            "uniq",
-            "Function that returns unique elements from a list"
+            "filter",
+            "Function that returns a custom filter by name"
         ],
         [
             "flatten",
             "Function that returns elements from nested lists"
         ],
         [
-            "today",
-            "Function that returns today's date"
-        ],
-        [
-            "namespace",
-            "E.g. 'Person', 'Family' etc."
-        ],
-        [
-            "category",
-            "Category, e.g. 'Dashboard', 'People' etc." 
-        ],
-        [
-            "filter",
-            "Function that returns a custom filter by name"
-        ],
-        [
             "getargs",
             "Function that asks the user for parameters to be used in the query"
         ],
         [
+            "makedate",
+            "Function to construct a date literal; e.g. makedate(1800, 12, 31) or makedate(1800)"
+        ],
+        [
+            "namespace",
+            "e.g. 'Person', 'Family' etc."
+        ],
+        [
             "referrers",
             "Function returning objects of specified category that refer to this object"
+        ],
+        [
+            "today",
+            "Function that returns today's date"
+        ],
+        [
+            "trans",
+            "Current transaction"
+        ],
+        [
+            "uistate",
+            "UI state  object"
+        ],
+        [
+            "uniq",
+            "Function that returns unique elements from a list"
+        ],
+        [
+            "user",
+            "Gramps internal user object"
         ]
     ],
     "People": [
-        [
-            "self",
-            "This PersonProxy object"
-        ],
         [
             "attributes",
             "Attributes as a list of tuples (name,value)"
@@ -108,7 +195,9 @@
         ],
         [
             "gramps_id",
-            "Gramps id, e.g. I0123"
+            "Gramps id, e.g. I0123",
+            "https://gramps-project.org/docs/gen/gen_lib.html#gramps.gen.lib.primaryobj.BasicPrimaryObject.get_gramps_id",
+            "get_gramps_id(self)&#xA;set_gramps_id(str)"
         ],
         [
             "handle",
@@ -151,6 +240,10 @@
             "This Gramps Person object (same as 'obj')"
         ],
         [
+            "self",
+            "This PersonProxy object"
+        ],
+        [
             "spouses",
             "List of person's spouses"
         ],
@@ -168,10 +261,6 @@
         ]
     ],
     "Families": [
-        [
-            "self",
-            "This FamilyProxy object"
-        ],
         [
             "attributes",
             "Attributes as a list of tuples (name,value)"
@@ -198,7 +287,9 @@
         ],
         [
             "gramps_id",
-            "Gramps id, e.g. F0123"
+            "Gramps id, e.g. F0123",
+            "https://gramps-project.org/docs/gen/gen_lib.html#gramps.gen.lib.primaryobj.BasicPrimaryObject.get_gramps_id",
+            "get_gramps_id(self)&#xA;set_gramps_id(str)"
         ],
         [
             "handle",
@@ -213,12 +304,16 @@
             "List of notes"
         ],
         [
+            "obj",
+            "This Gramps Family object (same as 'family')"
+        ],
+        [
             "reltype",
             "Relationship type"
         ],
         [
-            "obj",
-            "This Gramps Family object (same as 'family')"
+            "self",
+            "This FamilyProxy object"
         ],
         [
             "tags",
@@ -226,10 +321,6 @@
         ]
     ],
     "Events": [
-        [
-            "self",
-            "This EventProxy object"
-        ],
         [
             "attributes",
             "Attributes as a list of tuples (name,value)"
@@ -252,7 +343,9 @@
         ],
         [
             "gramps_id",
-            "Gramps id, e.g. E0123"
+            "Gramps id, e.g. E0123",
+            "https://gramps-project.org/docs/gen/gen_lib.html#gramps.gen.lib.primaryobj.BasicPrimaryObject.get_gramps_id",
+            "get_gramps_id(self)&#xA;set_gramps_id(str)"
         ],
         [
             "handle",
@@ -287,6 +380,10 @@
             "Role of the event"
         ],
         [
+            "self",
+            "This EventProxy object"
+        ],
+        [
             "tags",
             "List of tags as strings"
         ],
@@ -297,16 +394,16 @@
     ],
     "Places": [
         [
-            "self",
-            "This PlaceProxy object"
-        ],
-        [
             "altnames",
             "List of alternate names for this place"
         ],
         [
             "citations",
             "List of citations"
+        ],
+        [
+            "code",
+            "Code of the place"
         ],
         [
             "enclosed_by",
@@ -319,14 +416,24 @@
         [
             "events",
             "List of events that occurred in this place"
-        ], 
+        ],
         [
             "gramps_id",
-            "Gramps id, e.g. P0123"
+            "Gramps id, e.g. P0123",
+            "https://gramps-project.org/docs/gen/gen_lib.html#gramps.gen.lib.primaryobj.BasicPrimaryObject.get_gramps_id",
+            "get_gramps_id(self)&#xA;set_gramps_id(str)"
         ],
         [
             "handle",
             "Gramps internal handle"
+        ],
+        [
+            "lat",
+            "Latitude"
+        ],
+        [
+            "long",
+            "Longitude"
         ],
         [
             "longname",
@@ -349,6 +456,10 @@
             "This Gramps Place object (same as 'obj')"
         ],
         [
+            "self",
+            "This PlaceProxy object"
+        ],
+        [
             "tags",
             "List of tags as strings"
         ],
@@ -357,27 +468,11 @@
             "Title of the place"
         ],
         [
-            "code",
-            "Code of the place"
-        ],
-        [
-            "lat",
-            "Latitude"
-        ],
-        [
-            "long",
-            "Longitude"
-        ],
-        [
             "type",
             "Type of the place as string"
         ]
     ],
     "Citations": [
-        [
-            "self",
-            "This CitationProxy object"
-        ],
         [
             "attributes",
             "Attributes as a list of tuples (name,value)"
@@ -400,7 +495,9 @@
         ],
         [
             "gramps_id",
-            "Gramps id, e.g. C0123"
+            "Gramps id, e.g. C0123",
+            "https://gramps-project.org/docs/gen/gen_lib.html#gramps.gen.lib.primaryobj.BasicPrimaryObject.get_gramps_id",
+            "get_gramps_id(self)&#xA;set_gramps_id(str)"
         ],
         [
             "handle",
@@ -419,6 +516,10 @@
             "Page value"
         ],
         [
+            "self",
+            "This CitationProxy object"
+        ],
+        [
             "source",
             "Source"
         ],
@@ -428,10 +529,6 @@
         ]
     ],
     "Sources": [
-        [
-            "self",
-            "This SourceProxy object"
-        ],
         [
             "abbrev",
             "Abbreviation"
@@ -450,7 +547,9 @@
         ],
         [
             "gramps_id",
-            "Gramps id, e.g. S0123"
+            "Gramps id, e.g. S0123",
+            "https://gramps-project.org/docs/gen/gen_lib.html#gramps.gen.lib.primaryobj.BasicPrimaryObject.get_gramps_id",
+            "get_gramps_id(self)&#xA;set_gramps_id(str)"
         ],
         [
             "handle",
@@ -473,6 +572,10 @@
             "List of repositories"
         ],
         [
+            "self",
+            "This SourceProxy object"
+        ],
+        [
             "source",
             "This Gramps Source object (same as 'obj')"
         ],
@@ -487,12 +590,10 @@
     ],
     "Repositories": [
         [
-            "self",
-            "This RepositoryProxy object"
-        ],
-        [
             "gramps_id",
-            "Gramps id, e.g. R0123"
+            "Gramps id, e.g. R0123",
+            "https://gramps-project.org/docs/gen/gen_lib.html#gramps.gen.lib.primaryobj.BasicPrimaryObject.get_gramps_id",
+            "get_gramps_id(self)&#xA;set_gramps_id(str)"
         ],
         [
             "handle",
@@ -511,6 +612,10 @@
             "This Gramps Repository object (same as 'obj')"
         ],
         [
+            "self",
+            "This RepositoryProxy object"
+        ],
+        [
             "sources",
             "List of sources in this repository"
         ],
@@ -525,12 +630,30 @@
     ],
     "Media": [
         [
-            "self",
-            "This MediaProxy object"
+            "attributes",
+            "Attributes"
+        ],
+        [
+            "checksum",
+            "Checksum"
+        ],
+        [
+            "citations",
+            "List of citations"
+        ],
+        [
+            "date",
+            "Date"
+        ],
+        [
+            "desc",
+            "Description"
         ],
         [
             "gramps_id",
-            "Gramps id, e.g. O0123"
+            "Gramps id, e.g. O0123",
+            "https://gramps-project.org/docs/gen/gen_lib.html#gramps.gen.lib.primaryobj.BasicPrimaryObject.get_gramps_id",
+            "get_gramps_id(self)&#xA;set_gramps_id(str)"
         ],
         [
             "handle",
@@ -541,54 +664,36 @@
             "This Gramps Media object (same as 'obj')"
         ],
         [
-            "obj",
-            "This Gramps Media object (same as 'media')"
-        ],
-        [
-            "tags",
-            "List of tags as strings"
+            "mime",
+            "Mime type"
         ],
         [
             "notes",
             "List of notes"
         ],
         [
-            "attributes",
-            "Attributes"
-        ],
-        [
-            "citations",
-            "List of citations"
+            "obj",
+            "This Gramps Media object (same as 'media')"
         ],
         [
             "path",
             "Path to the media object"
         ],
         [
-            "checksum",
-            "Checksum"
+            "self",
+            "This MediaProxy object"
         ],
         [
-            "desc",
-            "Description"
-        ],
-        [
-            "mime",
-            "Mime type"
-        ],
-        [
-            "date",
-            "Date"
+            "tags",
+            "List of tags as strings"
         ]
     ],
     "Notes": [
         [
-            "self",
-            "This NoteProxy object"
-        ],
-        [
             "gramps_id",
-            "Gramps id, e.g. N0123"
+            "Gramps id, e.g. N0123",
+            "https://gramps-project.org/docs/gen/gen_lib.html#gramps.gen.lib.primaryobj.BasicPrimaryObject.get_gramps_id",
+            "get_gramps_id(self)&#xA;set_gramps_id(str)"
         ],
         [
             "handle",
@@ -601,6 +706,10 @@
         [
             "obj",
             "This Gramps Note object (same as 'note')"
+        ],
+        [
+            "self",
+            "This NoteProxy object"
         ],
         [
             "tags",
@@ -616,6 +725,3 @@
         ]
     ]
 }
-
-
-

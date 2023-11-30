@@ -245,6 +245,7 @@ class HelpWindow(Gtk.Window):
 
         self.box.pack_start(Gtk.Label("Available properties"), True, True, 0)
         self.box.pack_start(help_notebook, True, True, 0)
+        self.resize(1, 1)  # shrink to minimum size needed
 
 
 class Query:
@@ -1170,23 +1171,52 @@ class SuperTool(ManagedWindow):
 
     def load_help(self):
         dirname = os.path.split(__file__)[0]
-        fname = os.path.join(dirname, "helptext.txt")
+        fname = os.path.join(dirname, "helptext.json")
         data = json.loads(open(fname).read())
         self.help_notebook = Gtk.Notebook()
         page = 0
-        for cat_name in ["global"] + supertool_utils.get_categories():
+        #for cat_name in ["global"] + supertool_utils.get_categories():
+        for tabnum, cat_name in enumerate(data):
             grid = Gtk.Grid()
             grid.set_column_spacing(10)
             row = 0
             col = 0
-            for name, desc in sorted(data[cat_name]):
+            for x in data[cat_name]:
+                name = x[0]
+                desc = x[1]
                 label = Gtk.Label(label=name)
                 label.set_halign(Gtk.Align.START)
+                if len(x) > 2:
+                    url = x[2]
+                    if url:
+                        if len(x) > 3:
+                            title = x[3]
+                            markup = '<a href="{url}" title="{title}">{name}</a>'.format(
+                                url=html.escape(url), name=html.escape(name), title=html.escape(title), 
+                            )
+                        else:
+                            markup = '<a href="{url}">{name}</a>'.format(
+                                url=html.escape(url), name=html.escape(name), 
+                            )
+                        label.set_markup(markup)
+                    elif len(x) > 3:
+                        label.set_tooltip_text(x[3])
                 grid.attach(label, col, row, 1, 1)
 
                 label = Gtk.Label(label=desc)
                 label.set_halign(Gtk.Align.START)
+                #label.set_line_wrap(True)
+                #label.set_size_request(500, -1)
+                #label.set_max_width_chars(100)
+                
+                #label.set_size_request(250, -1) # 250 or whatever width you want. -1 to keep height automatic
+
+                #table = Gtk.Table(1, 1, False)
+                #table.attach(label, 0, 1, 0, 1, Gtk.AttachOptions.SHRINK | Gtk.AttachOptions.FILL)
+                
                 grid.attach(label, col + 1, row, 1, 1)
+                
+                    
                 row += 1
             self.help_notebook.append_page(grid, Gtk.Label(label=cat_name))
             grid.show()
