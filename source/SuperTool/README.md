@@ -1,6 +1,6 @@
 # SuperTool
-v1.2.9<br>
-02 Feb 2023<br>
+v1.3.3<br>
+30 Nov 2023<br>
 Author: kari.kujansuu@gmail.com<br>
 
  [Introduction](#introduction)
@@ -268,7 +268,9 @@ The 'getargs' function can also be used in the command line mode.
 
 ## Modifying the database
 
-You can modify the database by supplying suitable Python statements in the "Statements executed for each object" section. To be able to do that you of course have to know which Gramps functions to call to make the modifications correctly. That is, you need to know something about Gramps internals. See e.g. the documentation at https://www.gramps-project.org/docs/gen/gen_lib.html.
+You can modify the database by supplying suitable Python statements in the "Statements executed for each object" section. To be able to do that you of course have to know which Gramps functions to call to make the modifications correctly. That is, you need to know something about Gramps internals. See e.g. the documentation at https://www.gramps-project.org/docs/gen/gen_lib.html, 
+the Gramps Data Model at https://gramps-project.org/wiki/index.php/Gramps_Data_Model
+and, of course, Gramps source code at https://github.com/gramps-project/gramps.
 
 All queries are done under a transaction and any changes can be undone from the Gramps menu (Edit > Undo).
 
@@ -276,7 +278,7 @@ For example, this will set the gender of selected people to FEMALE:
 
 ![SuperTool](SuperTool-set-gender.png)
 
-Note that you cannot change the properties of the objects by simply assigning new values to properties of *Proxy* objects (see below). For example, in the People category, this does not work:
+Note that you cannot change the properties of the objects by simply assigning new values to properties of *Proxy* objects (see [Proxy objects](#proxy-objects)). For example, in the People category, this does not work:
 
 ```python
 gender = Person.FEMALE
@@ -287,6 +289,8 @@ But this works:
 ```python
 person.gender = Person.FEMALE
 ```
+
+This is because the 'person' object is the Gramps internal Person object, not the PersonProxy object.
     
 However, the recommended way would be to use the corresponding setter method as in the example above:
 
@@ -462,6 +466,16 @@ This is an experimental feature. There is a pre-defined variable 'result' which 
 
 Normally the rows displayed will correspond to the processed Gramps objects. With 'result.add_row(data)' you can add arbitrary data to the result. The 'data' argument must be a list with values to be displayed. The number and types of the values must be consistent: there must be the same number of values in each call of add_row and the number must be the same as the number of items in the "Expressions to display" field (if any). The types (str, int or float) must also match.
 
+The 'add_row' function also accepts three optional parameters: gramps_id, category and handle. These can be used if you want the row to correspond to a specific Gramps object. The parameter 'gramps_id' should be a string that will be inserted as the first column in the display. The parameters 'category' and 'handle' specify the object that the row corresponds to. Double-clicking the row will then open the corresponding object editor. For example this code will display the parents of the family and their children - and also allow the children be edited (this shouöld be run in the Families category):
+
+```python
+    result.add_row([father.name, mother.name], gramps_id=gramps_id, category='Families', handle=handle)
+    for child in children:
+        result.add_row(["", child.name], gramps_id=child.gramps_id, category='People', handle=child.handle)
+```
+
+The default for 'category' is the current category.
+
 Normally the types of the columns are detected when the first row is generated. The subsequent rows must use the same types. The 'set_coltypes' can be called in advance to set the column types. It is not clear if this is ever needed, though :-)
 
 Normally the column headers are "Value 1", "Value 2" etc. With 'set_headers' you can specify different headers. For example;
@@ -505,6 +519,9 @@ An asterisk after the type name means that the attribute is a list of objects, e
 
 
 ![SuperTool](supertool.svg)
+
+
+The corresponding diagram for Gramps object (Gramps Data Model) is at https://gramps-project.org/wiki/index.php/Gramps_Data_Model
 
 
 The lists below include the attributes defined in the various proxy classes. In addition, you can naturally use all properties and methods of the Gramps objects and Python libraries.
