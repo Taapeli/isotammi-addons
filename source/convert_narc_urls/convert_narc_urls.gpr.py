@@ -36,7 +36,11 @@ register(TOOL,
     id    = 'convert_narc_urls',
     name  = _("Convert NARC URLs"),
     description =  _(""),
+<<<<<<< HEAD
     version = '1.0.1',
+=======
+    version = '1.0.0',
+>>>>>>> branch 'master' of ssh://git@github.com/Taapeli/isotammi-addons.git
     gramps_target_version = major_version,
     status = STABLE,
     fname = 'convert_narc_urls.py',
