@@ -1,3 +1,4 @@
+import json
 import os
 import subprocess
 import tarfile
@@ -17,13 +18,17 @@ def ignore(fname):
     if fname.endswith("/__pycache__"): return True
     if fname.endswith("~"): return True
     if fname.endswith(".script"): return True
+    if fname.split("/")[-1].startswith("."): return True
     return False
 
 def get_tgz(addon,grampsver):
     return f"../addons/{grampsver}/download/{addon}.addon.tgz"
 
 def get_listing(grampsver,lang):
-    return f"../addons/{grampsver}/listings/addons-{lang}.txt"
+    if grampsver < "gramps52":
+        return f"../addons/{grampsver}/listings/addons-{lang}.txt"
+    else:
+        return f"../addons/{grampsver}/listings/addons-{lang}.json"
 
 def get_addons():
     for dirname in os.listdir("."):
@@ -41,8 +46,7 @@ def get_files(addon):
 
 def need_rebuild(addon):
     for gver, grampsver in grampsversions:
-        if addon.startswith("_") and gver == "5.0": # convention: filter rules start with "_"
-            continue
+        if skip(gver, addon): continue
         tgz = get_tgz(addon,grampsver)
         if not os.path.exists(tgz): return True
         tgz_modtime = os.stat(tgz).st_mtime
@@ -111,7 +115,12 @@ def bump_version(addon):
 
 def update_translations(addon):
     pass
-        
+
+def skip(gver, addon):        
+    if addon.startswith("_") and gver == "5.0": return True # convention: filter rules start with "_"
+    if addon == "IsotammiConfig" and gver == "5.2": return True # not needed in 5.2
+    return False
+
 def rebuild(addon):
     def filter(tarinfo):
         if ignore(tarinfo.name): return None
@@ -119,7 +128,7 @@ def rebuild(addon):
     bump_version(addon)
     update_translations(addon)
     for gver, grampsver in grampsversions:
-        if addon.startswith("_") and gver == "5.0": continue
+        if skip(gver, addon): continue
         tgz = get_tgz(addon, grampsver)
         tf = tarfile.open(tgz,"w:gz")
         tf.add(addon, addon, recursive=True, filter=filter)
@@ -131,6 +140,7 @@ def update_listings():
         #global plugins
         # need to take care of translated types
         kwargs["ptype"] = PTYPE_STR[ptype]
+        kwargs["ptype_numeric"] = ptype
         plugins.append(SimpleNamespace(**kwargs))
     listings = defaultdict(list)
     for addon in get_addons():
@@ -149,12 +159,15 @@ def update_listings():
             for p in plugins:
                 #print(p)
                 for gver, grampsver in grampsversions:
-                    if addon.startswith("_") and gver == "5.0": 
-                        continue
+                    if skip(gver, addon): continue
                     tgz = get_tgz(addon,grampsver)
                     tgzfile = f"{addon}.addon.tgz"
-                    d = dict(t=p.ptype, i=p.id, n=p.name, v=p.version, g=gver, # p.gramps_target_version,
-                             d=p.description, z=tgzfile)
+                    if grampsver < "gramps52":
+                        ptype = p.ptype
+                    else:
+                        ptype = p.ptype_numeric
+                    d = dict(t=ptype, i=p.id, n=p.name, v=p.version, g=gver, # p.gramps_target_version,
+                             d=p.description, z=tgzfile, s=3)
                     #print(d)
                     listings[(grampsver,lang)].append(d)
 
@@ -166,8 +179,11 @@ def update_listings():
             listing_file = get_listing(grampsver,lang)
             print("-",listing_file)
             with open(listing_file,"w") as f:
-                for d in listing:
-                    print(d, file=f)
+                if grampsver < "gramps52":
+                    for d in listing:
+                        print(d, file=f)
+                else:
+                    print(json.dumps(listing, indent=2), file=f)
 
 def removefile(fname):
     try:
