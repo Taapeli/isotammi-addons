@@ -25,7 +25,14 @@ Asennuksen jälkeen voit lisätä laajennuksen "Isotammen asetukset" Grampsin ty
 
 Valitse tässä haluttu laajennuskirjasto (Oletus tai Isotammi) ja paina "Talleta". Sen jälkeen voit avata Grampsin asetusikkunan ja ladata sieltä laajennuksia valitusta kirjastosta.
 
-Kentät "Isotammi URL" ja "API Key" tulevat käyttöön myöhemmin.
+Kentät "Isotammi URL" ja "API Key" eivät ole käytössä.
+
+Gramps-versiossa 5.2 asennus on erilainen. Lisää uusi projekti Grampsin "Addon managerin" Projects-välilehdellä ja anna sille osoitteeksi
+
+* https://raw.githubusercontent.com/Taapeli/isotammi-addons/master/addons/gramps52
+
+ "Isotammen asetukset" on tarpeeton versiossa 5.2 eikä sitä enää ole.
+
 
 Huomaa että Työkalut-valikon alle asentuvat Isotammen Gramps-työkalut ovat omassa alavalikossaan "Isotammi-työkalut".
 
@@ -54,7 +61,13 @@ After installation go to Gramps Dashboard and add the gramplet "Isotammi configu
 
 Choose the addon library (either Default or Isotammi) and click "Save".
 
-The fields "Isotammi URL" and "API Key" are for future use.
+The fields "Isotammi URL" and "API Key" are not used.
+
+In Gramps version 5.2 add a new project in the Projects tab in "Addon manager" and use this address:
+
+* https://raw.githubusercontent.com/Taapeli/isotammi-addons/master/addons/gramps52
+
+The "Isotammi configuration" gramplet is unnecessary in 5.2 and does not exist any longer.
 
 Note that those Isotammi tools that install under the "Tools" menu will be in their own submenu "Isotammi tools".
 
