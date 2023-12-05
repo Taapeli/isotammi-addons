@@ -108,12 +108,12 @@ class SidebarFilterBase:
             # in gramps.gen.filters.rules.event.__init__.py.
             # The workaround is to create a new custom rule HasEventBase1 which is identical to HasEventBase.
             if rule.__class__.__name__ == "HasEventBase":
-                rule1 = HasEventBase1(rule.list, rule.use_regex)
+                rule1 = HasEventBasePlus(rule.list, rule.use_regex)
                 new_rules.append(rule1)
                 continue
             # Similar problem with HasSourceBase.
             if rule.__class__.__name__ == "HasSourceBase":
-                rule1 = HasSourceBase1(rule.list, rule.use_regex)
+                rule1 = HasSourceBasePlus(rule.list, rule.use_regex)
                 new_rules.append(rule1)
                 continue
             # The Place rule WithinArea might have None or numeric values while custom_filters.xml only accepts strings.

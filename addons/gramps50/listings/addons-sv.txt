@@ -2,17 +2,17 @@
 {'t': 'Gramplet', 'i': 'Multimergegramplet Gramplet', 'n': 'Multimerge Gramplet', 'v': '1.1.8', 'g': '5.0', 'd': 'Multimerge Gramplet', 'z': 'multimergegramplet.addon.tgz', 's': 3}
 {'t': 'Tool', 'i': 'zipinstall', 'n': 'ZipInstall', 'v': '1.1.4', 'g': '5.0', 'd': 'Install a plugin from a ZIP file', 'z': 'zipinstall.addon.tgz', 's': 3}
 {'t': 'Tool', 'i': 'generatecitations', 'n': 'Generate source citations from notes', 'v': '1.1.8', 'g': '5.0', 'd': 'Generate source citations from notes', 'z': 'generatecitations.addon.tgz', 's': 3}
-{'t': 'Gramplet', 'i': 'Person-Filter+', 'n': 'Person Filter+', 'v': '1.0.1', 'g': '5.0', 'd': 'Gramplet providing a filter (enhanced)', 'z': 'Filter+.addon.tgz', 's': 3}
-{'t': 'Gramplet', 'i': 'Family-Filter+', 'n': 'Family Filter+', 'v': '1.0.1', 'g': '5.0', 'd': 'Gramplet providing a filter (enhanced)', 'z': 'Filter+.addon.tgz', 's': 3}
-{'t': 'Gramplet', 'i': 'Event-Filter+', 'n': 'Event Filter+', 'v': '1.0.1', 'g': '5.0', 'd': 'Gramplet providing a filter (enhanced)', 'z': 'Filter+.addon.tgz', 's': 3}
-{'t': 'Gramplet', 'i': 'Place-Filter+', 'n': 'Place Filter+', 'v': '1.0.1', 'g': '5.0', 'd': 'Gramplet providing a filter (enhanced)', 'z': 'Filter+.addon.tgz', 's': 3}
-{'t': 'Gramplet', 'i': 'Citation-Filter+', 'n': 'Citation Filter+', 'v': '1.0.1', 'g': '5.0', 'd': 'Gramplet providing a filter (enhanced)', 'z': 'Filter+.addon.tgz', 's': 3}
-{'t': 'Gramplet', 'i': 'Source-Filter+', 'n': 'Source Filter+', 'v': '1.0.1', 'g': '5.0', 'd': 'Gramplet providing a filter (enhanced)', 'z': 'Filter+.addon.tgz', 's': 3}
-{'t': 'Gramplet', 'i': 'Repository-Filter+', 'n': 'Repository Filter+', 'v': '1.0.1', 'g': '5.0', 'd': 'Gramplet providing a filter (enhanced)', 'z': 'Filter+.addon.tgz', 's': 3}
-{'t': 'Gramplet', 'i': 'Media-Filter+', 'n': 'Media Filter+', 'v': '1.0.1', 'g': '5.0', 'd': 'Gramplet providing a filter (enhanced)', 'z': 'Filter+.addon.tgz', 's': 3}
-{'t': 'Gramplet', 'i': 'Note-Filter+', 'n': 'Note Filter+', 'v': '1.0.1', 'g': '5.0', 'd': 'Gramplet providing a filter (enhanced)', 'z': 'Filter+.addon.tgz', 's': 3}
-{'t': 'Rule', 'i': 'HasEventBase+', 'n': 'HasEventBase+', 'v': '1.0.1', 'g': '5.0', 'd': 'HasEventBase+ - used by Filter+', 'z': 'Filter+.addon.tgz', 's': 3}
-{'t': 'Rule', 'i': 'HasSourceBase+', 'n': 'HasSourceBase+', 'v': '1.0.1', 'g': '5.0', 'd': 'HasSourceBase+ - used by Filter+', 'z': 'Filter+.addon.tgz', 's': 3}
+{'t': 'Gramplet', 'i': 'Person-Filter+', 'n': 'Person Filter+', 'v': '1.0.2', 'g': '5.0', 'd': 'Gramplet providing a filter (enhanced)', 'z': 'Filter+.addon.tgz', 's': 3}
+{'t': 'Gramplet', 'i': 'Family-Filter+', 'n': 'Family Filter+', 'v': '1.0.2', 'g': '5.0', 'd': 'Gramplet providing a filter (enhanced)', 'z': 'Filter+.addon.tgz', 's': 3}
+{'t': 'Gramplet', 'i': 'Event-Filter+', 'n': 'Event Filter+', 'v': '1.0.2', 'g': '5.0', 'd': 'Gramplet providing a filter (enhanced)', 'z': 'Filter+.addon.tgz', 's': 3}
+{'t': 'Gramplet', 'i': 'Place-Filter+', 'n': 'Place Filter+', 'v': '1.0.2', 'g': '5.0', 'd': 'Gramplet providing a filter (enhanced)', 'z': 'Filter+.addon.tgz', 's': 3}
+{'t': 'Gramplet', 'i': 'Citation-Filter+', 'n': 'Citation Filter+', 'v': '1.0.2', 'g': '5.0', 'd': 'Gramplet providing a filter (enhanced)', 'z': 'Filter+.addon.tgz', 's': 3}
+{'t': 'Gramplet', 'i': 'Source-Filter+', 'n': 'Source Filter+', 'v': '1.0.2', 'g': '5.0', 'd': 'Gramplet providing a filter (enhanced)', 'z': 'Filter+.addon.tgz', 's': 3}
+{'t': 'Gramplet', 'i': 'Repository-Filter+', 'n': 'Repository Filter+', 'v': '1.0.2', 'g': '5.0', 'd': 'Gramplet providing a filter (enhanced)', 'z': 'Filter+.addon.tgz', 's': 3}
+{'t': 'Gramplet', 'i': 'Media-Filter+', 'n': 'Media Filter+', 'v': '1.0.2', 'g': '5.0', 'd': 'Gramplet providing a filter (enhanced)', 'z': 'Filter+.addon.tgz', 's': 3}
+{'t': 'Gramplet', 'i': 'Note-Filter+', 'n': 'Note Filter+', 'v': '1.0.2', 'g': '5.0', 'd': 'Gramplet providing a filter (enhanced)', 'z': 'Filter+.addon.tgz', 's': 3}
+{'t': 'Rule', 'i': 'HasEventBase+', 'n': 'HasEventBase+', 'v': '1.0.2', 'g': '5.0', 'd': 'HasEventBase+ - used by Filter+', 'z': 'Filter+.addon.tgz', 's': 3}
+{'t': 'Rule', 'i': 'HasSourceBase+', 'n': 'HasSourceBase+', 'v': '1.0.2', 'g': '5.0', 'd': 'HasSourceBase+ - used by Filter+', 'z': 'Filter+.addon.tgz', 's': 3}
 {'t': 'Gramplet', 'i': 'PropertyEditor', 'n': 'PropertyEditor', 'v': '1.1.1', 'g': '5.0', 'd': 'Gramplet to edit attributes of multiple objects', 'z': 'PropertyEditor.addon.tgz', 's': 3}
 {'t': 'Tool', 'i': 'NameMergeTool', 'n': 'Name Merge Tool', 'v': '1.1.0', 'g': '5.0', 'd': 'Merge names', 'z': 'NameMergeTool.addon.tgz', 's': 3}
 {'t': 'Exporter', 'i': 'isotammiexportxml', 'n': 'Isotammi XML export', 'v': '1.0.5', 'g': '5.0', 'd': 'Isotammi XML export', 'z': 'isotammiexportxml.addon.tgz', 's': 3}
