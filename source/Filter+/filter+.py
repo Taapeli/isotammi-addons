@@ -103,13 +103,15 @@ class SidebarFilterBase:
         label_birth_place.set_halign(Gtk.Align.START)
         grid.attach(label_birth_place, 1, 5, 1, 1)
         self.entry_birth_place = Gtk.Entry()
-        grid.attach(self.entry_birth_place, 2, 5, 1, 1)
+        self.entry_birth_place.connect("key-press-event", self.key_press)
+        grid.attach(self.entry_birth_place, 2, 5, 2, 1)
                 
         label_death_place = Gtk.Label(_("Death Place"))
         label_death_place.set_halign(Gtk.Align.START)
         grid.attach(label_death_place, 1, 7, 1, 1)
         self.entry_death_place = Gtk.Entry()
-        grid.attach(self.entry_death_place, 2, 7, 1, 1)
+        self.entry_death_place.connect("key-press-event", self.key_press)
+        grid.attach(self.entry_death_place, 2, 7, 2, 1)
 
     def set_min_conf_to_very_low(self):
         grid = self.vbox.get_children()[0]

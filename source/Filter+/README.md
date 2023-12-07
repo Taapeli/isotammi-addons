@@ -6,15 +6,20 @@ These gramplets are slightly enhanced versions of the regular sidebar filter gra
 
 * The Find feature also displays the elapsed time
 
-* The fields "Father", "Mother" and "Child" behave the same way as in the "Person" filter: one can supply multiple partial names. For example "Joh Smi" will match "John Smith". The regular filter tries to match the entire string exactly. However, this feature is already present in Gramps 5.2.
+* There are two new fields in the Person filter: birth and death place
+
+* Family filter: The fields "Father", "Mother" and "Child" behave the same way as in the "Person" filter: one can supply multiple partial names. For example "Joh Smi" will match "John Smith". The regular filter tries to match the entire string exactly. However, this feature is already present in Gramps 5.2.
 
 * The citation filter uses "Very low" as the default confidence level. The regular filter uses "Normal" (which might miss some citations).
 
 Screenshots:
 
-![citation-filter](citation-filter.png)
-
 ![person-filter](person-filter.png)
 
+![family-filter](family-filter.png)
+
+![citation-filter](citation-filter.png)
+
 ![define-filter](define-filter.png)
+
 
