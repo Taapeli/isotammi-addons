@@ -77,11 +77,10 @@ class SidebarFilterBase:
 
         if isinstance(self, PersonSidebarFilter):
             self.add_place_fields()
+            self.update_reset_function()
 
         if isinstance(self, CitationSidebarFilter):
             self.set_min_conf_to_very_low()
-
-        self.update_reset_function()
                             
         self.vbox.pack_start(hbox, False, False, 0)
         self.vbox.pack_start(self.msg_label, False, False, 0)
