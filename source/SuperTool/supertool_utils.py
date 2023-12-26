@@ -523,13 +523,7 @@ class Response:
         self.result = result
 
 
-dirname = os.path.dirname(__file__)
-saved_path = sys.path[:]
-try:
-    sys.path.append(dirname)
-    import SuperTool
-finally:
-    sys.path = saved_path
+import SuperTool
 
 def supertool_execute( *, 
     category, 
@@ -544,15 +538,6 @@ def supertool_execute( *,
     unwind_lists=False, 
     commit_changes=False, 
     args=""):
-        dirname = os.path.dirname(__file__)
-        saved_path = sys.path[:]
-        try:
-            sys.path.append(dirname)
-            import SuperTool
-        finally:
-            sys.path = saved_path
-
-        
         query = SuperTool.Query()
         if initial_statements:
             query.initial_statements = initial_statements
@@ -570,13 +555,11 @@ def supertool_execute( *,
         return supertool_execute_query(dbstate=dbstate, query=query, trans=trans, handles=handles, args=args) 
 
 def supertool_execute_script(*, dbstate, script, trans=None, handles=None, args=""): 
-        import SuperTool
         scriptfile = SuperTool.ScriptFile()
         query = scriptfile.load(script)
         return supertool_execute_query(dbstate=dbstate, query=query, trans=trans, handles=handles, args=args) 
 
 def supertool_execute_query(*, dbstate, query, trans=None, handles=None, args=""): 
-        import SuperTool
         env = {
             "args": args, 
             #"category": category, 
