@@ -66,6 +66,7 @@ from gramps.gen.filters._genericfilter import GenericFilterFactory
 from gramps.gen.filters._filterlist import FilterList
 from gramps.gen.filters import reload_custom_filters
 from gramps.gen.plug import PluginRegister
+from gramps.gen.utils.debug import profile
 
 from gramps.gui.dialog import OkDialog, ErrorDialog
 from gramps.gui.glade import Glade
@@ -73,6 +74,7 @@ from gramps.gui.managedwindow import ManagedWindow
 from gramps.gui.plug import tool
 from gramps.gui.utils import ProgressMeter
 from gramps.gui.views.treemodels.treebasemodel import TreeBaseModel
+
 
 try:
     _trans = glocale.get_addon_translator(__file__)
@@ -929,7 +931,6 @@ class SuperTool(ManagedWindow):
 
     def execute(self, _widget):
         # type: (Gtk.Widget) -> None
-        from gramps.gen.utils.debug import profile
 
         self.statusmsg.set_text("")
         self.output_window.hide()
@@ -1434,7 +1435,11 @@ class Tool(tool.Tool):
         if not self.uistate:  # CLI mode
             print()
             print("SuperTool v" + pd.version)
-            self.run_cli()
+            do_profile = self.options.handler.options_dict.get("profile")
+            if do_profile:
+                profile(self.run_cli)
+            else:
+                self.run_cli()
             return
         self.run(pd)
 
@@ -1527,6 +1532,7 @@ class Options(tool.ToolOptions):
             output="",
             category="",
             args="",
+            profile=0,
         )
         self.options_help = dict(
             script=(
@@ -1551,4 +1557,9 @@ class Options(tool.ToolOptions):
                 False,
             ),
             args=("=str", "Any string argument", "string"),
+            profile=("=0/1", "Display profiling information after execution", 
+                     [
+                         "0 - do not use profiling",
+                         "1 - use profiling"
+                     ], False)
         )
