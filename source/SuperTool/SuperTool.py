@@ -392,7 +392,14 @@ class ScriptFile:
 class Row:
     def __init__(self, row, gramps_id, category, handle):
         # type: (List, str, str, str) -> None
-        self.row = row
+        self.row = []
+        for v in row:
+            if type(v) in {int, str, float}:
+                value = v
+            else:
+                value = str(v)
+            self.row.append(value)
+
         self.gramps_id = gramps_id
         self.category = category
         self.handle = handle
