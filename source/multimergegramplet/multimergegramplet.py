@@ -432,18 +432,21 @@ class MultiMergeGramplet(Gramplet):
 
         engine = MultiMergeEngine(context, self.dbstate, self.category, selected_handles, self.options)
         title = _("Merging {} {}").format(len(selected_handles), self.category)
-        with nested_txn(title, self.dbstate.db, context.mergemodule) as trans:
-            phoenix = None
-            for handle in selected_handles:
-                if handle == self.primary_handle:
-                    continue  # don't merge with self
-                phoenix = context.getfunc(self.primary_handle)  # must retrieve a fresh copy
-                titanic = context.getfunc(handle)
-                engine.domerge(context, phoenix, titanic)
-        if phoenix:
-            self.uistate.set_active(
-                phoenix.get_handle(), context.objclass
-            )  # put cursor on the combined object
+        try:
+            with nested_txn(title, self.dbstate.db, context.mergemodule) as trans:
+                phoenix = None
+                for handle in selected_handles:
+                    if handle == self.primary_handle:
+                        continue  # don't merge with self
+                    phoenix = context.getfunc(self.primary_handle)  # must retrieve a fresh copy
+                    titanic = context.getfunc(handle)
+                    engine.domerge(context, phoenix, titanic, trans)
+            if phoenix:
+                self.uistate.set_active(
+                    phoenix.get_handle(), context.objclass
+                )  # put cursor on the combined object
+        except Exception as e:
+            ErrorDialog(_("Error"), str(e))
 
     def display_results(self, merged):
         if self.output_window: self.output_window.destroy()
@@ -517,12 +520,42 @@ class MultiMergeEngine:
                     if objkey not in merged:
                         merged[objkey] = [context.titlefunc(p)]
                     merged[objkey].append(obj_title)
-                    self.domerge(context, p, obj)
+                    self.domerge(context, p, obj, trans)
                 else:
                     objs[objkey] = handle
         return merged
             
-    def domerge(self, context, phoenix, titanic):
+
+    def contains(self, place1, place2):
+        """
+        If place1 contains place2 then return all placerefs in place2 that point
+        (directly or indirectly) to place1.
+        Otherwise return an empty set.
+        """
+        placereflist = set()
+        for placeref in place2.get_placeref_list():
+            if place1.handle == placeref.ref:
+                placereflist.add(placeref)
+            p1 = self.dbstate.db.get_place_from_handle(placeref.ref)
+            if self.contains(place1, p1):
+                placereflist.add(placeref)
+        return placereflist
+    
+    
+    def domerge(self, context, phoenix, titanic, trans):
+        if self.category == "Places":
+            # Check if a merge is attempted between a place and an enclosing place.
+            # In such a case remove the references to the enclosing place before the merge.
+            # This avoids creating a loop in the place hierarchy.
+            def check(p1, p2):
+                placerefs = self.contains(p1, p2)
+                for placeref in placerefs:
+                    placereflist = p2.get_placeref_list()
+                    placereflist.remove(placeref)
+                    p2.set_placeref_list(placereflist)
+                    self.dbstate.db.commit_place(p2, trans)
+            check(titanic, phoenix)
+            check(phoenix, titanic)
         query = context.mergeclass(context.dbstate, phoenix, titanic)
         if self.category == "Notes":
             if self.options.note_option == 2:
