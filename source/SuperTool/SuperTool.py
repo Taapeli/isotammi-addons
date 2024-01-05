@@ -36,6 +36,7 @@ import types
 
 from contextlib import contextmanager
 from pathlib import Path
+from pprint import pprint
 
 try:
     from typing import Any
@@ -68,6 +69,8 @@ from gramps.gen.filters import reload_custom_filters
 from gramps.gen.plug import PluginRegister
 from gramps.gen.utils.debug import profile
 
+from gramps.gen.lib import Note
+
 from gramps.gui.dialog import OkDialog, ErrorDialog
 from gramps.gui.glade import Glade
 from gramps.gui.managedwindow import ManagedWindow
@@ -97,6 +100,7 @@ config.register("defaults.delimiter", "comma")
 config.register("defaults.font", "")
 config.register("defaults.last_filename", "")
 config.register("defaults.include_location", "")
+config.register("defaults.last_note", "")
 
 SCRIPTFILE_EXTENSION = ".script"
 
@@ -120,6 +124,102 @@ def importfile(fname):  # not used
     exec(code, globals_dict)
     return SimpleNamespace(**globals_dict)
 
+
+class NoteDialog(Gtk.Dialog):
+    # signals:
+    CANCEL = 1
+    
+    def __init__(self, dbstate, notes, selected_gramps_id, current_category):
+        Gtk.Dialog.__init__(self)
+        self.dbstate = dbstate
+        self.notes = list(notes)
+        self.last_note = None
+        self.selected_gramps_id = selected_gramps_id
+        self.current_category = current_category
+
+        c = self.get_content_area()
+        lbl = Gtk.Label()
+        lbl.set_markup("<b>Notes of type 'SuperTool Script'</b>")
+        
+        sw = Gtk.ScrolledWindow()
+        sw.set_size_request(600, 300)
+        sw.set_vexpand(True)
+
+        listview = Gtk.TreeView()
+        liststore = Gtk.ListStore(str,str,str,str)
+        listview.set_model(liststore)
+        renderer = Gtk.CellRendererText()
+        column = Gtk.TreeViewColumn("ID", renderer, text=0, weight=1)
+        listview.append_column(column)
+        column = Gtk.TreeViewColumn("Category", renderer, text=1, weight=1)
+        listview.append_column(column)
+        column = Gtk.TreeViewColumn("Title", renderer, text=2, weight=1)
+        listview.append_column(column)
+        listview.connect("button-press-event", self.button_press)
+
+        self.cb_category = Gtk.CheckButton("Show only category '{}'".format(current_category))
+        self.cb_category.set_active(True)
+        self.cb_category.connect("toggled", self.list_notes)
+
+        sw.add(listview)
+        c.add(lbl)
+        c.add(sw)
+        c.add(self.cb_category)
+
+        self.listview = listview
+        self.liststore = liststore
+
+        self.list_notes(None)
+        
+        self.show_all()
+        
+    def button_press(self, treeview, event):
+        if event.type == Gdk.EventType.DOUBLE_BUTTON_PRESS and event.button == 1:
+            model, treeiter = self.listview.get_selection().get_selected()
+            if treeiter is None:
+                return
+            row = list(model[treeiter])
+            self.emit("response", self.LOAD_NOTE)
+            return True
+
+    def list_notes(self, _widget):
+        self.liststore.clear()
+        for note, data in self.notes:
+            title = data["title"]
+            category = data["category"]
+            if self.cb_category.get_active() and category != self.current_category:
+                continue
+            treeiter  = self.liststore.append([note.gramps_id, category, title, note.get_handle()])
+            if note.gramps_id == self.selected_gramps_id:
+                self.listview.get_selection().select_iter(treeiter)
+    
+        
+    def get_note(self):
+        model, iter_ = self.listview.get_selection().get_selected()
+        if iter_ is None:
+            return None
+        row = model[iter_]
+        notehandle = row[3]
+        note = self.dbstate.db.get_note_from_handle(notehandle)
+        return note
+
+
+class NoteChooserDialog(NoteDialog):
+    LOAD_NOTE = 2
+    def __init__(self, dbstate, notes, selected_gramps_id, category_name):
+        NoteDialog.__init__(self, dbstate, notes, selected_gramps_id, category_name)
+        self.add_button("Load",  NoteChooserDialog.LOAD_NOTE)
+        self.add_button("Cancel",  NoteChooserDialog.CANCEL)
+        self.set_default_response(NoteChooserDialog.LOAD_NOTE)
+
+class NoteSaveDialog(NoteDialog):
+    SAVE_NOTE = 3
+    NEW_NOTE = 4
+    def __init__(self, dbstate, notes, selected_gramps_id, category_name):
+        NoteDialog.__init__(self, dbstate, notes, selected_gramps_id, category_name)
+        self.add_button("Overwrite",  NoteSaveDialog.SAVE_NOTE)
+        self.add_button("New",  NoteSaveDialog.NEW_NOTE)
+        self.add_button("Cancel",  NoteSaveDialog.CANCEL)
 
 class ScriptOpenFileChooserDialog(Gtk.FileChooserDialog):
     def __init__(self, uistate):
@@ -249,6 +349,8 @@ class HelpWindow(Gtk.Window):
 
 
 class Query:
+    ESCAPE = "\\"  # one backslash
+
     def __init__(self):
         self.category = ""
         self.title = ""
@@ -280,38 +382,99 @@ class Query:
                 return fname, (linenum-startline+1)
         return "", linenum
 
-class ScriptFile:
-    # when saving, lines starting with [ or \ are prefixed with a \
-    ESCAPE = "\\"  # one backslash
+    @staticmethod
+    def text_to_query(text):
+        return Query.dict_to_query(Query.text_to_dict(text))
 
-    def load(self, filename, loadtitle=True):
-        # type: (str, bool) -> Query
+    @staticmethod
+    def dict_to_query(data):
         query = Query()
-        query.filename = filename
-        if filename.endswith(".json"):
-            data = self.__readdata_json(filename)
-        else:
-            data = self.__readdata(filename)
+        query.title = data.get("title", "")
         query.category = data.get("category", "")
-        title = data.get("title", "")
-        if not title and loadtitle:
-            name = os.path.split(filename)[1]
-            title = name.replace(SCRIPTFILE_EXTENSION, "")
-        query.title = title
-
         query.dirname = data.get("dirname", "")
         query.initial_statements = data.get("initial_statements", "")
         query.statements = data.get("statements", "")
         query.filter = data.get("filter", "")
         query.expressions = data.get("expressions", "")
         query.scope = data.get("scope", "selected")
-
+    
         unwind_lists = data.get("unwind_lists", "")
         commit_changes = data.get("commit_changes", "")
         summary_only = data.get("summary_only", "")
         query.unwind_lists = unwind_lists == "True"
         query.commit_changes = commit_changes == "True"
         query.summary_only = summary_only == "True"
+        return query
+    
+    @staticmethod
+    def text_to_dict(text):
+        data = {}
+        key = None
+        value = ""
+        for line in text.splitlines(keepends=True):
+            if line.startswith("["):
+                if key:
+                    data[key] = value.rstrip()
+                key = line.strip()[1:-1]
+                value = ""
+            elif line.startswith(Query.ESCAPE):
+                value += line[1:]
+            else:
+                value += line
+        if key:
+            data[key] = value.rstrip()
+        return data
+
+    def to_text(self):
+        return Query.dict_to_text(self.to_dict())
+
+    def to_dict(self):
+        data = {}
+        data["title"] = self.title
+        data["category"] = self.category
+        data["initial_statements"] = self.initial_statements
+        data["statements"] = self.statements
+        data["filter"] = self.filter
+        data["expressions"] = self.expressions
+
+        data["scope"] = self.scope
+
+        data["unwind_lists"] = str(self.unwind_lists)
+        data["commit_changes"] = str(self.commit_changes)
+        data["summary_only"] = str(self.summary_only)
+        return data
+    
+    @staticmethod
+    def dict_to_text(data):
+        # type: (Dict[str,str]) -> str
+        lines = []
+        lines.append("[Gramps SuperTool script file]")
+        lines.append("version=1")
+        lines.append("")
+        for key, value in data.items():
+            lines.append("[" + key + "]")
+            for line in value.splitlines():
+                if line.startswith("[") or line.startswith(Query.ESCAPE):
+                    line = Query.ESCAPE + line
+                lines.append(line)
+            lines.append("")  # empty line
+        return "\n".join(lines)
+
+class ScriptFile:
+    # when saving, lines starting with [ or \ are prefixed with a \
+    ESCAPE = "\\"  # one backslash
+
+    def load(self, filename, loadtitle=True):
+        # type: (str, bool) -> Query
+        if filename.endswith(".json"):
+            data = self.__readdata_json(filename)
+        else:
+            data = self.__readdata(filename)
+        query = Query.dict_to_query(data)
+        query.filename = filename
+        if not query.title and loadtitle:
+            name = os.path.split(filename)[1]
+            query.title = name.replace(SCRIPTFILE_EXTENSION, "")
         return query
 
     def save(self, filename, query, save_dirname=False):
@@ -356,22 +519,7 @@ class ScriptFile:
 
     def __readdata(self, filename):
         try:
-            data = {}
-            key = None
-            value = ""
-            for line in open(filename):
-                if line.startswith("["):
-                    if key:
-                        data[key] = value.rstrip()
-                    key = line.strip()[1:-1]
-                    value = ""
-                elif line.startswith(self.ESCAPE):
-                    value += line[1:]
-                else:
-                    value += line
-            if key:
-                data[key] = value.rstrip()
-            return data
+            return Query.text_to_dict(open(filename).read())
         except FileNotFoundError:
             return {}
         except:
@@ -605,6 +753,7 @@ class SuperTool(ManagedWindow):
         self.execute_func = None
         self.editfunc = None
         self.query = Query()
+        self.last_note = None
         self.init()
 
     def build_menu_names(self, obj): 
@@ -764,6 +913,8 @@ class SuperTool(ManagedWindow):
         clipboard.set_text(stringio.getvalue(), -1)
         OkDialog("Info", "Result list copied to clipboard")
 
+
+    
     def create_gui(self):
         # type: () -> Gtk.Widget
         glade = Glade(
@@ -820,6 +971,8 @@ class SuperTool(ManagedWindow):
             {
                 "new": self.clear,
                 "load": self.load,
+                "load_from_note": self.load_from_note,
+                "save_in_note": self.save_in_note,
                 "save": self.save,
                 "save_as_filter": self.save_as_filter,
                 "settings": self.settings_dialog,
@@ -1168,6 +1321,29 @@ class SuperTool(ManagedWindow):
 
         choose_file_dialog.destroy()
 
+    def load_from_note(self, _widget):
+        # type: (Gtk.Widget) -> None
+        def handle_response(_dialog, response):
+            if response == NoteChooserDialog.LOAD_NOTE:
+                note = choose_note_dialog.get_note()
+                if note is None:
+                    return
+                self.loadstate_from_note(note.get())
+                self.last_note = note.gramps_id
+                config.set("defaults.last_note", note.gramps_id)
+                config.save()
+
+            choose_note_dialog.destroy()
+            
+        choose_note_dialog = NoteChooserDialog(self.dbstate, self.get_notes(), self.last_note, self.category_name)
+        choose_note_dialog.connect("response", handle_response)
+
+    def get_notes(self):
+        for note in self.db.iter_notes():
+            if note.get_type() == "SuperTool Script":
+                data  = Query.text_to_dict(note.get())
+                yield (note, data)
+            
 
     def load_help(self):
         dirname = os.path.split(__file__)[0]
@@ -1235,6 +1411,17 @@ class SuperTool(ManagedWindow):
         query = self.query
         if set_dirname:
             query.dirname = os.path.split(filename)[0]
+        if not query.title and loadtitle:
+            name = os.path.split(filename)[1]
+            query.title = name.replace(SCRIPTFILE_EXTENSION, "")
+        self.loadstate_from_query(query)
+
+    def loadstate_from_note(self, notetext):
+        # type: (str, bool) -> None
+        self.query = Query.text_to_query(notetext)
+        self.loadstate_from_query(self.query)
+
+    def loadstate_from_query(self, query):
         if query.category and query.category != self.category_name:
             msg = "Warning: saved query is for category '{}'. Current category is '{}'."
             msg = msg.format(query.category, self.category_name)
@@ -1244,9 +1431,6 @@ class SuperTool(ManagedWindow):
                 parent=self.uistate.window,
             )
 
-        if not query.title and loadtitle:
-            name = os.path.split(filename)[1]
-            query.title = name.replace(SCRIPTFILE_EXTENSION, "")
         self.title.set_text(query.title)
 
         set_text(self.expressions, query.expressions)
@@ -1351,6 +1535,30 @@ class SuperTool(ManagedWindow):
 
         choose_file_dialog.destroy()
 
+    def save_in_note(self, _widget):
+        def handle_response(dialog, response):
+            if response == NoteSaveDialog.CANCEL:
+                choose_note_dialog.destroy()
+                return
+            with DbTxn("Saving as Note", self.dbstate.db) as trans:
+                if response == NoteSaveDialog.SAVE_NOTE:
+                    note = dialog.get_note()
+                    if note is None:
+                        return
+                    self.savestate_to_note(note)
+                    self.dbstate.db.commit_note(note, trans)
+                if response == NoteSaveDialog.NEW_NOTE:
+                    note = Note()
+                    note.set_type("SuperTool Script")
+                    self.savestate_to_note(note)
+                    self.dbstate.db.add_note(note, trans)
+                    OkDialog("Done", "Saved as note {}".format(note.gramps_id))
+            choose_note_dialog.destroy()
+            
+        choose_note_dialog = NoteSaveDialog(self.dbstate, self.get_notes(), self.last_note, self.category_name)
+        choose_note_dialog.connect("response", handle_response)
+        
+
     def save_as_filter(self, obj):
         filtername = self.title.get_text().strip()
         filtertext = get_text(self.filter).strip()
@@ -1399,6 +1607,31 @@ class SuperTool(ManagedWindow):
         scriptfile.save(filename, query, save_dirname)
         return query
         # self.writedata(filename, data)
+
+    def savestate_to_note(self, note):
+        # type: (str) -> Query
+        query = self.query
+        query.category = self.category_name
+        query.title = self.title.get_text()
+        if self.selected_objects.get_active():
+            scope = "selected"
+        elif self.all_objects.get_active():
+            scope = "all"
+        elif self.filtered_objects.get_active():
+            scope = "filtered"
+        query.scope = scope
+        query.expressions = get_text(self.expressions)
+        query.filter = get_text(self.filter)
+        query.statements = get_text(self.statements)
+        query.initial_statements = get_text(self.initial_statements)
+
+        query.unwind_lists = self.unwind_lists.get_active()
+        query.commit_changes = self.commit_checkbox.get_active()
+        query.summary_only = self.summary_checkbox.get_active()
+        
+        text = query.to_text()
+        note.set(text)
+        return query
 
     def select_category(self):
         # type: () -> None

@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.22.1 -->
+<!-- Generated with glade 3.22.2 -->
 <interface domain="">
   <requires lib="gtk+" version="3.12"/>
   <object class="GtkMenu">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
+  </object>
+  <object class="GtkImage">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="stock">gtk-missing-image</property>
   </object>
   <object class="GtkImage">
     <property name="visible">True</property>
@@ -19,7 +24,7 @@
     <property name="authors">Kari Kujansuu</property>
     <property name="logo_icon_name">face-smile</property>
     <property name="license_type">gpl-2-0</property>
-    <child>
+    <child type="titlebar">
       <placeholder/>
     </child>
     <child internal-child="vbox">
@@ -56,7 +61,7 @@
   </object>
   <object class="GtkApplicationWindow" id="main">
     <property name="can_focus">False</property>
-    <child>
+    <child type="titlebar">
       <placeholder/>
     </child>
     <child>
@@ -127,6 +132,26 @@
                       <object class="GtkSeparatorMenuItem">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="tooltip_text" translatable="yes">Load script from a Note of type 'SuperTool Script'</property>
+                        <property name="label" translatable="yes">Load from Note</property>
+                        <property name="use_underline">True</property>
+                        <signal name="activate" handler="load_from_note" swapped="no"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="tooltip_text" translatable="yes">Save current script as a Note of type 'SuperTool Script'</property>
+                        <property name="label" translatable="yes">Save as Note</property>
+                        <property name="use_underline">True</property>
+                        <signal name="activate" handler="save_in_note" swapped="no"/>
                       </object>
                     </child>
                     <child>
@@ -226,7 +251,7 @@
                         <property name="label">gtk-preferences</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="tooltip_text" translatable="yes">Edit settiings</property>
+                        <property name="tooltip_text" translatable="yes">Edit settings</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
                         <signal name="activate" handler="settings" swapped="no"/>
@@ -700,7 +725,7 @@
     <property name="title" translatable="yes">SuperTool settings</property>
     <property name="type_hint">dialog</property>
     <property name="deletable">False</property>
-    <child>
+    <child type="titlebar">
       <placeholder/>
     </child>
     <child internal-child="vbox">
