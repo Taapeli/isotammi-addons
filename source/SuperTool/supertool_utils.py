@@ -303,13 +303,7 @@ def compile_expression(expression, source):
     return compile(expression.strip().replace("\n"," "), source, 'eval')
 
 
-
 def getargs_dialog(**kwargs):
-    # type: () -> bool
-    """
-    This code should really be in SuperTool.py because it contains user interface code...
-    """
-    
     from types import SimpleNamespace
 
 
@@ -329,35 +323,69 @@ def getargs_dialog(**kwargs):
     dialog.set_default_response(Gtk.ResponseType.OK)
 
     grid = Gtk.Grid()
+    grid.set_row_spacing(10)
+    grid.set_column_spacing(10)
     widgets = []
+    initvalue = None
     for row, param in enumerate(kwargs.items()):
         param_name, title = param
         key = "default-params." + param_name
         config.register(key, "")
         value = config.get(key)
-
+        
+        if type(title) == str:
+            widget = Gtk.Entry()
+            widget.set_text(value)
+        if type(title) == tuple:
+            title, paramtype, initvalue = title
+            if paramtype == bool:
+                widget = Gtk.CheckButton()
+                if value == "":
+                    value = initvalue
+                elif value == 'True':
+                    value = True
+                else:
+                    value = False
+                widget.set_active(value)
+            if paramtype == list:
+                initvalue = list(initvalue)  # ensure this is a real list
+                widget = Gtk.ComboBoxText()
+                widget.set_entry_text_column(0)
+                widget.append_text("")
+                for index, v in enumerate(initvalue):
+                    widget.append_text(str(v))
+                    if str(v) == value:
+                        widget.set_active(index+1)                
+                
         lbl_title = Gtk.Label(title)
         lbl_title.set_halign(Gtk.Align.START)
-        widget = Gtk.Entry() #self.get_widget(opttype)
-        widget.set_text(value)
         grid.attach(lbl_title, 0, row, 1, 1)
         grid.attach(widget, 1, row, 1, 1)
-        widgets.append((param_name, widget))
+        widgets.append((param_name, initvalue, widget))
 
     dialog.vbox.pack_start(grid, False, False, 5)
     dialog.show_all()
     result = dialog.run()
     if result != Gtk.ResponseType.OK:
         dialog.destroy()
-        raise RuntimeError("canceled")
+        raise engine.SupertoolException("canceled")
         return False
 
     values = {}
-    for param_name, widget in widgets:
-        value = widget.get_text()
+    for param_name, initvalue, widget in widgets:
+        if isinstance(widget, Gtk.Entry):
+            value = widget.get_text()
+        if isinstance(widget, Gtk.CheckButton):
+            value = widget.get_active()
+        if isinstance(widget, Gtk.ComboBoxText):
+            index = widget.get_active()
+            if index <= 0:  # 0 or -1
+                value = ""    # none selected
+            else:
+                value = initvalue[index-1]
         values[param_name] = value
         key = "default-params." + param_name
-        config.set(key, value)
+        config.set(key, str(value))
     config.save()
     dialog.destroy()
     return SimpleNamespace(**values)
@@ -412,7 +440,7 @@ class DummyTxn:
 
     def __init__(self, trans):
         if trans is None:
-            raise SupertoolException("Need a transaction (check 'Commit changes')")
+            raise engine.SupertoolException("Need a transaction (check 'Commit changes')")
         self.trans = trans
 
         class _Txn:

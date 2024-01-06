@@ -1660,7 +1660,7 @@ class SuperTool(ManagedWindow):
         s = s.format(
                 msg=msg.replace("<", "&lt;"),
                 context=context.replace("<", "&lt;"),
-                src=src,
+                src=src.replace("<", "&lt;"),
                 fname=fname.replace("<", "&lt;"),
                 linenum=linenum,
                 codeline=codeline.replace("<", "&lt;"),
