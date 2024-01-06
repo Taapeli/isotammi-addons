@@ -32,7 +32,7 @@ plug.tool.tool_categories["Isotammi"] = ("Isotammi", _("Isotammi tools"))
 # SuperTool
 #
 # ------------------------------------------------------------------------
-VERSION="1.3.7"
+VERSION="1.3.8"
  
 register(
     TOOL,

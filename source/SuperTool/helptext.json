@@ -1,19 +1,8 @@
 {
-    "Hint": [
-        [   "User Guide",
-            "A Python script execution shell tool. Allows quick manipulation of Gramps Tree data",
-            "https://github.com/Taapeli/isotammi-addons/blob/master/source/SuperTool/\"README.md",
-            "comprehensive documentation"
-        ],
+    "Hints": [
         [
-            "shorthand variables",
-            "Each tab is a category specific shorthand equivalents for getting common Gramps tree data",
-            "https://github.com/Taapeli/isotammi-addons/blob/master/source/SuperTool/README.md#pre+defined-variables",
-            "tooltip"
-        ],
-        [
-            "diagram: class shorthand",
-            "simplified 'get' equivalants by class of object",
+            "diagram: SuperTool classes",
+            "attributes and relationships between SuperTool objects",
             "https://github.com/Taapeli/isotammi-addons/blob/master/source/SuperTool/supertool.svg"
         ],
         [   "example scripts",
@@ -21,27 +10,9 @@
             "https://www.gramps-project.org/wiki/index.php/Addon:Isotammi_addons#SuperTool_Scripts"
         ],
         [
-            "General variables and functions",
-            "\"Initialization statements\" allow importing standard modules. These are available without importing ",
-            "https://github.com/Taapeli/isotammi-addons/blob/master/source/SuperTool/README.md#general-variables",
-            "os, sys, re, functools, collections, db, trans, len, uniq, flatten, makedate, today,filter"
-        ],
-        [
-            "SuperTool function: getargs()",
-            "(get arguments) parameter input dialog. Support parameterized queries ",
-            "https://github.com/Taapeli/isotammi-addons/blob/master/source/SuperTool/README.md#parameterized-queries",
-            "obj1=getargs2(par1='Label: ',par2=('One of: ', list, ['1a','2b','3c']),par3=('Private: ', bool, True))"
-        ],
-        [
-            "SuperTool function: getargs()",
-            "(get arguments) parameter input dialog. Support parameterized queries ",
-            "https://github.com/Taapeli/isotammi-addons/blob/master/source/SuperTool/README.md#parameterized-queries",
-            "obj1=getargs2(par1=\"Label: \",par2=(\"One of: \", list, [\"1a\",\"2b\",\"3c\"]),par3=(\"Private: \", bool, True))"
-        ],
-        [
             "Gramps Developer API Guide",
             "Gramps methods and module documentation",
-            "https://gramps-project.org/docs ",
+            "https://gramps-project.org/docs/api.html",
             "Searchable documentation in Sphinx markdown CMS"
         ],
         [
@@ -57,19 +28,19 @@
             "Unified Modeling Language block diagram of API calls"
         ],
         [
-            "function: dir()",
+            "Python function: dir()",
             "returns typical properties and methods",
             "https://docs.python.org/3/library/functions.html#dir",
             "Without arguments, return the list of names in the current local scope"
         ],
         [
-            "function: dir(obj)",
+            "Python function: dir(obj)",
             "returns all properties and methods of the specified object, without the values",
             "https://www.w3schools.com/python/ref_func_dir.asp",
             " With an argument, attempt to return a list of valid attributes for that object"
         ],
         [
-            "Python: dunder methods",
+            "Python 'dunder' methods",
             "\"double underscore\" (leading and trailing) or \"magic\" python methods",
             "https://www.reddit.com/r/Python/comments/br9ok2/list_of_all_python_dunder_methods/"
         ],
@@ -195,9 +166,7 @@
         ],
         [
             "gramps_id",
-            "Gramps id, e.g. I0123",
-            "https://gramps-project.org/docs/gen/gen_lib.html#gramps.gen.lib.primaryobj.BasicPrimaryObject.get_gramps_id",
-            "get_gramps_id(self)&#xA;set_gramps_id(str)"
+            "Gramps id, e.g. I0123"
         ],
         [
             "handle",
@@ -287,9 +256,7 @@
         ],
         [
             "gramps_id",
-            "Gramps id, e.g. F0123",
-            "https://gramps-project.org/docs/gen/gen_lib.html#gramps.gen.lib.primaryobj.BasicPrimaryObject.get_gramps_id",
-            "get_gramps_id(self)&#xA;set_gramps_id(str)"
+            "Gramps id, e.g. F0123"
         ],
         [
             "handle",
@@ -343,9 +310,7 @@
         ],
         [
             "gramps_id",
-            "Gramps id, e.g. E0123",
-            "https://gramps-project.org/docs/gen/gen_lib.html#gramps.gen.lib.primaryobj.BasicPrimaryObject.get_gramps_id",
-            "get_gramps_id(self)&#xA;set_gramps_id(str)"
+            "Gramps id, e.g. E0123"
         ],
         [
             "handle",
@@ -419,9 +384,7 @@
         ],
         [
             "gramps_id",
-            "Gramps id, e.g. P0123",
-            "https://gramps-project.org/docs/gen/gen_lib.html#gramps.gen.lib.primaryobj.BasicPrimaryObject.get_gramps_id",
-            "get_gramps_id(self)&#xA;set_gramps_id(str)"
+            "Gramps id, e.g. P0123"
         ],
         [
             "handle",
@@ -495,9 +458,7 @@
         ],
         [
             "gramps_id",
-            "Gramps id, e.g. C0123",
-            "https://gramps-project.org/docs/gen/gen_lib.html#gramps.gen.lib.primaryobj.BasicPrimaryObject.get_gramps_id",
-            "get_gramps_id(self)&#xA;set_gramps_id(str)"
+            "Gramps id, e.g. C0123"
         ],
         [
             "handle",
@@ -547,9 +508,7 @@
         ],
         [
             "gramps_id",
-            "Gramps id, e.g. S0123",
-            "https://gramps-project.org/docs/gen/gen_lib.html#gramps.gen.lib.primaryobj.BasicPrimaryObject.get_gramps_id",
-            "get_gramps_id(self)&#xA;set_gramps_id(str)"
+            "Gramps id, e.g. S0123"
         ],
         [
             "handle",
@@ -591,9 +550,7 @@
     "Repositories": [
         [
             "gramps_id",
-            "Gramps id, e.g. R0123",
-            "https://gramps-project.org/docs/gen/gen_lib.html#gramps.gen.lib.primaryobj.BasicPrimaryObject.get_gramps_id",
-            "get_gramps_id(self)&#xA;set_gramps_id(str)"
+            "Gramps id, e.g. R0123"
         ],
         [
             "handle",
@@ -651,9 +608,7 @@
         ],
         [
             "gramps_id",
-            "Gramps id, e.g. O0123",
-            "https://gramps-project.org/docs/gen/gen_lib.html#gramps.gen.lib.primaryobj.BasicPrimaryObject.get_gramps_id",
-            "get_gramps_id(self)&#xA;set_gramps_id(str)"
+            "Gramps id, e.g. O0123"
         ],
         [
             "handle",
@@ -691,9 +646,7 @@
     "Notes": [
         [
             "gramps_id",
-            "Gramps id, e.g. N0123",
-            "https://gramps-project.org/docs/gen/gen_lib.html#gramps.gen.lib.primaryobj.BasicPrimaryObject.get_gramps_id",
-            "get_gramps_id(self)&#xA;set_gramps_id(str)"
+            "Gramps id, e.g. N0123"
         ],
         [
             "handle",
