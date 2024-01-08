@@ -27,6 +27,7 @@ import functools
 import os
 import re
 import sys
+import textwrap
 
 from pprint import pprint
 
@@ -568,9 +569,9 @@ def supertool_execute( *,
     args=""):
         query = SuperTool.Query()
         if initial_statements:
-            query.initial_statements = initial_statements
+            query.initial_statements = textwrap.dedent(initial_statements)
         if statements:
-            query.statements = statements
+            query.statements = textwrap.dedent(statements)
         if filter:
             query.filter = filter
         if expressions:
