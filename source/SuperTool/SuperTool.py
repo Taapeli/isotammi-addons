@@ -704,7 +704,7 @@ class GrampsEngine:
         env["result"] = result
         env["category"] = self.category.category_name
         env["namespace"] = self.category.objclass
-        env["supertool_execute"] = lambda **kwargs: supertool_utils.supertool_execute(dbstate=self.dbstate, trans=trans, **kwargs)
+        env["supertool_run"] = lambda **kwargs: supertool_utils.supertool_execute(dbstate=self.dbstate, trans=trans, **kwargs)
         env["step"] = self.step
     
 
