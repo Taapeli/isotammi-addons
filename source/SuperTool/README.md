@@ -1,6 +1,6 @@
 # SuperTool
-v1.3.3<br>
-30 Nov 2023<br>
+v1.3.8<br>
+8 jan 2024<br>
 Author: kari.kujansuu@gmail.com<br>
 
  [Introduction](#introduction)
@@ -23,6 +23,7 @@ Author: kari.kujansuu@gmail.com<br>
 <br> [Modifying the database](#modifying-the-database)
 <br> [Deleting objects](#deleting-objects)
 <br> [Saving the query as a script file](#saving-the-query-as-a-script-file)
+<br> [Saving the query in a Note](#saving-the-query-in-a-note)
 <br> [Saving the query as a custom filter](#saving-the-query-as-a-custom-filter)
 <br> [Using predefined custom filters](#using-predefined-custom-filters)
 <br> [Running from the command line](#running-from-the-command-line)
@@ -31,6 +32,7 @@ Author: kari.kujansuu@gmail.com<br>
 <br> [Include files](#include-files)
 <br> [The 'result' object](#the-result-object)
 <br> [Settings](#settings)
+<br> [The 'supertool_execute' function](#the-supertool_execute-function)
 <br> [More examples](#more-examples)
 - [Reference](#reference)
     * [Properties supported by the various object types.](#variables--or-attributes-or-properties--supported-for-the-various-object-types)
@@ -44,8 +46,8 @@ Author: kari.kujansuu@gmail.com<br>
     + [Sources](#sources)
     + [global variables and functions](#global-variables-and-functions)
 
-  * [Command line options](#command-line-options)
-  * [Sample files](#sample-files)
+- [Command line options](#command-line-options)
+- [Sample files](#sample-files)
 
 
 
@@ -55,9 +57,7 @@ This is a general purpose scripting tool that can be used to do "ad-hoc" queries
 
 This tool works in the Gramps versions 5.x and later. It will be installed in the "Isotammi tools" submenu under the Tools menu.
 
-The tool allows arbitrary Python code so it can also be used to modify the database.
-
-See [CHANGELOG](CHANGELOG.md) for changes in version 1.1.0.
+The tool allows arbitrary Python code so it can also be used to modify the database. Or just to experiment with Python code.
 
 ## User interface 
 
@@ -222,7 +222,7 @@ In this example a counter is used to find duplicate places in the database. The 
 
 ## Statements executed for every object 
 
-The statements in "Statements executed for every object" are executed for every object before the filter or expressions are evaluated. This can contain arbitrary Python code, including setting of variables, "if" clauses, function calls and even loops. Note that the filter does not affect these statements - they are executed even if the filter rejects the current object (the filter only affects the display of the data). If filtering is needed the you can use a suitable if clause in this part. This field can, for example, be used to define shortcut variables used in the filter or expressions. This can also contain any database calls that modify the database (if the "Commit changes" checkbox is marked).
+The statements in "Statements executed for each object" are executed for every object before the filter or expressions are evaluated. This can contain arbitrary Python code, including setting of variables, "if" clauses, function calls and even loops. Note that the filter does not affect these statements - they are executed even if the filter rejects the current object (the filter only affects the display of the data). If filtering is needed then you can use a suitable if clause in this part. This field can, for example, be used to define shortcut variables used in the filter or expressions. This can also contain any database calls that modify the database (if the "Commit changes" checkbox is marked).
 
 This field can contain regular Python comments (lines starting with a hash sign: #).
 
@@ -243,10 +243,11 @@ The tool will remember the script last executed for each object type. Therefore,
 You can use the global 'getargs' function to ask the user for parameters to a query. This function should be called in the initialization code and the syntax is:
 
 ```python
-args = getargs(argname=caption, argname=caption, ...)
+args = getargs(argname=description, argname=description, ...)
 ```
 
-and a supplied value can be used in the script by using the 'argname' as a property of the 'args' object, e.g.
+The value of 'description' can be a string or a three-element tuple. If it is a string then the string is used as a label for the value in a dialog. For example:
+
 
 ```python
 args = getargs(text="Searchtext", limit="Limit")
@@ -256,12 +257,31 @@ This will first display a dialog like
 
 ![Getargs dialog](SuperTool-getargs.png)
 
-If the user presses "OK" then the script continues normally. 
+If the user presses "OK" then the script continues normally. The supplied value can be used in the script by using the 'argname' as a property of the 'args' object, e.g. 'args.limit'.
+
+The 'description' can also be a tuple of format (label, type, value). The label is a string used as a label. Type can be 'bool' or 'list' (without quotes). 
+
+If the type is 'bool' then the dialog displays a checkbox. The value can be True or False and it determines if the checkbox is initially checked or not.
+
+If the type is 'list' then value must be a list of values that are displayed in a dropdown list. The values can be of any type (that can be converted to a string).
+
+For example:
+
+```python
+args = getargs(text="Searchtext", 
+    case_sensitive=("Case sensitive", bool, False), 
+    limit=("Limit", list, [50,100,500]))
+```
+This will first display a dialog like
+
+![Getargs dialog](SuperTool-getargs2.png)
+
+
 The given values are saved and reused as defaults when getargs is called the next time.
 
 If the user presses "Cancel" then the query is canceled:
 
-This feature is quite rudimentary: only simple string values are supported. The feature may be enhanced or changed in the future. It does work with 
+This feature may be enhanced or changed in the future. It does work with 
 [saved filters](#saving-the-query-as-a-custom-filter) so this is a way to parameterize filters. But canceling a getargs call when called from a filter does not work cleanly - it will throw an unexpected exception.
 
 The 'getargs' function can also be used in the command line mode. 
@@ -311,7 +331,7 @@ But this is not necessary or recommended. However, if you make changes to *other
             child.obj.set_gender(Person.FEMALE)
             db.commit_person(child.obj, trans)
 
-Note that the argument to "db.commit_person" is the actual Gramps object (child.obj), not the corresponding Proxy object (child).
+Note that the argument to "db.commit_person" is the actual Gramps object (child.obj), not the corresponding Proxy object (child). This kind of an explicit commit is performed even if the 'Commit changes' checkbox is not selected.
 
 ## Deleting objects
 
@@ -325,13 +345,30 @@ This is because the tool automatically commits all processed objects if the "Com
 
 ## Saving the query as a script file
 
-The File menu has choices to save the query in a file ("Save") and load it from a file (Open). With this you can save useful queries and also distribute them to other Gramps users. These files are also called script files. They are human-readable text files that can also be edited with an external editor. Be careful not to mix spaces and tabs though.
+The File menu has choices to save the query in a file (Save) and load a query from a file (Open). With this you can save useful queries and also distribute them to other Gramps users. These files are also called script files. They are human-readable text files that can also be edited with an external editor. Be careful not to mix spaces and tabs though.
 
 The script files have the extension ".script" by default.
 
 The "New" command will clear all input fields.
 
 ![SuperTool](SuperTool-file-menu.png)
+
+## Saving the query in a Note
+
+A query can also be saved in the current Gramps database (family tree) as a Note of the type 'SuperTool Script'. This feature is available starting from SuperTool version 1.3.8 and it adds two new items in the 'File' menu:
+
+![SuperTool](SuperTool-file-menu-2.png)
+
+Selecting 'Load from Note' displays a list of saved notes (if any) and allows the user to load one of them as the current query:
+
+![SuperTool](load-note.png)
+
+Selecting 'Save as Note' also displays the list of saved notes and allows the user to overwrite one of them with the current query or create a new Note:
+
+![SuperTool](save-note.png)
+
+By default the lists only show queries for the current category.
+
 
 ## Saving the query as a custom filter
 
@@ -464,15 +501,20 @@ This is an experimental feature. There is a pre-defined variable 'result' which 
 - set headers()
 - set_max()
 
-Normally the rows displayed will correspond to the processed Gramps objects. With 'result.add_row(data)' you can add arbitrary data to the result. The 'data' argument must be a list with values to be displayed. The number and types of the values must be consistent: there must be the same number of values in each call of add_row and the number must be the same as the number of items in the "Expressions to display" field (if any). The types (str, int or float) must also match.
+Normally the rows displayed will correspond to the processed Gramps objects. With 'result.add_row(data)' you can add arbitrary data to the result. The 'data' argument must be a list with values to be displayed. The number and types of the values must be consistent: there must be the same number of values in each call of add_row and the number must be the same as the number of items in the "Expressions to display" field (if any). The types (str, int or float) must also match (all other types are converted to strings).
 
-The 'add_row' function also accepts three optional parameters: gramps_id, category and handle. These can be used if you want the row to correspond to a specific Gramps object. The parameter 'gramps_id' should be a string that will be inserted as the first column in the display. The parameters 'category' and 'handle' specify the object that the row corresponds to. Double-clicking the row will then open the corresponding object editor. For example this code will display the parents of the family and their children - and also allow the children be edited (this shouöld be run in the Families category):
+The 'add_row' function also accepts three optional parameters: gramps_id, category and handle. These can be used if you want the row to correspond to a specific Gramps object. The parameter 'gramps_id' should be a string that will be inserted as the first column in the display. The parameters 'category' and 'handle' specify the object that the row corresponds to. Double-clicking the row will then open the corresponding object editor. For example this code will display the parents of the family and their children - and also allow the children be edited (this should be run in the Families category):
 
 ```python
-    result.add_row([father.name, mother.name], gramps_id=gramps_id, category='Families', handle=handle)
-    for child in children:
-        result.add_row(["", child.name], gramps_id=child.gramps_id, category='People', handle=child.handle)
+result.add_row([father.name, mother.name], gramps_id=gramps_id, category='Families', handle=handle)
+for child in children:
+    result.add_row(["", child.name], gramps_id=child.gramps_id, category='People', handle=child.handle)
 ```
+
+Note that both families and individuals appear in the result:
+
+![SuperTool](add_row.png)
+
 
 The default for 'category' is the current category.
 
@@ -481,7 +523,7 @@ Normally the types of the columns are detected when the first row is generated. 
 Normally the column headers are "Value 1", "Value 2" etc. With 'set_headers' you can specify different headers. For example;
  
 ```python
-    result.set_headers(["Name", "Age"])
+result.set_headers(["Name", "Age"])
 ```
  
 With 'set_max' you can specify the maximum number of rows displayed. The default maximum is 1000 rows as explained above and you cannot set the maximum greater that 1000. This maximum takes effect after the 'Filter' is processed. The method has also a second parameter 'read_limit' that specifies the maximum number of objects to process before filtering.
@@ -495,6 +537,43 @@ The Settings menu opens a settings dialog where you can change two values:
 If you change the directory for the @include files then you should move all existing files to the new directory. Otherwise scripts (and filters) that use the files do not work anymore.
 
 ![Settings](SuperTool-settings.png)
+
+## The 'supertool_execute' function
+
+It occured to me that SuperTool could also need an API (Application Programming Interface) so that one could use SuperTool type of scripting from another addons or other programs within Gramps.
+
+Warning: this is an experimental feature. Or rather, more experimental than the other features :-)
+
+The function supertool_execute resides in the module supertool_utils. This module is automatically loaded at Gramps startup so it is always available to other addons. So one could write
+
+```python
+from supertool_utils import supertool_execute
+rsp = supertool_execute(...)
+print(rsp.rows)
+```
+
+The arguments to supertool_execute mirror the input fields in the SuperTool user interface. The signature is
+
+```python
+def supertool_execute( *, 
+    category, 
+    dbstate, 
+    trans=None,
+    handles=None, 
+    initial_statements=None, 
+    statements=None, 
+    filter=None, 
+    expressions=None, 
+    summary_only=False, 
+    unwind_lists=False, 
+    commit_changes=False, 
+    args="")
+```
+
+The return value of this function contains the rows generated by the query. 
+
+A more detailed description will be in a separate document.
+
 
 ## More examples
 
@@ -718,9 +797,10 @@ dbstate              | Database state  object                                   
 filter               | Function that returns a custom filter by name                                         | 
 flatten              | Function that returns elements from nested lists                                      | 
 getargs              | Function that asks the user for parameters to be used in the query                    | 
-makedate             | Function to construct a date literal; e.g. makedate(1800, 12, 31) or makedate(1800)   | 
+makedate             | Function to construct a date value; e.g. makedate(1800, 12, 31) or makedate(1800)     | 
 namespace            | E.g. 'Person', 'Family' etc. None for unsupported categories (Dashboard etc.)         |
 referrers(category)  | Function returning objects of type 'category' that refer to this object               |
+result               | A special object (see above)                                                          |
 today                | Function that returns today's date                                                    |
 trans                | Current transaction                                                                   |
 uistate              | UI state  object                                                                      | 
@@ -743,18 +823,20 @@ See "gramps -h" or https://gramps-project.org/wiki/index.php/Gramps_5.1_Wiki_Man
 
 Possible options in the "-p" (or --options) argument:
 
-    script
-        Specifies the script file to use. Required.
+####    script
+Specifies the script file to use. Required.
 
-    output
-        Specifies the output CSV file. Optional. If not used then the output will go to the screen.
+####    output
+Specifies the output CSV file. Optional. If not used then the output will go to the screen.
 
-    category
-        Specifies the category (People, Families, Events etc). Overrides the category in the script file. Optional. 
+####    category
+Specifies the category (People, Families, Events etc). Overrides the category in the script file. Optional. 
 
-    args
-        Free form argument that the script can access (as variable 'args'). Optional. Like all options cannot contain spaces or commas. 
+####    args
+Free form argument that the script can access (as variable 'args'). Optional. Like all options cannot contain spaces or commas. 
 
+####    profile
+If profile is set to 1 (profile=1) then the Python profiler (https://docs.python.org/3/library/profile.html) is invoked and the profiling results are displayed after running the script. Optional.
 
 ## Sample files
 
