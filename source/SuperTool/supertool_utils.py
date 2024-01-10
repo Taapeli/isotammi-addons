@@ -30,8 +30,7 @@ import sys
 import textwrap
 
 from pprint import pprint
-
-
+from types import SimpleNamespace
 
 # -------------------------------------------------------------------------
 #
@@ -556,7 +555,8 @@ import SuperTool
 
 def supertool_execute( *, 
     category, 
-    dbstate, 
+    dbstate=None, 
+    db=None, 
     trans=None,
     handles=None, 
     initial_statements=None, 
@@ -581,20 +581,27 @@ def supertool_execute( *,
         query.unwind_lists = unwind_lists
         query.commit_changes = commit_changes
         query.summary_only = summary_only
-        return supertool_execute_query(dbstate=dbstate, query=query, trans=trans, handles=handles, args=args) 
+        return supertool_execute_query(query=query, dbstate=dbstate, db=db, trans=trans, handles=handles, args=args) 
 
-def supertool_execute_script(*, dbstate, script, trans=None, handles=None, args=""): 
+def supertool_execute_script(*, script, dbstate=None, db=None, trans=None, handles=None, args=""): 
         scriptfile = SuperTool.ScriptFile()
         query = scriptfile.load(script)
-        return supertool_execute_query(dbstate=dbstate, query=query, trans=trans, handles=handles, args=args) 
+        return supertool_execute_query(query=query, dbstate=dbstate, db=db, trans=trans, handles=handles, args=args) 
 
-def supertool_execute_query(*, dbstate, query, trans=None, handles=None, args=""): 
+def supertool_execute_query(*, query, dbstate=None, db=None, trans=None, handles=None, args=""): 
         env = {
             "args": args, 
             #"category": category, 
             #"namespace": category_info.objclass
         }
 
+        if dbstate is None and db is None:
+            raise RuntimeError("supertool_execute: dbstate and db cannot both be omitted")
+        if dbstate is not None and db is not None:
+            raise RuntimeError("supertool_execute: dbstate and db cannot both be supplied")
+        if dbstate is None:
+            dbstate =  SimpleNamespace(db=db)
+            
         if query.category not in CATEGORIES:
             raise RuntimeError("Invalid category: " + query.category)
         category_info = get_category_info(dbstate.db, query.category)
