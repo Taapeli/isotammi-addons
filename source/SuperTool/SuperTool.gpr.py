@@ -38,7 +38,7 @@ register(
     TOOL,
     id="SuperTool",
     name=_("SuperTool"),
-    description=_(""),
+    description=_("General purpose scripting tool that can be used to do 'ad-hoc' queries against a Gramps family tree/database"),
     version=VERSION,
     gramps_target_version=major_version,
     status=STABLE,
