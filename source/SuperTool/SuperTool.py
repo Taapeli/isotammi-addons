@@ -341,11 +341,10 @@ class HelpWindow(Gtk.Window):
             url=readme_url, title="Open README in a browser"
         )
         label.set_markup(markup)
-        self.box.pack_start(label, True, True, 0)
-
-        self.box.pack_start(Gtk.Label("Available properties"), True, True, 0)
+        
+        self.box.pack_start(label, False, False, 0)
+        self.box.pack_start(Gtk.Label("Available properties"), False, False, 0)
         self.box.pack_start(help_notebook, True, True, 0)
-        self.resize(1, 1)  # shrink to minimum size needed
 
 
 class Query:
