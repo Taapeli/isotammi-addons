@@ -960,12 +960,6 @@ class SuperTool(ManagedWindow):
         self.btn_csv.connect("clicked", self.download)
         self.btn_copy.connect("clicked", self.copy)
 
-        colorh = "#22dd22"
-        color = Gdk.RGBA()
-        color.parse(colorh)
-        color.to_string()
-        self.btn_execute.override_background_color(Gtk.StateFlags.NORMAL, color)
-
         glade.connect_signals(
             {
                 "new": self.clear,
@@ -1294,6 +1288,15 @@ class SuperTool(ManagedWindow):
             self.btn_font.set_font(font)
             font_description = self.btn_font.get_font_desc()
             self.window.modify_font(font_description)
+
+        css = b"* {background: #00aa00; color: white}"
+        p = Gtk.CssProvider()
+        try:
+            p.load_from_data(css)
+            self.btn_execute.get_style_context().add_provider(p, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
+        except:
+            pass
+        
         self.last_filename = config.get("defaults.last_filename")
         self.show()
         self.check_category()
