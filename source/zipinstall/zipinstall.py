@@ -326,6 +326,7 @@ class ZipInstallFileDialog(ManagedWindow):
         lbl_desc = Gtk.Label(plugin_desc)
         lbl_desc_title.set_halign(Gtk.Align.START)
         lbl_desc.set_halign(Gtk.Align.START)
+        lbl_desc.set_line_wrap(True)
         
         lbl_version_title = Gtk.Label(_("Version:"))
         lbl_version = Gtk.Label(plugin_version)
@@ -333,6 +334,8 @@ class ZipInstallFileDialog(ManagedWindow):
         lbl_version.set_halign(Gtk.Align.START)
         
         grid = Gtk.Grid()
+        grid.set_column_spacing(10)
+        grid.set_row_spacing(5)
         grid.attach(lbl_id_title, 0, 0, 1, 1)
         grid.attach(lbl_id, 1, 0, 1, 1)
         grid.attach(lbl_type_title, 0, 2, 1, 1)
