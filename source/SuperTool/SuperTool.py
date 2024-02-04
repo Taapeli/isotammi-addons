@@ -26,6 +26,7 @@
 
 import csv
 import html
+import io
 import json
 import os
 import sys
@@ -35,6 +36,7 @@ import traceback
 import types
 
 from contextlib import contextmanager
+from contextlib import redirect_stdout, redirect_stderr
 from pathlib import Path
 from pprint import pprint
 
@@ -966,6 +968,10 @@ class SuperTool(ManagedWindow):
 
         self.save_as_filter_menu_item = glade.get_object("save_as_filter")
 
+        self.output_notebook = glade.get_object("output_notebook")
+        self.print_output = glade.get_object("print_output") # TextView
+        self.print_output_buffer = self.print_output.get_buffer()      
+
         self.selected_objects.set_active(True)
         self.btn_execute.connect("clicked", self.execute)
         self.btn_csv.connect("clicked", self.download)
@@ -1096,9 +1102,9 @@ class SuperTool(ManagedWindow):
 
     def execute(self, _widget):
         # type: (Gtk.Widget) -> None
-
         self.statusmsg.set_text("")
-        self.output_window.hide()
+        #self.output_window.hide()
+        self.output_notebook.hide()
         self.btn_csv.hide()
         self.btn_copy.hide()
         self.trans = None
@@ -1112,7 +1118,12 @@ class SuperTool(ManagedWindow):
                 txtitle += " ({})".format(self.title.get_text())
 
             with DbTxn(txtitle, self.dbstate.db) as self.trans:
-                self.execute1(query)
+                self.output  = io.StringIO()
+                with redirect_stdout(self.output), redirect_stderr(self.output):
+                    self.execute1(query)
+                #self.output_notebook.show()
+                #self.output_notebook.set_current_page(self.current_notebook_page)
+
                 # profile(self.__execute1, query)
         except Exception as e:
             traceback.print_exc()
@@ -1154,6 +1165,9 @@ class SuperTool(ManagedWindow):
             if source:
                 codeline = source.splitlines()[linenum-1]
             self.set_error(errortext, context, codeline, src, fname, linenum=linenum2)
+        finally:
+            self.print_output_buffer.set_text(self.output.getvalue()) #[0:10000])
+            self.output_notebook.show()
 
     def execute1(self, query):
         # type: (Query) -> None
@@ -1233,7 +1247,8 @@ class SuperTool(ManagedWindow):
         else:
             self.btn_csv.hide()
             self.btn_copy.hide()
-        self.output_window.show()
+        #self.output_window.show()
+        #self.output_notebook.show()
 
         
     def exit(self, _widget):
@@ -1311,7 +1326,9 @@ class SuperTool(ManagedWindow):
         self.last_filename = config.get("defaults.last_filename")
         self.show()
         self.check_category()
-
+        #self.current_notebook_page = 0
+        #self.output_notebook.set_current_page(self.current_notebook_page)
+        
     def load(self, _widget):
         # type: (Gtk.Widget) -> None
         choose_file_dialog = ScriptOpenFileChooserDialog(self.uistate)
@@ -1700,6 +1717,7 @@ class SuperTool(ManagedWindow):
         rsp = self.about_dialog.run()
         self.about_dialog.hide()
 
+  
 
 # -------------------------------------------------------------------------
 #
