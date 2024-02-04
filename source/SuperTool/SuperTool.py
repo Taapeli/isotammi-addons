@@ -873,11 +873,16 @@ class SuperTool(ManagedWindow):
             self.label_statements.show()
             self.statements.show()
             self.filter.show()
+            self.save_as_filter_menu_item.set_sensitive(True)             
+            self.save_as_filter_menu_item.set_tooltip_text("Save the filter as a custom filter")        
         else:
             self.label_filter.hide()
             self.label_statements.hide()
             self.statements.hide()
             self.filter.hide()
+            self.save_as_filter_menu_item.set_sensitive(False)        
+            self.save_as_filter_menu_item.set_tooltip_text("Save as filter not available in this category")        
+                 
             self.summary_checkbox.set_active(True)
 
         self.all_objects.set_sensitive(category_ok)
@@ -958,6 +963,8 @@ class SuperTool(ManagedWindow):
         self.help_window = glade.get_object("help_window")
         self.help_notebook = glade.get_object("help_notebook")
         self.help_win = None
+
+        self.save_as_filter_menu_item = glade.get_object("save_as_filter")
 
         self.selected_objects.set_active(True)
         self.btn_execute.connect("clicked", self.execute)
