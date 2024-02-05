@@ -828,7 +828,7 @@ class SuperTool(ManagedWindow):
                     title = "ID"
                 else:
                     title = "Value %s" % colnum
-            col = Gtk.TreeViewColumn(title, renderer, text=colnum, weight_set=True)
+            col = Gtk.TreeViewColumn(title, renderer, text=colnum)
             col.set_clickable(True)
             col.set_resizable(True)
             col.set_sort_column_id(colnum)
