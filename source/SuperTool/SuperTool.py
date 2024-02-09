@@ -347,6 +347,32 @@ class HelpWindow(Gtk.Window):
         self.box.pack_start(help_notebook, True, True, 0)
 
 
+
+class DescriptionDialog(Gtk.Dialog):
+    def __init__(self, parent):
+        Gtk.Dialog.__init__(self, title="Description", transient_for=parent)
+        self.add_buttons(
+            Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL, Gtk.STOCK_OK, Gtk.ResponseType.OK)
+        self.set_keep_above(True)
+        self.box = Gtk.VBox(spacing=6)
+        self.get_content_area().add(self.box)
+
+        textview = Gtk.TextView()
+        self.textbuffer = textview.get_buffer()
+        textview.set_size_request(400, 200)
+        textview.set_wrap_mode(Gtk.WrapMode.WORD)
+        self.box.pack_start(textview, False, False, 0)
+        self.show_all()
+        
+    def get_description(self):
+        start = self.textbuffer.get_start_iter()
+        end = self.textbuffer.get_end_iter()
+        return self.textbuffer.get_text(start, end, False)
+
+    def set_description(self, description):
+        self.textbuffer.set_text(description)
+
+
 class Query:
     ESCAPE = "\\"  # one backslash
 
@@ -363,6 +389,7 @@ class Query:
         self.summary_only = False
         self.filename = None
         self.dirname = None
+        self.description = ""
 
     def initialize(self):
         self.initial_statements_with_includes, self.initial_statements_files = process_includes(self.initial_statements, self.dirname)
@@ -396,6 +423,7 @@ class Query:
         query.filter = data.get("filter", "")
         query.expressions = data.get("expressions", "")
         query.scope = data.get("scope", "selected")
+        query.description = data.get("description", "")
     
         unwind_lists = data.get("unwind_lists", "")
         commit_changes = data.get("commit_changes", "")
@@ -435,6 +463,7 @@ class Query:
         data["statements"] = self.statements
         data["filter"] = self.filter
         data["expressions"] = self.expressions
+        data["description"] = self.description
 
         data["scope"] = self.scope
 
@@ -487,13 +516,13 @@ class ScriptFile:
         data["statements"] = query.statements
         data["filter"] = query.filter
         data["expressions"] = query.expressions
+        data["description"] = query.description
 
         data["scope"] = query.scope
 
         data["unwind_lists"] = str(query.unwind_lists)
         data["commit_changes"] = str(query.commit_changes)
         data["summary_only"] = str(query.summary_only)
-
         try:
             self.__writedata(filename, data)
         except Exception as e:
@@ -907,6 +936,9 @@ class SuperTool(ManagedWindow):
         self.commit_checkbox.set_active(False)
         self.summary_checkbox.set_active(False)
         self.query = Query()
+        if self.desc_win:
+            self.desc_win.destroy()
+            self.desc_win = None
 
     def close(self, *args):
         self.exit(None) 
@@ -926,7 +958,6 @@ class SuperTool(ManagedWindow):
         OkDialog("Info", "Result list copied to clipboard")
 
 
-    
     def create_gui(self):
         # type: () -> Gtk.Widget
         glade = Glade(
@@ -967,6 +998,7 @@ class SuperTool(ManagedWindow):
         self.help_window = glade.get_object("help_window")
         self.help_notebook = glade.get_object("help_notebook")
         self.help_win = None
+        self.desc_win = None
 
         self.save_as_filter_menu_item = glade.get_object("save_as_filter")
 
@@ -987,6 +1019,7 @@ class SuperTool(ManagedWindow):
                 "help": self.help,
                 "close": self.exit,
                 "about": self.show_about_dialog,
+                "show-description": self.show_description,
             }
         )
 
@@ -1249,6 +1282,8 @@ class SuperTool(ManagedWindow):
 
         if self.help_win:
             self.help_win.close()
+        if self.desc_win:
+            self.desc_win.destroy()
         if _widget:
             self.close()
                 
@@ -1439,6 +1474,11 @@ class SuperTool(ManagedWindow):
         self.loadstate_from_query(self.query)
 
     def loadstate_from_query(self, query):
+        if self.desc_win:
+            print("closing")
+            self.desc_win.destroy()
+            self.desc_win = None
+        
         if query.category and query.category != self.category_name:
             msg = "Warning: saved query is for category '{}'. Current category is '{}'."
             msg = msg.format(query.category, self.category_name)
@@ -1510,6 +1550,9 @@ class SuperTool(ManagedWindow):
             self.btn_copy.hide()
         self.statusmsg.set_text("")
         self.check_category()
+        if self.desc_win:
+            self.desc_win.destroy()
+            self.desc_win = None
 
     @contextmanager
     def progress(self, title1, title2, count):
@@ -1704,6 +1747,24 @@ class SuperTool(ManagedWindow):
         rsp = self.about_dialog.run()
         self.about_dialog.hide()
 
+    def show_description(self, _widget, _event):
+        # type: (Gtk.Widget) -> None
+    
+        def handle_response(dialog, response):
+            if response == Gtk.ResponseType.OK:
+                # save description in current query
+                self.query.description = dialog.get_description()
+            dialog.destroy()
+            self.desc_win = None
+        
+        if self.desc_win:
+            self.desc_win.destroy()
+        self.desc_win =  DescriptionDialog(parent=self.uistate.window)
+        dialog = self.desc_win
+        dialog.set_description(self.query.description)
+        dialog.connect("response", handle_response)
+
+    
 
 # -------------------------------------------------------------------------
 #
