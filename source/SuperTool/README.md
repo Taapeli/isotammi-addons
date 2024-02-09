@@ -345,7 +345,7 @@ This is because the tool automatically commits all processed objects if the "Com
 
 ## Saving the query as a script file
 
-The File menu has choices to save the query in a file (Save) and load a query from a file (Open). With this you can save useful queries and also distribute them to other Gramps users. These files are also called script files. They are human-readable text files that can also be edited with an external editor. Be careful not to mix spaces and tabs though.
+The File menu has choices to save the query in a file (Save) and load a query from a file (Open). With this you can save useful queries and also distribute them to other Gramps users. These files are also called script files. They are human-readable text files that can also be edited with an external editor. Be careful not to mix spaces and tabs though. These files are always stored in UTF-8 encoding.
 
 The script files have the extension ".script" by default.
 
@@ -487,7 +487,7 @@ However, the "supertool" directory can be changed from [settings](#settings)
 
 So it is intended that the user can store often used include files in her own "supertool" folder.
 
-The text from the specified file is included 'as-is' at the point where the include command was found. So this is not the same as importing the module - although the include file contains Python code and usually has the .py extension.
+The text from the specified file is included 'as-is' at the point where the include command was found. So this is not the same as importing the module - although the include file contains Python code and usually has the .py extension. These files should always be stored in UTF-8 encoding.
 
 The included code cannot contain @include statements.
 

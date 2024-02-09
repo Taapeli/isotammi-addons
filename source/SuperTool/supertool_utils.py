@@ -270,6 +270,14 @@ def find_fullname(fname, scriptfile_location, default_location):
 
 def process_includes(code, scriptfile_location=None):
     # type (str) -> Tuple[str, List[Tuple(str,int,int)]]
+
+    def readfile(filename):
+        try:
+            return open(filename, 'rt', encoding='utf-8').readlines()
+        except UnicodeError:
+            # include files should be in utf-8 but if that fails then try the default encoding
+            return open(filename, 'rt').readlines()
+
     config.load()
     default_location = config.get("defaults.include_location")
     if not default_location:
@@ -286,7 +294,7 @@ def process_includes(code, scriptfile_location=None):
             fname = parts[1].strip()
             fullname = find_fullname(fname, scriptfile_location, default_location)
             startline = len(newlines)+1
-            for line2 in open(fullname):
+            for line2 in readfile(fullname):
                 newlines.append(line2)
             endline = len(newlines)
             files.append((fullname,startline,endline))

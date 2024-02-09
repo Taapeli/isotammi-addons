@@ -503,7 +503,7 @@ class ScriptFile:
     def __writedata(self, filename, data):
         # type: (str, Dict[str,str]) -> None
         # open(filename, "w").write(json.dumps(data, indent=4))
-        with open(filename, "w") as f:
+        with open(filename, "wt", encoding='utf-8') as f:
             print("[Gramps SuperTool script file]", file=f)
             print("version=1", file=f)
             print("", file=f)
@@ -518,8 +518,12 @@ class ScriptFile:
 
     def __readdata(self, filename):
         try:
-            return Query.text_to_dict(open(filename).read())
-        except FileNotFoundError:
+            try:
+                return Query.text_to_dict(open(filename, 'rt', encoding='utf-8').read())
+            except UnicodeError: 
+                # script files should be in utf-8 but if that fails then try the default encoding
+                return Query.text_to_dict(open(filename, 'rt').read())
+        except (FileNotFoundError, UnicodeError):
             return {}
         except:
             msg = traceback.format_exc()
@@ -529,7 +533,7 @@ class ScriptFile:
     def __readdata_json(self, filename):
         # type: (str) -> Dict[str,str]
         try:
-            data = open(filename).read()
+            data = open(filename, 'rt', encoding='utf-8').read()
             return json.loads(data)
         except FileNotFoundError:
             return {}
@@ -1777,7 +1781,7 @@ class Tool(tool.Tool):
         )
         result = Result()
         if output_filename:
-            f = csv.writer(open(output_filename, open_mode))
+            f = csv.writer(open(output_filename, open_mode, encoding='utf-8'))
         with DbTxn("Generating values", self.db) as trans:
             for values in gramps_engine.get_values(trans, result):
                 if output_filename:
