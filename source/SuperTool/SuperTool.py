@@ -488,6 +488,13 @@ class Query:
             lines.append("")  # empty line
         return "\n".join(lines)
 
+    def clone(self):
+        data = self.to_dict()
+        return Query.dict_to_query(data)
+    
+    def __eq__(self, other):
+        return self.to_dict() == other.to_dict()
+
 class ScriptFile:
     # when saving, lines starting with [ or \ are prefixed with a \
     ESCAPE = "\\"  # one backslash
@@ -939,11 +946,19 @@ class SuperTool(ManagedWindow):
         if self.desc_win:
             self.desc_win.destroy()
             self.desc_win = None
+        self.window.set_title("SuperTool")
 
     def close(self, *args):
         self.exit(None) 
         super().close(*args)
         
+    def content_changed(self, _widget):
+        if self.ignore_changes: return
+        print("content_changed")
+        query = self.save_to_query()        
+        modified = (query != self.saved_query)
+        self.set_window_title(modified=modified)
+    
     def copy(self, _widget):
         # type: (Gtk.Widget) -> None
         clipboard = Gtk.Clipboard.get(Gdk.SELECTION_CLIPBOARD)
@@ -957,7 +972,7 @@ class SuperTool(ManagedWindow):
         clipboard.set_text(stringio.getvalue(), -1)
         OkDialog("Info", "Result list copied to clipboard")
 
-
+   
     def create_gui(self):
         # type: () -> Gtk.Widget
         glade = Glade(
@@ -1060,6 +1075,18 @@ class SuperTool(ManagedWindow):
             self.statements_window.set_propagate_natural_height(True)
             # self.statements_window.set_max_content_height(200)
 
+        self.title.connect("changed",self.content_changed)
+        self.initial_statements.get_buffer().connect("changed", self.content_changed)
+        self.statements.get_buffer().connect("changed", self.content_changed)
+        self.filter.get_buffer().connect("changed", self.content_changed)
+        self.expressions.get_buffer().connect("changed", self.content_changed)
+        self.all_objects.connect("toggled", self.content_changed)
+        self.filtered_objects.connect("toggled", self.content_changed)
+        self.selected_objects.connect("toggled", self.content_changed)
+        self.unwind_lists.connect("toggled", self.content_changed)
+        self.commit_checkbox.connect("toggled", self.content_changed)
+        self.summary_checkbox.connect("toggled", self.content_changed)
+        
         return glade.toplevel
 
     def db_changed(self, db):
@@ -1324,12 +1351,12 @@ class SuperTool(ManagedWindow):
     def init(self):
         # type: () -> None
         window = self.create_gui()
+        self.set_window(window, None, _("SuperTool"))
         self.select_category()
         self.loadconfig()
         self.no_database_key = self.dbstate.connect("no-database", self.db_closed)
         self.database_changed_key = self.dbstate.connect("database-changed", self.db_changed)
         self.switch_page_key = self.uistate.viewmanager.notebook.connect("switch-page", self.pageswitch)
-        self.set_window(window, None, _("SuperTool"))
         self.help_loaded = False
 
         config.load()
@@ -1366,6 +1393,9 @@ class SuperTool(ManagedWindow):
             elif response == Gtk.ResponseType.OK:
                 filename = choose_file_dialog.get_filename()
                 self.loadstate(filename)
+                basename = os.path.basename(filename)
+                self.window.set_title(basename + " - SuperTool")
+                
                 self.last_filename = filename
                 config.set("defaults.last_filename", filename)
                 config.save()
@@ -1468,11 +1498,14 @@ class SuperTool(ManagedWindow):
             query.title = name.replace(SCRIPTFILE_EXTENSION, "")
         self.loadstate_from_query(query)
 
+
     def loadstate_from_note(self, notetext):
         # type: (str, bool) -> None
         self.query = Query.text_to_query(notetext)
         self.loadstate_from_query(self.query)
 
+
+    
     def loadstate_from_query(self, query):
         if self.desc_win:
             print("closing")
@@ -1488,6 +1521,7 @@ class SuperTool(ManagedWindow):
                 parent=self.uistate.window,
             )
 
+        self.ignore_changes = True
         self.title.set_text(query.title)
 
         set_text(self.expressions, query.expressions)
@@ -1502,6 +1536,9 @@ class SuperTool(ManagedWindow):
         self.unwind_lists.set_active(query.unwind_lists)
         self.commit_checkbox.set_active(query.commit_changes)
         self.summary_checkbox.set_active(query.summary_only)
+        self.set_window_title(modified=False)
+        self.saved_query = query.clone()
+        self.ignore_changes = False
 
     def makefilter(
         self, category, filtername, filtertext, initial_statements, statements
@@ -1591,6 +1628,7 @@ class SuperTool(ManagedWindow):
                 self.last_filename = filename
                 config.set("defaults.last_filename", filename)
                 config.save()
+                self.set_window_title(modified=False)
                 break
 
         choose_file_dialog.destroy()
@@ -1642,7 +1680,7 @@ class SuperTool(ManagedWindow):
         # type: () -> Query
         return self.savestate(self.get_configfile(), save_dirname=True)
 
-    def savestate(self, filename, save_dirname=False):
+    def save_to_query(self):  # save UI data in a Query
         # type: (str) -> Query
         query = self.query
         query.category = self.category_name
@@ -1662,33 +1700,18 @@ class SuperTool(ManagedWindow):
         query.unwind_lists = self.unwind_lists.get_active()
         query.commit_changes = self.commit_checkbox.get_active()
         query.summary_only = self.summary_checkbox.get_active()
-
+        return query
+    
+    def savestate(self, filename, save_dirname=False):
+        # type: (str) -> Query
+        query = self.save_to_query()
         scriptfile = ScriptFile()
         scriptfile.save(filename, query, save_dirname)
         return query
-        # self.writedata(filename, data)
 
     def savestate_to_note(self, note):
         # type: (str) -> Query
-        query = self.query
-        query.category = self.category_name
-        query.title = self.title.get_text()
-        if self.selected_objects.get_active():
-            scope = "selected"
-        elif self.all_objects.get_active():
-            scope = "all"
-        elif self.filtered_objects.get_active():
-            scope = "filtered"
-        query.scope = scope
-        query.expressions = get_text(self.expressions)
-        query.filter = get_text(self.filter)
-        query.statements = get_text(self.statements)
-        query.initial_statements = get_text(self.initial_statements)
-
-        query.unwind_lists = self.unwind_lists.get_active()
-        query.commit_changes = self.commit_checkbox.get_active()
-        query.summary_only = self.summary_checkbox.get_active()
-        
+        query = self.save_to_query()
         text = query.to_text()
         note.set(text)
         return query
@@ -1734,6 +1757,15 @@ class SuperTool(ManagedWindow):
         config.set("defaults.font", font)
         config.save()
 
+    def set_window_title(self, modified):
+        title = self.window.get_title()
+        if modified:
+            if not title.startswith("* "):
+                self.window.set_title("* " + title)
+        else:
+            if title.startswith("* "):
+                self.window.set_title(title[2:])
+    
     def settings_dialog(self, _widget):
         dialog = self.settings.toplevel
         config.load()
@@ -1754,6 +1786,8 @@ class SuperTool(ManagedWindow):
             if response == Gtk.ResponseType.OK:
                 # save description in current query
                 self.query.description = dialog.get_description()
+                self.content_changed(None)
+                
             dialog.destroy()
             self.desc_win = None
         
