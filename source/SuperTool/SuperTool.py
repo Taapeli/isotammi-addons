@@ -458,12 +458,12 @@ class Query:
     def to_dict(self):
         data = {}
         data["title"] = self.title
+        data["description"] = self.description
         data["category"] = self.category
         data["initial_statements"] = self.initial_statements
         data["statements"] = self.statements
         data["filter"] = self.filter
         data["expressions"] = self.expressions
-        data["description"] = self.description
 
         data["scope"] = self.scope
 
@@ -515,21 +515,21 @@ class ScriptFile:
     def save(self, filename, query, save_dirname=False):
         # type: (str, Query) -> None
         data = {}
-        if save_dirname and query.dirname:
-            data["dirname"] = query.dirname
         data["title"] = query.title
+        data["description"] = query.description
         data["category"] = query.category
         data["initial_statements"] = query.initial_statements
         data["statements"] = query.statements
         data["filter"] = query.filter
         data["expressions"] = query.expressions
-        data["description"] = query.description
 
         data["scope"] = query.scope
 
         data["unwind_lists"] = str(query.unwind_lists)
         data["commit_changes"] = str(query.commit_changes)
         data["summary_only"] = str(query.summary_only)
+        if save_dirname and query.dirname:
+            data["dirname"] = query.dirname
         try:
             self.__writedata(filename, data)
         except Exception as e:
