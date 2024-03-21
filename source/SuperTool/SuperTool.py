@@ -493,7 +493,11 @@ class Query:
         return Query.dict_to_query(data)
     
     def __eq__(self, other):
-        return self.to_dict() == other.to_dict()
+        my_data = self.to_dict()
+        other_data = other.to_dict()
+        del my_data["category"]
+        del other_data["category"]
+        return my_data == other_data
 
 class ScriptFile:
     # when saving, lines starting with [ or \ are prefixed with a \
@@ -954,7 +958,7 @@ class SuperTool(ManagedWindow):
         
     def content_changed(self, _widget):
         if self.ignore_changes: return
-        print("content_changed")
+        #print("content_changed")
         query = self.save_to_query()        
         modified = (query != self.saved_query)
         self.set_window_title(modified=modified)
