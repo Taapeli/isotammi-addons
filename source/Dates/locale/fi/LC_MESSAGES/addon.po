@@ -18,7 +18,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Poedit 2.0.6\n"
 
-#: Dates/Dates.gpr.py:5 Dates/Dates.gpr.py:6 Dates/Dates.gpr.py:16
+#: Dates/Dates.gpr.py:11 Dates/Dates.gpr.py:12 Dates/Dates.gpr.py:22
 msgid "Dates"
 msgstr "Päivämäärät"
 

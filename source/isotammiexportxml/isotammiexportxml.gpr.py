@@ -21,13 +21,19 @@
 """
 Gramps registration file
 """
-from gramps.version import major_version
+from gramps.version import major_version, VERSION_TUPLE
 
 #------------------------------------------------------------------------
 #
 # Isotammi XML export  
 #
 #------------------------------------------------------------------------
+
+
+if VERSION_TUPLE < (5, 2, 0):
+    additional_args = {}
+else:
+    additional_args = {"audience": EXPERT}
 
 register(EXPORT, 
     id    = 'isotammiexportxml',
@@ -41,7 +47,8 @@ register(EXPORT,
     export_function = 'export_data',
     export_options = 'IsotammiOptionBox',
     export_options_title = _('Isotammi XML export options'),
-    extension = "isotammi.gpkg"
+    extension = "isotammi.gpkg",
+    **additional_args,
 )
 
 

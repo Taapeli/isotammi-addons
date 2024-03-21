@@ -18,12 +18,12 @@ msgstr ""
 "X-Generator: Poedit 2.0.6\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 
-#: PropertyEditor/PropertyEditor.gpr.py:5
-#: PropertyEditor/PropertyEditor.gpr.py:16
+#: PropertyEditor/PropertyEditor.gpr.py:11
+#: PropertyEditor/PropertyEditor.gpr.py:22
 msgid "PropertyEditor"
 msgstr "OminaisuusMuokkain"
 
-#: PropertyEditor/PropertyEditor.gpr.py:6
+#: PropertyEditor/PropertyEditor.gpr.py:12
 msgid "Gramplet to edit attributes of multiple objects"
 msgstr "Gramplet jolla voi muokata usean kohteen ominaisuuksia samalla kertaa"
 

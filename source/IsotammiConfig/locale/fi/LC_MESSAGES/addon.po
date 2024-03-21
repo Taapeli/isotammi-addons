@@ -17,9 +17,9 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 2.0.6\n"
 
-#: IsotammiConfig/isotammiconfig.gpr.py:5
-#: IsotammiConfig/isotammiconfig.gpr.py:6
-#: IsotammiConfig/isotammiconfig.gpr.py:16
+#: IsotammiConfig/isotammiconfig.gpr.py:11
+#: IsotammiConfig/isotammiconfig.gpr.py:12
+#: IsotammiConfig/isotammiconfig.gpr.py:22
 msgid "Isotammi configuration"
 msgstr "Isotammen asetukset"
 

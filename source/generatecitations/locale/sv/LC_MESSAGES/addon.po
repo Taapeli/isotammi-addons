@@ -23,8 +23,8 @@ msgstr ""
 msgid "Isotammi tools"
 msgstr ""
 
-#: generatecitations/generatecitations.gpr.py:37
-#: generatecitations/generatecitations.gpr.py:38
+#: generatecitations/generatecitations.gpr.py:43
+#: generatecitations/generatecitations.gpr.py:44
 msgid "Generate source citations from notes"
 msgstr ""
 

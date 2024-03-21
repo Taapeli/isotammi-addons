@@ -1,4 +1,10 @@
-from gramps.version import major_version
+from gramps.version import major_version, VERSION_TUPLE
+
+
+if VERSION_TUPLE < (5, 2, 0):
+    additional_args = {}
+else:
+    additional_args = {"audience": EXPERT}
 
 register(GRAMPLET,
          id = "AddSourcesGramplet",
@@ -17,4 +23,5 @@ register(GRAMPLET,
          help_url="AddSourcesGramplet Gramplet",
          include_in_listing = True,
          navtypes=["Event"],
+         **additional_args,
         )

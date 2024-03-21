@@ -18,13 +18,13 @@ msgstr ""
 "X-Generator: Poedit 2.0.6\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 
-#: DeepConnectionsGraph/DeepConnectionsGraph.gpr.py:5
-#: DeepConnectionsGraph/DeepConnectionsGraph.gpr.py:12
+#: DeepConnectionsGraph/DeepConnectionsGraph.gpr.py:11
+#: DeepConnectionsGraph/DeepConnectionsGraph.gpr.py:18
 #: DeepConnectionsGraph/DeepConnectionsGraph.py:153
 msgid "Deep Connections Graph"
 msgstr "Syväsuhteet kaaviona"
 
-#: DeepConnectionsGraph/DeepConnectionsGraph.gpr.py:6
+#: DeepConnectionsGraph/DeepConnectionsGraph.gpr.py:12
 #, fuzzy
 msgid "DeepConnectionsGraph Gramplet"
 msgstr "Syväsuhteet kaaviona -gramplet"

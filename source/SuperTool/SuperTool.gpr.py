@@ -22,7 +22,7 @@
 """
 Gramps registration file
 """
-from gramps.version import major_version
+from gramps.version import major_version, VERSION_TUPLE
 from gramps.gui import plug
 
 plug.tool.tool_categories["Isotammi"] = ("Isotammi", _("Isotammi tools"))
@@ -32,8 +32,14 @@ plug.tool.tool_categories["Isotammi"] = ("Isotammi", _("Isotammi tools"))
 # SuperTool
 #
 # ------------------------------------------------------------------------
-VERSION="1.3.9"
+VERSION="1.4.0"
  
+
+if VERSION_TUPLE < (5, 2, 0):
+    additional_args = {}
+else:
+    additional_args = {"audience": EXPERT}
+
 register(
     TOOL,
     id="SuperTool",
@@ -48,6 +54,7 @@ register(
     toolclass="Tool",
     optionclass="Options",
     tool_modes=[TOOL_MODE_GUI, TOOL_MODE_CLI],
+    **additional_args,
 )
 
 register(
@@ -63,6 +70,7 @@ register(
     fname="supertool_genfilter.py",
     ruleclass="GenericFilterRule_Person",
     namespace="Person",
+    **additional_args,
 )
 
 register(
@@ -78,6 +86,7 @@ register(
     fname="supertool_genfilter.py",
     ruleclass="GenericFilterRule_Family",
     namespace="Family",
+    **additional_args,
 )
 
 register(
@@ -93,6 +102,7 @@ register(
     fname="supertool_genfilter.py",
     ruleclass="GenericFilterRule_Place",
     namespace="Place",
+    **additional_args,
 )
 
 register(
@@ -108,6 +118,7 @@ register(
     fname="supertool_genfilter.py",
     ruleclass="GenericFilterRule_Event",
     namespace="Event",
+    **additional_args,
 )
 
 register(
@@ -123,6 +134,7 @@ register(
     fname="supertool_genfilter.py",
     ruleclass="GenericFilterRule_Citation",
     namespace="Citation",
+    **additional_args,
 )
 
 register(
@@ -138,6 +150,7 @@ register(
     fname="supertool_genfilter.py",
     ruleclass="GenericFilterRule_Source",
     namespace="Source",
+    **additional_args,
 )
 
 register(
@@ -153,6 +166,7 @@ register(
     fname="supertool_genfilter.py",
     ruleclass="GenericFilterRule_Repository",
     namespace="Repository",
+    **additional_args,
 )
 
 register(
@@ -168,6 +182,7 @@ register(
     fname="supertool_genfilter.py",
     ruleclass="GenericFilterRule_Note",
     namespace="Note",
+    **additional_args,
 )
 
 register(
@@ -183,4 +198,5 @@ register(
     fname="supertool_genfilter.py",
     ruleclass="GenericFilterRule_Media",
     namespace="Media",
+    **additional_args,
 )

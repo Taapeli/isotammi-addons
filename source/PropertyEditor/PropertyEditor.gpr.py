@@ -1,11 +1,17 @@
-from gramps.version import major_version
+from gramps.version import major_version, VERSION_TUPLE
+
+
+if VERSION_TUPLE < (5, 2, 0):
+    additional_args = {}
+else:
+    additional_args = {"audience": EXPERT}
 
 register(GRAMPLET,
          id = "PropertyEditor",
          name = _("PropertyEditor"),
          description = _("Gramplet to edit attributes of multiple objects"),
          status = STABLE,
-         version = '1.1.1',
+         version = '1.1.2',
          gramps_target_version = major_version,
          fname = "PropertyEditor.py",
          gramplet = 'PropertyEditor',
@@ -16,5 +22,5 @@ register(GRAMPLET,
          gramplet_title = _("PropertyEditor"),
          help_url="PropertyEditor Gramplet",
          include_in_listing = True,
-         #navtypes=["Source"],
+         **additional_args,
         )

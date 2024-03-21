@@ -19,11 +19,11 @@ msgstr ""
 "Generated-By: Babel 2.6.0\n"
 "X-Generator: Poedit 2.0.6\n"
 
-#: PlaceTool/PlaceTool.gpr.py:5 PlaceTool/PlaceTool.gpr.py:16
+#: PlaceTool/PlaceTool.gpr.py:11 PlaceTool/PlaceTool.gpr.py:22
 msgid "PlaceTool"
 msgstr ""
 
-#: PlaceTool/PlaceTool.gpr.py:6
+#: PlaceTool/PlaceTool.gpr.py:12
 msgid "Gramplet to manipulate multiple places"
 msgstr ""
 
