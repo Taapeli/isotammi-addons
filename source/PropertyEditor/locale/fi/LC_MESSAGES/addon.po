@@ -35,34 +35,34 @@ msgid ""
 msgstr ""
 "Tällä grampletilla voi muokata usean %s- kohteen ominaisuuksia samalla kertaa"
 
-#: PropertyEditor/PropertyEditor.py:177
+#: PropertyEditor/PropertyEditor.py:178
 msgid "Use regex"
 msgstr "Käytä säännöllisiä lausekkeita"
 
-#: PropertyEditor/PropertyEditor.py:185
+#: PropertyEditor/PropertyEditor.py:186
 msgid "Old text:"
 msgstr "Vanha teksti:"
 
-#: PropertyEditor/PropertyEditor.py:190
+#: PropertyEditor/PropertyEditor.py:191
 msgid "New text:"
 msgstr "Uusi teksti:"
 
-#: PropertyEditor/PropertyEditor.py:202
+#: PropertyEditor/PropertyEditor.py:203
 msgid "Clear"
 msgstr "Tyhjennä"
 
-#: PropertyEditor/PropertyEditor.py:206
+#: PropertyEditor/PropertyEditor.py:207
 msgid "Apply to selected objects"
 msgstr "Suorita muokkaus valituille kohteille"
 
-#: PropertyEditor/PropertyEditor.py:211
+#: PropertyEditor/PropertyEditor.py:212
 msgid "_Help"
 msgstr ""
 
-#: PropertyEditor/PropertyEditor.py:252
+#: PropertyEditor/PropertyEditor.py:253
 msgid "Setting properties"
 msgstr "Ominaisuuksien asetus"
 
-#: PropertyEditor/PropertyEditor.py:270
+#: PropertyEditor/PropertyEditor.py:272
 msgid "Regex operation failed: {}"
 msgstr "Virhe säännöllinen lausekkeen käsittelyssä: {}"

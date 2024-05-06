@@ -1241,7 +1241,6 @@ class SuperTool(ManagedWindow):
             self.output_window.remove(self.listview)
         self.listview = None
         n = 0
-        LIMIT = 1000
 
         if self.category.objclass:
             if self.selected_objects.get_active():
@@ -1283,13 +1282,6 @@ class SuperTool(ManagedWindow):
 
                 self.store.append(values)
                 n += 1
-                if n >= LIMIT:
-                    OkDialog(
-                        _("Warning"),
-                        "Limit of {} rows reached".format(LIMIT),
-                        parent=self.uistate.window,
-                    )
-                    break
         t2 = time.time()
 
         msg = "Objects: {}/{}; rows: {} ({:.2f}s)".format(

@@ -1,6 +1,6 @@
 # SuperTool
-v1.3.8<br>
-8 jan 2024<br>
+v1.4.2<br>
+6 May 2024<br>
 Author: kari.kujansuu@gmail.com<br>
 
  [Introduction](#introduction)
@@ -12,7 +12,6 @@ Author: kari.kujansuu@gmail.com<br>
 <br> [General variables](#general-variables)
 <br> [Help feature](#help-feature)
 <br> [Options](#options)
-<br> [Row limit](#row-limit)
 <br> [Editing objects](#editing-objects)
 <br> [Download/copy as CSV](#download-or-copy-as-csv)
 <br> [Title field](#title-field)
@@ -187,15 +186,6 @@ Next are three checkboxes:
 * Unwind lists - if any value in the "Expressions to display" is a list then each member of the list will be shown on a separate row
 * Commit changes - any changes to the selected objects are automatically committed if this is checked
 * Summary only - do not display values for every object, only a summary after processing all objects
-
-## Row limit
-
-There is a hard limit of 1000 rows that can be displayed. This is because Gramps seems to become unstable if an attempt is made to display greater number of rows (maybe a Gtk limitation). If the limit is exceeded then you will get a warning and only the first 1000 rows are processed and displayed:
-
-![SuperTool](Warning.png)
-
-The row limit does not apply when you use the tool in the [command line mode](#running-from-the-command-line).
-
 
 ## Editing objects
 
@@ -526,7 +516,7 @@ Normally the column headers are "Value 1", "Value 2" etc. With 'set_headers' you
 result.set_headers(["Name", "Age"])
 ```
  
-With 'set_max' you can specify the maximum number of rows displayed. The default maximum is 1000 rows as explained above and you cannot set the maximum greater that 1000. This maximum takes effect after the 'Filter' is processed. The method has also a second parameter 'read_limit' that specifies the maximum number of objects to process before filtering.
+With 'set_max' you can specify the maximum number of rows displayed. This maximum takes effect after the 'Filter' is processed. The method has also a second parameter 'read_limit' that specifies the maximum number of objects to process before filtering.
 
 ## Settings
 
