@@ -150,7 +150,8 @@ class PropertyEditor(Gramplet):
 
         propnames = []        
         for propname,propinfo in self.schema["properties"].items():
-            print(propname,propinfo)
+            #print(propname)
+            #print("-", propinfo)
             if propname == "gramps_id": continue
             if propname.endswith("handle"): continue
             proptype = propinfo.get("type")
@@ -262,6 +263,7 @@ class PropertyEditor(Gramplet):
                     self.commitfunc(obj,self.trans)
                     continue
                 orig_text = getpropfunc(obj)
+                #print("orig text", orig_text)
                 if self.use_regex.get_active():
                     try:
                         next_text = re.sub(old_text,new_text,orig_text)
@@ -270,6 +272,11 @@ class PropertyEditor(Gramplet):
                         raise RuntimeError(_("Regex operation failed: {}").format(e))
                 else:
                     next_text = orig_text.replace(old_text,new_text)
+                print("setpropfunc",setpropfunc)
+                print("old_text", old_text)
+                print("new_text", new_text)
+                print("next_text", next_text)
+                print("commitfunc", self.commitfunc)
                 setpropfunc(obj, next_text)
                 self.commitfunc(obj,self.trans)
     
