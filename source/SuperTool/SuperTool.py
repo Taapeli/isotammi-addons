@@ -103,6 +103,7 @@ config.register("defaults.include_location", "")
 config.register("defaults.last_note", "")
 
 SCRIPTFILE_EXTENSION = ".script"
+STEP_INTERVAL = 100   # call step() only every 100 rows
 
 def get_text(textview):
     buf = textview.get_buffer()
@@ -683,7 +684,7 @@ class GrampsEngine:
             if result.read_limit and n >= result.read_limit:
                 return
 
-            if self.step:
+            if self.step and n % STEP_INTERVAL == 0:
                 if self.step():  # user clicked 'Cancel', stop
                     return
 
@@ -1262,8 +1263,9 @@ class SuperTool(ManagedWindow):
 
         result = Result()
 
+        count = len(selected_handles) // STEP_INTERVAL
         with self.progress(
-            "SuperTool", "Executing " + self.title.get_text(), len(selected_handles)
+            "SuperTool", "Executing " + self.title.get_text(), count
         ) as step:
             gramps_engine = GrampsEngine(
                 self.dbstate,
