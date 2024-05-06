@@ -881,7 +881,7 @@ class SuperTool(ManagedWindow):
         self.output_window.set_size_request(600, 400)
         self.output_window.add(self.listview)
 
-        self.store = Gtk.TreeStore(*coltypes)
+        self.store = Gtk.ListStore(*coltypes)
         self.listview.set_model(self.store)
         self.listview.connect("button-press-event", self.button_press)
         self.listview.show()
@@ -1279,7 +1279,7 @@ class SuperTool(ManagedWindow):
                     # (we assume the types are the same for all rows)
                     self.build_listview(values, result)
 
-                self.store.append(None, values)
+                self.store.append(values)
                 n += 1
                 if n >= LIMIT:
                     OkDialog(
