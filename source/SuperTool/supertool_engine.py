@@ -219,6 +219,11 @@ class CommonProxy(Proxy):
         for handle in self.obj.get_note_list():
             yield NoteProxy(self.db, handle)
 
+class MediaListProxy:
+    @listproperty
+    def media_list(self):
+        for mediaref in self.obj.get_media_list():
+            yield MediaProxy(self.db, mediaref.ref)
 
 class NoteProxy(Proxy):
     namespace = "Note"
@@ -240,7 +245,7 @@ class NoteProxy(Proxy):
         
 
 
-class CitationProxy(Proxy, AttributeProxy):
+class CitationProxy(Proxy, AttributeProxy, MediaListProxy):
     namespace = "Citation"
     _attrs = set()
 
@@ -296,7 +301,7 @@ class CitationProxy(Proxy, AttributeProxy):
             yield PersonProxy(self.db, handle)
 
 
-class SourceProxy(Proxy, AttributeProxy):
+class SourceProxy(Proxy, AttributeProxy, MediaListProxy):
     namespace = "Source"
     _attrs = set()
 
@@ -365,7 +370,7 @@ class RepositoryProxy(Proxy):
             yield NoteProxy(self.db, handle)
 
 
-class PlaceProxy(CommonProxy):
+class PlaceProxy(CommonProxy, MediaListProxy):
     namespace = "Place"
     _attrs = set()
 
@@ -426,7 +431,7 @@ class PlaceProxy(CommonProxy):
     def events(self):
         return self.referrers("Event")
 
-class EventProxy(CommonProxy, AttributeProxy):
+class EventProxy(CommonProxy, AttributeProxy, MediaListProxy):
     namespace = "Event"
     _attrs = set()
 
@@ -504,7 +509,7 @@ class EventProxy(CommonProxy, AttributeProxy):
         return "referred"
 
 
-class PersonProxy(CommonProxy, AttributeProxy):
+class PersonProxy(CommonProxy, AttributeProxy, MediaListProxy):
     namespace = "Person"
     _attrs = set()
 
@@ -626,7 +631,7 @@ class PersonProxy(CommonProxy, AttributeProxy):
             yield CitationProxy(self.db, handle)
 
 
-class FamilyProxy(CommonProxy, AttributeProxy):
+class FamilyProxy(CommonProxy, AttributeProxy, MediaListProxy):
     namespace = "Family"
     _attrs = set()
 

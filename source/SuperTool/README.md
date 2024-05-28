@@ -606,6 +606,7 @@ confidence           | Confidence value (0-4)                             | inte
 date                 | Date of the citation                               | DateProxy
 gramps_id            | Gramps id, e.g. C0123                              | string
 handle               | Gramps internal handle                             | string
+media_list           | List of media objects                              | list of MediaProxy objects
 notes                | List of notes                                      | list of NoteProxy objects
 obj                  | This Gramps Citation object (same as 'citation')   | Citation
 page                 | Page value                                         | string
@@ -624,6 +625,7 @@ description          | Event description                                        
 event                | This Gramps Event object (same as 'obj')                             | Event
 gramps_id            | Gramps id, e.g. E0123                                                | string
 handle               | Gramps internal handle                                               | string
+media_list           | List of media objects                                                | list of MediaProxy objects
 notes                | List of notes                                                        | list of NoteProxy objects
 obj                  | This Gramps Event object (same as 'event')                           | Event
 participants         | Participants of the event (person objects)                           | list of PersonProxy objects
@@ -647,6 +649,7 @@ family               | This Gramps Family object (same as 'obj')      | Family
 father               | Person object of the family's father           | PersonProxy
 gramps_id            | Gramps id, e.g. F0123                          | string
 handle               | Gramps internal handle                         | string
+media_list           | List of media objects                          | list of MediaProxy objects
 mother               | Person object of the family's mother           | PersonProxy
 notes                | List of notes                                  | list of NoteProxy objects
 obj                  | This Gramps Family object (same as 'family')   | Family
@@ -705,6 +708,7 @@ father               | Person's father                                  | Person
 gender               | Gender as as string: male, female or unknown     | string
 gramps_id            | Gramps id, e.g. I0123                            | string
 handle               | Gramps internal handle                           | string
+media_list           | List of media objects                          | list of MediaProxy objects
 mother               | Person's mother                                  | PersonProxy object (or Nullproxy)
 name                 | Primary name as string                           | string
 nameobjs             | List of Gramps internal Name objects             | list of Name objects
@@ -733,6 +737,7 @@ events               | List of events that occurred in this place   | list of Ev
 gramps_id            | Gramps id, e.g. P0123                        | string
 handle               | Gramps internal handle                       | string
 longname             | Full name including enclosing places         | string
+media_list           | List of media objects                        | list of MediaProxy objects
 name                 | Name of the place                            | string
 notes                | List of notes                                | list of NoteProxy objects
 obj                  | This Gramps Place object (same as 'place')   | Place
@@ -767,6 +772,7 @@ author               | Author                                         | string
 citations            | List of citations                              | list of CitationProxy objects
 gramps_id            | Gramps id, e.g. S0123                          | string
 handle               | Gramps internal handle                         | string
+media_list           | List of media objects                          | list of MediaProxy objects
 notes                | List of notes                                  | list of NoteProxy objects
 obj                  | This Gramps Source object (same as 'source')   | Source
 pubinfo              | Publication info                               | string
