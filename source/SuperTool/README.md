@@ -349,7 +349,7 @@ A query can also be saved in the current Gramps database (family tree) as a Note
 
 ![SuperTool](SuperTool-file-menu-2.png)
 
-Selecting 'Load from Note' displays a list of saved notes (if any) and allows the user to load one of them as the current query:
+Selecting 'Load from Note' displays a list of saved notes (if any) and allows the user to edit them or load one of them as the current query:
 
 ![SuperTool](load-note.png)
 

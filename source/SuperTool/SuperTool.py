@@ -72,6 +72,7 @@ from gramps.gen.utils.debug import profile
 from gramps.gen.lib import Note
 
 from gramps.gui.dialog import OkDialog, ErrorDialog
+from gramps.gui.editors import EditNote
 from gramps.gui.glade import Glade
 from gramps.gui.managedwindow import ManagedWindow
 from gramps.gui.plug import tool
@@ -130,10 +131,10 @@ class NoteDialog(Gtk.Dialog):
     # signals:
     CANCEL = 1
     
-    def __init__(self, dbstate, notes, selected_gramps_id, current_category):
+    def __init__(self, dbstate, get_notes, selected_gramps_id, current_category):
         Gtk.Dialog.__init__(self)
         self.dbstate = dbstate
-        self.notes = list(notes)
+        self.get_notes = get_notes
         self.last_note = None
         self.selected_gramps_id = selected_gramps_id
         self.current_category = current_category
@@ -185,12 +186,14 @@ class NoteDialog(Gtk.Dialog):
 
     def list_notes(self, _widget):
         self.liststore.clear()
-        for note, data in self.notes:
+        for note, data in self.get_notes():
             title = data["title"]
             category = data["category"]
             if self.cb_category.get_active() and category != self.current_category:
                 continue
             treeiter  = self.liststore.append([note.gramps_id, category, title, note.get_handle()])
+            if self.selected_gramps_id is None:
+                self.selected_gramps_id = note.gramps_id # select first one by default
             if note.gramps_id == self.selected_gramps_id:
                 self.listview.get_selection().select_iter(treeiter)
     
@@ -207,17 +210,19 @@ class NoteDialog(Gtk.Dialog):
 
 class NoteChooserDialog(NoteDialog):
     LOAD_NOTE = 2
-    def __init__(self, dbstate, notes, selected_gramps_id, category_name):
-        NoteDialog.__init__(self, dbstate, notes, selected_gramps_id, category_name)
+    EDIT_NOTE = 3
+    def __init__(self, dbstate, get_notes, selected_gramps_id, category_name):
+        NoteDialog.__init__(self, dbstate, get_notes, selected_gramps_id, category_name)
         self.add_button("Load",  NoteChooserDialog.LOAD_NOTE)
+        self.add_button("Edit",  NoteChooserDialog.EDIT_NOTE)
         self.add_button("Cancel",  NoteChooserDialog.CANCEL)
         self.set_default_response(NoteChooserDialog.LOAD_NOTE)
 
 class NoteSaveDialog(NoteDialog):
     SAVE_NOTE = 3
     NEW_NOTE = 4
-    def __init__(self, dbstate, notes, selected_gramps_id, category_name):
-        NoteDialog.__init__(self, dbstate, notes, selected_gramps_id, category_name)
+    def __init__(self, dbstate, get_notes, selected_gramps_id, category_name):
+        NoteDialog.__init__(self, dbstate, get_notes, selected_gramps_id, category_name)
         self.add_button("Overwrite",  NoteSaveDialog.SAVE_NOTE)
         self.add_button("New",  NoteSaveDialog.NEW_NOTE)
         self.add_button("Cancel",  NoteSaveDialog.CANCEL)
@@ -1412,10 +1417,19 @@ class SuperTool(ManagedWindow):
                 self.last_note = note.gramps_id
                 config.set("defaults.last_note", note.gramps_id)
                 config.save()
+            if response == NoteChooserDialog.EDIT_NOTE:
+                note = choose_note_dialog.get_note()
+                if note is None:
+                    return
+                def callback(*args):
+                    choose_note_dialog.list_notes(_widget) # refresh list
+                choose_note_dialog.selected_gramps_id = note.gramps_id                    
+                EditNote(self.dbstate, self.uistate, [], note, callback)
+                return  # keep the dialog open
 
             choose_note_dialog.destroy()
             
-        choose_note_dialog = NoteChooserDialog(self.dbstate, self.get_notes(), self.last_note, self.category_name)
+        choose_note_dialog = NoteChooserDialog(self.dbstate, self.get_notes, self.last_note, self.category_name)
         choose_note_dialog.connect("response", handle_response)
 
     def get_notes(self):
@@ -1651,7 +1665,7 @@ class SuperTool(ManagedWindow):
                     OkDialog("Done", "Saved as note {}".format(note.gramps_id))
             choose_note_dialog.destroy()
             
-        choose_note_dialog = NoteSaveDialog(self.dbstate, self.get_notes(), self.last_note, self.category_name)
+        choose_note_dialog = NoteSaveDialog(self.dbstate, self.get_notes, self.last_note, self.category_name)
         choose_note_dialog.connect("response", handle_response)
         
 
