@@ -52,6 +52,8 @@ except:
 from gi.repository import Gtk
 from gramps.gen.filters.rules import Rule
 from gramps.gen.const import GRAMPS_LOCALE as glocale
+from gramps.gen.errors import FilterError
+
 _ = glocale.translation.gettext
 
 
@@ -178,9 +180,10 @@ class GenericFilterRule(Rule):
                 value, env = self.execute_func(dbstate, obj, s, env, "exec")
             res, env = self.execute_func(dbstate, obj, self.rule, env)
             return res
-        except:
+        except Exception as e:
             traceback.print_exc()
-            return False
+            self.user.end_progress()
+            raise FilterError("SuperTool Query Error", str(e))
 
 
 class GenericFilterRule_Family(GenericFilterRule):
