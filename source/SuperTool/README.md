@@ -415,17 +415,12 @@ SuperTool internally uses "proxy objects" to represent the Gramps internal objec
 
 For example, a person's birth event - the "birth" attribute - is actually an EventProxy object. If you display it you will get something like "Event[E0123]". To get the event date and place you need to append the corresponding event attributes: "birth.date" and "birth.place". And even then the "birth.place" refers to a PlaceProxy and to fetch the name of the place you need to use "birth.place.name" or "birth.place.longname".
 
-Proxy objects are created when they are needed. This means also that identical expressions do not always refer to the same objects. For example, in People category, the expression <i>birth.place.obj</i> refers to a Gramps internal Place object. But if you use the same expression multiple times in the same query then each one will refer to a different Place object. This matters only if you intend to update the object - changes in one object will not be seen in the other and calling db.commit_place() would not have any effect. Solution is to save the object reference in a local variable, e.g.
+Proxy objects are created when they are needed. In an earlier version of SuperTool his meant also that identical expressions did not always refer to the same objects. This is not a problem any longer since all objects are cached automatically (using CacheProxyDb) and therefore there will be only one memory object per handle. You can update attributes for example in the following way:
 
 ```python
-# does not work:
-birth.place.obj.set_latitude(90)
-db.commit_place(birth.place.obj, trans)
-
 # ok:
-placeobj = birth.place.obj
-placeobj.set_latitude(90)
-db.commit_place(placeobj, trans)
+death.obj.description = 'Died in war'
+db.commit_place(death.obj, trans)
 ```
 
 ## Date arithmetic

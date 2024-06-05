@@ -59,6 +59,7 @@ from gramps.gen.filters import FilterList
 from gramps.gen.lib import Person
 from gramps.gen.lib import Date
 from gramps.gen.lib import Note
+from gramps.gen.proxy.cache import CacheProxyDb
 
 _ = glocale.translation.gettext
 
@@ -97,7 +98,8 @@ def gentolist(orig):
 class Proxy:
     def __init__(self, db, handle, obj=None):
         # type: (DbGeneric, str, PrimaryObject) -> None
-        self.db = db
+        self.db = CacheProxyDb(db)
+        #self.db = db
         self.handle = handle
 
     def __eq__(self, other):
