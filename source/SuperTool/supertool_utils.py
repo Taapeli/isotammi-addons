@@ -31,12 +31,36 @@ import textwrap
 
 from pprint import pprint
 from types import SimpleNamespace
+from builtins import str
+
+try:
+    from typing import TYPE_CHECKING
+    from typing import Any
+    from typing import Callable
+    from typing import Dict
+    from typing import Generator
+    from typing import Iterator
+    from typing import List
+    from typing import Optional
+    from typing import Set
+    from typing import Tuple
+    from typing import Type
+    from typing import Union
+    from gramps.gen.user import User
+    from gramps.gen.db import DbGeneric
+    #from gramps.gen.lib import PrimaryObject
+except:
+    TYPE_CHECKING = False
 
 # -------------------------------------------------------------------------
 #
 # Gramps modules
 #
 # -------------------------------------------------------------------------
+from gramps.gen.db import DbGeneric
+
+from gramps.gen.lib import PrimaryObject
+
 from gramps.gen.lib import Address
 from gramps.gen.lib import Attribute
 from gramps.gen.lib import AttributeType
@@ -130,20 +154,35 @@ CATEGORIES = [
 ]
 
 def gentolist(orig):
+    # type: (Callable) -> Callable
+
     @functools.wraps(orig)
     def f(*args):
+        # type: (List[Any]) -> List[Any]
         return list(orig(*args))
 
     return f
 
 def get_categories():
+    # type: () -> List[str]
     return CATEGORIES
 
 
+class Category:
+    if TYPE_CHECKING:
+        category_name: str
+        get_all_objects_func: Callable
+        getfunc: Callable
+        commitfunc: Callable
+        execute_func: Callable
+        editfunc: Callable
+        objcls: Type[PrimaryObject]
+        objclass: Optional[str]
+        filterrule: Type[genfilter.GenericFilterRule]
+        proxyclass: Type[engine.Proxy]
+
 def get_category_info(db, category_name):
-    # type: () -> None
-    class Category:
-        pass
+    # type: (DbGeneric ,str) -> Category
 
     info = Category()
 
@@ -243,6 +282,7 @@ def get_category_info(db, category_name):
     return info
 
 def find_fullname(fname, scriptfile_location, default_location):
+    # type: (str, Optional[str], str) -> str
     mydir = os.path.split(__file__)[0]
     fullnames = []
     locations = []
@@ -269,9 +309,10 @@ def find_fullname(fname, scriptfile_location, default_location):
 
 
 def process_includes(code, scriptfile_location=None):
-    # type (str) -> Tuple[str, List[Tuple(str,int,int)]]
+    # type: (str, str) -> Tuple[str, List[Tuple[str,int,int]]]
 
     def readfile(filename):
+        # type: (str) -> List[str]
         try:
             return open(filename, 'rt', encoding='utf-8').readlines()
         except UnicodeError:
@@ -284,8 +325,8 @@ def process_includes(code, scriptfile_location=None):
         TOOL_DIR = "supertool"
         from gramps.gen.const import USER_HOME
         default_location = os.path.join(USER_HOME, TOOL_DIR)
-    newlines = []
-    files = []
+    newlines = [] # type: List[str]
+    files = []  # type: List[Tuple[str,int,int]]
     for line in code.splitlines(keepends=True):
         parts = line.split(maxsplit=1)
         if len(parts) > 0 and parts[0] == "@include":
@@ -303,15 +344,18 @@ def process_includes(code, scriptfile_location=None):
     return "".join(newlines), files
 
 def compile_statements(statements, source):
+    # type: (str, str) -> Any
     if statements.strip() == "": return None
     return compile(statements, source, 'exec')
 
 def compile_expression(expression, source):
+    # type: (str, str) -> Any
     if expression.strip() == "": return None
     return compile(expression.strip().replace("\n"," "), source, 'eval')
 
 
 def getargs_dialog(**kwargs):
+    # type: (Dict[str, Union[str, Tuple[str,str,str]]]) -> Any
     from types import SimpleNamespace
 
 
@@ -336,16 +380,17 @@ def getargs_dialog(**kwargs):
     widgets = []
     initvalue = None
     for row, param in enumerate(kwargs.items()):
-        param_name, title = param
+        param_name, val = param
         key = "default-params." + param_name
         config.register(key, "")
         value = config.get(key)
         
-        if type(title) == str:
+        if type(val) == str:
+            title = val
             widget = Gtk.Entry()
             widget.set_text(value)
-        if type(title) == tuple:
-            title, paramtype, initvalue = title
+        if type(val) == tuple:
+            title, paramtype, initvalue = val # type: ignore
             if paramtype == bool:
                 widget = Gtk.CheckButton()
                 if value == "":
@@ -356,7 +401,7 @@ def getargs_dialog(**kwargs):
                     value = False
                 widget.set_active(value)
             if paramtype == list:
-                initvalue = list(initvalue)  # ensure this is a real list
+                initvalue = list(initvalue)  # type: ignore # ensure this is a real list
                 widget = Gtk.ComboBoxText()
                 widget.set_entry_text_column(0)
                 widget.append_text("")
@@ -390,7 +435,7 @@ def getargs_dialog(**kwargs):
             if index <= 0:  # 0 or -1
                 value = ""    # none selected
             else:
-                value = initvalue[index-1]
+                value = initvalue[index-1] # type: ignore
         values[param_name] = value
         key = "default-params." + param_name
         config.set(key, str(value))
@@ -400,10 +445,12 @@ def getargs_dialog(**kwargs):
 
 
 def uniq(items):
+    # type: (List[Any]) -> List[Any]
     return list(set(items))
 
 
 def makedate(year, month=0, day=0, about=False):
+    # type: (int, int, int, bool) -> engine.DateProxy
     d = GrampsDate()
     d.set_yr_mon_day(year, month, day)
     if about:
@@ -412,15 +459,18 @@ def makedate(year, month=0, day=0, about=False):
 
 
 def today():
+    # type: () -> engine.DateProxy
     return engine.DateProxy(Today())
 
 
 def size(x):
+    # type: (Any) -> int
     return len(list(x))
 
 
 @gentolist
 def old_flatten(lists):
+    # type: (List[Any]) -> Iterator[Any]
     for sublist in lists:
         for item in sublist:
             yield item
@@ -429,17 +479,18 @@ from types import GeneratorType
 
 @gentolist
 def flatten(a):
+    # type: (List[Any]) -> Iterator[Any]
     if type(a) in [list, GeneratorType]:
         for x in a:
             yield from flatten(x)
     else:
         yield a
 
-def commit(db, trans, proxyobj): # not used, possible future use
-    print("commit", trans, proxyobj.name)
-    if trans is not None:
-        proxyobj._commit(db, trans)
-
+# def commit(db, trans, proxyobj): # not used, possible future use
+#     # type: (DbGeneric, DbTxn, engine.Proxy) -> None
+#     print("commit", trans, proxyobj.name)
+#     if trans is not None:
+#         proxyobj._commit(db, trans)
 
 
 
@@ -447,28 +498,34 @@ class DummyTxn:
     "Implements nested transactions"
 
     def __init__(self, trans):
+        # type: (DbTxn) -> None
         if trans is None:
             raise engine.SupertoolException("Need a transaction (check 'Commit changes')")
         self.trans = trans
 
         class _Txn:
             def __init__(self, msg, db):
+                # type: (str, DbGeneric) -> None
                 pass
 
             def __enter__(self):
+                # type: () -> DbTxn
                 return trans
 
             def __exit__(self, *args):
+                # type: (List[Any]) -> Any
                 return False
 
         self.txn = _Txn
 
 class Lazyenv(dict):
     def __init__(self, **kwargs):
+        # type: (Any) -> None
         dict.__init__(self, **kwargs)
         self.obj = None
-        self.attrs = set()
+        self.attrs = set() # type: Set[str]
     def __getitem__(self, attrname):
+        # type: (str) -> Any
         if attrname in self:
             return dict.__getitem__(self, attrname)
         if attrname in self.attrs:
@@ -480,6 +537,7 @@ class Lazyenv(dict):
 
         
 def get_globals():
+    # type: () -> Lazyenv
     return Lazyenv(
         uniq=uniq,
         makedate=makedate,
@@ -554,6 +612,8 @@ def get_globals():
 
 class Response:
     def __init__(self, rows, query, result):
+        # type: (List[List[Any]], Any, Any) -> None
+        # xtype: (List[List[Any]], Query, Result) -> None
         self.rows = rows
         self.query = query
         self.result = result
@@ -575,6 +635,7 @@ def supertool_execute( *,
     unwind_lists=False, 
     commit_changes=False, 
     args=""):
+        # type: (str,Any,Any,Any,List[str],str,str,str,str,bool,bool,bool,str) -> Any
         query = SuperTool.Query()
         if initial_statements:
             query.initial_statements = textwrap.dedent(initial_statements)
@@ -592,11 +653,13 @@ def supertool_execute( *,
         return supertool_execute_query(query=query, dbstate=dbstate, db=db, trans=trans, handles=handles, args=args) 
 
 def supertool_execute_script(*, script, dbstate=None, db=None, trans=None, handles=None, args=""): 
+        # type: (str,Any,Any,Any,List[str],str) -> Any
         scriptfile = SuperTool.ScriptFile()
         query = scriptfile.load(script)
         return supertool_execute_query(query=query, dbstate=dbstate, db=db, trans=trans, handles=handles, args=args) 
 
 def supertool_execute_query(*, query, dbstate=None, db=None, trans=None, handles=None, args=""): 
+        # type: (SuperTool.Query,Any,Any,Any,List[str],str) -> Any
         env = {
             "args": args, 
             #"category": category, 
@@ -613,6 +676,8 @@ def supertool_execute_query(*, query, dbstate=None, db=None, trans=None, handles
         if query.category not in CATEGORIES:
             raise RuntimeError("Invalid category: " + query.category)
         category_info = get_category_info(dbstate.db, query.category)
+        
+        
         
         if handles is None:
             if category_info.objclass:

@@ -37,8 +37,10 @@ import types
 from contextlib import contextmanager
 from pathlib import Path
 from pprint import pprint
+from types import SimpleNamespace
 
 try:
+    from typing import TYPE_CHECKING
     from typing import Any
     from typing import Callable
     from typing import Dict
@@ -50,7 +52,7 @@ try:
     from typing import Type
     from typing import Union
 except:
-    pass
+    TYPE_CHECKING = False
 
 # -------------------------------------------------------------------------
 #
@@ -63,14 +65,19 @@ from gi.repository import Gtk, Gdk, GObject, Gio
 from gramps.gen.config import config as configman
 from gramps.gen.const import GRAMPS_LOCALE as glocale, CUSTOM_FILTERS
 from gramps.gen.db.txn import DbTxn
+from gramps.gen.dbstate import DbState
+from gramps.gen.lib import PrimaryObject
+
 from gramps.gen.filters._genericfilter import GenericFilterFactory
 from gramps.gen.filters._filterlist import FilterList
 from gramps.gen.filters import reload_custom_filters
 from gramps.gen.plug import PluginRegister
 from gramps.gen.utils.debug import profile
+from gramps.gen.user import User
 
 from gramps.gen.lib import Note
 
+from gramps.gui.displaystate import DisplayState
 from gramps.gui.dialog import OkDialog, ErrorDialog
 from gramps.gui.editors import EditNote
 from gramps.gui.glade import Glade
@@ -107,22 +114,25 @@ SCRIPTFILE_EXTENSION = ".script"
 STEP_INTERVAL = 100   # call step() only every 100 rows
 
 def get_text(textview):
+    # type: (Gtk.TextView) -> str 
     buf = textview.get_buffer()
     text = buf.get_text(buf.get_start_iter(), buf.get_end_iter(), True)
     return text
 
 
 def set_text(textview, text):
+    # type: (Gtk.TextView, str) -> None 
     textview.get_buffer().set_text(text)
 
 
 def importfile(fname):  # not used
+    # type: (str) -> SimpleNamespace
     dirname = os.path.split(__file__)[0]
     fullname = os.path.join(dirname, fname)
     from types import SimpleNamespace
 
     code = open(fullname).read()
-    globals_dict = {}
+    globals_dict = {} # type: ignore
     exec(code, globals_dict)
     return SimpleNamespace(**globals_dict)
 
@@ -132,6 +142,7 @@ class NoteDialog(Gtk.Dialog):
     CANCEL = 1
     
     def __init__(self, dbstate, get_notes, selected_gramps_id, current_category):
+        # type: (DbState, Callable, Optional[str], str) -> None
         Gtk.Dialog.__init__(self)
         self.dbstate = dbstate
         self.get_notes = get_notes
@@ -176,15 +187,18 @@ class NoteDialog(Gtk.Dialog):
         self.show_all()
         
     def button_press(self, treeview, event):
+        # type: (Gtk.TreeView, Gdk.Event) -> bool
         if event.type == Gdk.EventType.DOUBLE_BUTTON_PRESS and event.button == 1:
             model, treeiter = self.listview.get_selection().get_selected()
             if treeiter is None:
-                return
+                return False
             row = list(model[treeiter])
             self.emit("response", self.LOAD_NOTE)
             return True
+        return False
 
     def list_notes(self, _widget):
+        # type: (Gtk.Widget) -> None
         self.liststore.clear()
         for note, data in self.get_notes():
             title = data["title"]
@@ -199,6 +213,7 @@ class NoteDialog(Gtk.Dialog):
     
         
     def get_note(self):
+        # type: () -> Note
         model, iter_ = self.listview.get_selection().get_selected()
         if iter_ is None:
             return None
@@ -212,6 +227,7 @@ class NoteChooserDialog(NoteDialog):
     LOAD_NOTE = 2
     EDIT_NOTE = 3
     def __init__(self, dbstate, get_notes, selected_gramps_id, category_name):
+        # type: (DbState, Callable, Optional[str], str) -> None
         NoteDialog.__init__(self, dbstate, get_notes, selected_gramps_id, category_name)
         self.add_button("Load",  NoteChooserDialog.LOAD_NOTE)
         self.add_button("Edit",  NoteChooserDialog.EDIT_NOTE)
@@ -222,6 +238,7 @@ class NoteSaveDialog(NoteDialog):
     SAVE_NOTE = 3
     NEW_NOTE = 4
     def __init__(self, dbstate, get_notes, selected_gramps_id, category_name):
+        # type: (DbState, Callable, Optional[str], str) -> None
         NoteDialog.__init__(self, dbstate, get_notes, selected_gramps_id, category_name)
         self.add_button("Overwrite",  NoteSaveDialog.SAVE_NOTE)
         self.add_button("New",  NoteSaveDialog.NEW_NOTE)
@@ -229,6 +246,7 @@ class NoteSaveDialog(NoteDialog):
 
 class ScriptOpenFileChooserDialog(Gtk.FileChooserDialog):
     def __init__(self, uistate):
+        # type: (DisplayState) -> None
         Gtk.FileChooserDialog.__init__(
             self,
             title="Load query from a .script file",
@@ -258,6 +276,7 @@ class ScriptOpenFileChooserDialog(Gtk.FileChooserDialog):
 
 class ScriptSaveFileChooserDialog(Gtk.FileChooserDialog):
     def __init__(self, uistate):
+        # type: (DisplayState) -> None
         Gtk.FileChooserDialog.__init__(
             self,
             title="Save query to a .script file",
@@ -277,6 +296,7 @@ class ScriptSaveFileChooserDialog(Gtk.FileChooserDialog):
 
 class CsvFileChooserDialog(Gtk.FileChooserDialog):
     def __init__(self, uistate):
+        # type: (DisplayState) -> None
         Gtk.FileChooserDialog.__init__(
             self,
             title="Download results as a CSV file",
@@ -335,6 +355,7 @@ class CsvFileChooserDialog(Gtk.FileChooserDialog):
 
 class HelpWindow(Gtk.Window):
     def __init__(self, uistate, help_notebook):
+        # type: (DisplayState, Gtk.Notenook) -> None
         Gtk.Window.__init__(self, title="Help Window")
         self.set_keep_above(True)
         self.box = Gtk.VBox(spacing=6)
@@ -356,6 +377,7 @@ class HelpWindow(Gtk.Window):
 
 class DescriptionDialog(Gtk.Dialog):
     def __init__(self, parent):
+        # type: (Gtk.Widget) -> None
         Gtk.Dialog.__init__(self, title="Description", transient_for=parent)
         self.add_buttons(
             Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL, Gtk.STOCK_OK, Gtk.ResponseType.OK)
@@ -371,11 +393,13 @@ class DescriptionDialog(Gtk.Dialog):
         self.show_all()
         
     def get_description(self):
+        # type: () -> str
         start = self.textbuffer.get_start_iter()
         end = self.textbuffer.get_end_iter()
         return self.textbuffer.get_text(start, end, False)
 
     def set_description(self, description):
+        # type: (str) -> None
         self.textbuffer.set_text(description)
 
 
@@ -383,6 +407,7 @@ class Query:
     ESCAPE = "\\"  # one backslash
 
     def __init__(self):
+        # type: () -> None
         self.category = ""
         self.title = ""
         self.initial_statements = ""
@@ -393,11 +418,12 @@ class Query:
         self.unwind_lists = False
         self.commit_changes = False
         self.summary_only = False
-        self.filename = None
-        self.dirname = None
+        self.filename = None    # type: Optional[str]
+        self.dirname = None     # type: Optional[str]
         self.description = ""
 
     def initialize(self):
+        # type: () -> None
         self.initial_statements_with_includes, self.initial_statements_files = process_includes(self.initial_statements, self.dirname)
         self.statements_with_includes, self.statements_files = process_includes(self.statements, self.dirname)
 
@@ -409,6 +435,7 @@ class Query:
         self.expressions_compiled = compile_expression(self.expressions, "expressions")
 
     def get_filename(self, files, linenum):
+        # type: (List[Tuple[str,int,int]], int) -> Tuple[str,int]
         for fname,startline,endline in files:
             if startline <= linenum <= endline:
                 return fname, (linenum-startline+1)
@@ -416,10 +443,12 @@ class Query:
 
     @staticmethod
     def text_to_query(text):
+        # type: (str) -> Query
         return Query.dict_to_query(Query.text_to_dict(text))
 
     @staticmethod
     def dict_to_query(data):
+        # type: (Dict[str,str]) -> Query
         query = Query()
         query.title = data.get("title", "")
         query.category = data.get("category", "")
@@ -441,6 +470,7 @@ class Query:
     
     @staticmethod
     def text_to_dict(text):
+        # type: (str) -> Dict[str,str]
         data = {}
         key = None
         value = ""
@@ -459,9 +489,11 @@ class Query:
         return data
 
     def to_text(self):
+        # type: () -> str
         return Query.dict_to_text(self.to_dict())
 
     def to_dict(self):
+        # type: () -> Dict[str,str]
         data = {}
         data["title"] = self.title
         data["description"] = self.description
@@ -495,10 +527,12 @@ class Query:
         return "\n".join(lines)
 
     def clone(self):
+        # type: () -> Query
         data = self.to_dict()
         return Query.dict_to_query(data)
     
     def __eq__(self, other):
+        # type: (Any) -> bool
         my_data = self.to_dict()
         other_data = other.to_dict()
         del my_data["category"]
@@ -523,7 +557,7 @@ class ScriptFile:
         return query
 
     def save(self, filename, query, save_dirname=False):
-        # type: (str, Query) -> None
+        # type: (str, Query, bool) -> None
         data = {}
         data["title"] = query.title
         data["description"] = query.description
@@ -563,6 +597,7 @@ class ScriptFile:
                 print(file=f)  # empty line
 
     def __readdata(self, filename):
+        # type: (str) -> Dict[str,str]
         try:
             try:
                 return Query.text_to_dict(open(filename, 'rt', encoding='utf-8').read())
@@ -589,7 +624,7 @@ class ScriptFile:
 
 class Row:
     def __init__(self, row, gramps_id, category, handle):
-        # type: (List, str, str, str) -> None
+        # type: (List, Optional[str], Optional[str], Optional[str]) -> None
         self.row = []
         for v in row:
             if type(v) in {int, str, float}:
@@ -604,28 +639,34 @@ class Row:
         
 class Result:
     def __init__(self):
-        self.rows = []
-        self.coltypes = []
-        self.headers = []
+        # type: () -> None
+        self.rows = []  # type: List[Row]
+        self.coltypes = []  # type: List[Any]
+        self.headers = []   # type: List[str]
         self.max = 0
         self.read_limit = 0
     def add_row(self, row, gramps_id=None,category=None, handle=None):
         # type: (List, str, str, str) -> None
         self.rows.append(Row(row,gramps_id, category, handle))
     def fetch_rows(self):
-        # type: () -> List
+        # type: () -> Iterator[List[Optional[str]]]
         for row in self.rows:
             yield [row.gramps_id] + row.row + [row.category,row.handle]
         self.rows = []
     def set_coltypes(self, coltypes):
+        # type: (List[Any]) -> None
         self.coltypes = [str] + coltypes # add str for IDs
     def get_coltypes(self):
+        # type: (Any) -> List[Any]
         return  self.coltypes 
     def set_headers(self, headers):
+        # type: (List[str]) -> None
         self.headers = ["ID"] + headers
     def get_headers(self):
+        # type: (Any) -> List[str]
         return self.headers 
     def set_max(self, maxcount=0, read_limit=0):
+        # type: (int, int) -> None
         self.max = maxcount             # max number of object to display
         self.read_limit = read_limit    # max number of objects to retrieve
 
@@ -641,7 +682,7 @@ class GrampsEngine:
         env=None,
         raw_values=False,
     ):
-        # type: (DbState, DisplayState, Category, List[str], Query, Callable) -> None
+        # type: (DbState, User, supertool_utils.Category, List[str], Query, Callable, Any, bool) -> None
         self.dbstate = dbstate
         self.db = dbstate.db
         self.user = user
@@ -660,6 +701,7 @@ class GrampsEngine:
     def generate_rows(self, res):
         # type: (Tuple[Any,...]) -> Iterator[List[Any]]
         def cast(value):
+            # type: (Any) -> Any
             if self.raw_values: return value
             if type(value) in {int, str, float}:
                 return value
@@ -684,7 +726,7 @@ class GrampsEngine:
         return self.category.execute_func(self.dbstate, obj, cond, env)
 
     def generate_values(self, env, result):
-        # type: (Dict[str,Any]) -> Iterator[Tuple[Any,Dict[str,Any],List[Any]]]
+        # type: (Dict[str,Any],Result) -> Iterator[Tuple[Any,Dict[str,Any],List[Any]]]
         for n,handle in enumerate(self.selected_handles):
             if result.read_limit and n >= result.read_limit:
                 return
@@ -734,11 +776,11 @@ class GrampsEngine:
                     for values in self.generate_rows(res):
                         yield obj, env, [obj.gramps_id] + values + [self.category.category_name, handle]
             except Exception as e:
-                e.gramps_id = obj.gramps_id
+                e.gramps_id = obj.gramps_id # type: ignore
                 raise e
             
     def get_values(self, trans, result):
-        # type: (DbTxn) -> Generator
+        # type: (DbTxn, Result) -> Generator
         self.trans = trans
 
         #         if not self.category.execute_func:
@@ -794,31 +836,37 @@ class GrampsEngine:
 
 class SuperTool(ManagedWindow):
     def __init__(self, user, dbstate, plugindata):
+        # type: (User, DbState, Any) -> None
         ManagedWindow.__init__(self, user.uistate, [], self.__class__, modal=False)
         self.user = user
         self.uistate = user.uistate
         self.dbstate = dbstate
         self.db = dbstate.db
         self.plugindata = plugindata
-        self.csv_filename = None
+        self.csv_filename = ""
         self.last_filename = None
         self.getfunc = None
         self.execute_func = None
         self.editfunc = None
         self.query = Query()
         self.last_note = None
+        self.ignore_changes = True
+        self.saved_query = None # type: Optional[Query]
+        self.listview = None  # type: Optional[Gtk.TreeView]   
         self.init()
 
     def build_menu_names(self, obj): 
+        # type: (Any) -> Tuple[str,str]
         """
         Needed by ManagedWindow to build the Windows menu
         """
         return ('SuperTool','SuperTool')
 
     def build_help(self):  # temporary helper; not used
+        # type: () -> None
         self.help_notebook = Gtk.Notebook()
         page = 0
-        data = {}
+        data = {} # type: Dict[str,Any]
         for cat_name in supertool_utils.get_categories():
             print(cat_name)
             data[cat_name] = []
@@ -893,11 +941,12 @@ class SuperTool(ManagedWindow):
         self.listview.show()
 
     def button_press(self, treeview, event):
+        # type: (Gtk.TreeView, Gtk.Event) -> bool
         if not self.db.db_is_open:
             return True
         try:  # may fail if clicked too frequently
             if event.type == Gdk.EventType.DOUBLE_BUTTON_PRESS and event.button == 1:
-                model, treeiter = self.listview.get_selection().get_selected()
+                model, treeiter = self.listview.get_selection().get_selected() # type: ignore
                 row = list(model[treeiter])
                 category_name = row[-2]
                 handle = row[-1]
@@ -913,7 +962,8 @@ class SuperTool(ManagedWindow):
         return False
 
     def cancel_settings(self, _widget):
-        self.settings.toplevel.hide()
+        # type: (Gtk.Widget) -> None
+        self.settings.toplevel.hide() # type: ignore
 
     def check_category(self):
         # type: () -> None
@@ -955,14 +1005,16 @@ class SuperTool(ManagedWindow):
         self.query = Query()
         if self.desc_win:
             self.desc_win.destroy()
-            self.desc_win = None
+            self.desc_win = None # type: Gtk.Window
         self.window.set_title("SuperTool")
 
     def close(self, *args):
+        # type: (Any) -> None
         self.exit(None) 
         super().close(*args)
         
     def content_changed(self, _widget):
+        # type: (Gtk.Widget) -> None
         if self.ignore_changes: return
         #print("content_changed")
         query = self.save_to_query()        
@@ -1022,10 +1074,10 @@ class SuperTool(ManagedWindow):
         self.output_window = glade.get_child_object("output_window")
         self.help_window = glade.get_object("help_window")
         self.help_notebook = glade.get_object("help_notebook")
-        self.help_win = None
+        self.help_win = None # type: Gtk.Window
         self.desc_win = None
 
-        self.save_as_filter_menu_item = glade.get_object("save_as_filter")
+        self.save_as_filter_menu_item = glade.get_object("save_as_filter") # type: Gtk.CheckButton
 
         self.selected_objects.set_active(True)
         self.btn_execute.connect("clicked", self.execute)
@@ -1073,7 +1125,7 @@ class SuperTool(ManagedWindow):
 
         self.btn_csv.hide()
         self.listview = None
-
+        
         ver = (Gtk.get_major_version(), Gtk.get_minor_version())
         if ver >= (3, 22):
             self.initial_statements_window = glade.get_child_object(
@@ -1111,7 +1163,7 @@ class SuperTool(ManagedWindow):
         # type: () -> None
         if self.listview:
             self.output_window.remove(self.listview)
-        self.listview = None  # type: Optional[Gtk.TreeView]
+        self.listview = None
         self.btn_execute.set_sensitive(False)
 
     def download(self, _widget):
@@ -1153,6 +1205,7 @@ class SuperTool(ManagedWindow):
                 config.set("defaults.delimiter", delimiter)
                 config.save()
 
+                #assert self.csv_filename is not None  # for mypy
                 try:
                     writer = csv.writer(
                         open(self.csv_filename, "w", encoding=encoding, newline=""),
@@ -1197,7 +1250,7 @@ class SuperTool(ManagedWindow):
             source = None
             src = ""
             fname = ""
-            linenum2 = ""
+            linenum2 = 0
             if len(lines) >= 3 and lines[-2].strip() == "^":
                 msglines = lines[-3:]
             elif len(lines) >= 2:
@@ -1233,6 +1286,7 @@ class SuperTool(ManagedWindow):
         # type: (Query) -> None
 
         def store_handle(model, path, iter, *data):
+            # type: (TreeBaseModel, Any, Any, Any) -> None 
             "Auxiliary function for treemodels...."
             handle = model.get_handle_from_iter(iter)
             if handle: selected_handles.append(handle)
@@ -1246,7 +1300,9 @@ class SuperTool(ManagedWindow):
             self.output_window.remove(self.listview)
         self.listview = None
         n = 0
-
+        
+        if TYPE_CHECKING:
+            selected_handles: List[str]
         if self.category.objclass:
             if self.selected_objects.get_active():
                 selected_handles = (
@@ -1304,6 +1360,7 @@ class SuperTool(ManagedWindow):
 
         
     def exit(self, _widget):
+        # type: (Gtk.WIdget) -> None
         self.saveconfig()
 
         self.dbstate.disconnect(self.database_changed_key)
@@ -1319,6 +1376,7 @@ class SuperTool(ManagedWindow):
                 
 
     def get_attributes(self, objclass, proxyclass):
+        # type: (PrimaryObject, Type[engine.Proxy]) -> Iterator[str]
         obj = objclass()
         for name in dir(obj):
             if name.startswith("_"):
@@ -1345,6 +1403,7 @@ class SuperTool(ManagedWindow):
         return __file__[:-3] + "-" + self.category_name + SCRIPTFILE_EXTENSION
 
     def help(self, _widget):
+        # type: (Gtk.WIdget) -> None
         self.load_help()
         self.help_win = HelpWindow(self.uistate, self.help_notebook)
         font_description = self.btn_font.get_font_desc()
@@ -1408,7 +1467,9 @@ class SuperTool(ManagedWindow):
 
     def load_from_note(self, _widget):
         # type: (Gtk.Widget) -> None
+        choose_note_dialog: NoteChooserDialog
         def handle_response(_dialog, response):
+            # type: (Gtk.Dialog, int) -> None
             if response == NoteChooserDialog.LOAD_NOTE:
                 note = choose_note_dialog.get_note()
                 if note is None:
@@ -1422,6 +1483,7 @@ class SuperTool(ManagedWindow):
                 if note is None:
                     return
                 def callback(*args):
+                    # type: (Any) -> None
                     choose_note_dialog.list_notes(_widget) # refresh list
                 choose_note_dialog.selected_gramps_id = note.gramps_id                    
                 EditNote(self.dbstate, self.uistate, [], note, callback)
@@ -1433,6 +1495,7 @@ class SuperTool(ManagedWindow):
         choose_note_dialog.connect("response", handle_response)
 
     def get_notes(self):
+        # type: () -> Iterator[Tuple[Note,Dict]]
         for note in self.db.iter_notes():
             if note.get_type() == "SuperTool Script":
                 data  = Query.text_to_dict(note.get())
@@ -1440,6 +1503,7 @@ class SuperTool(ManagedWindow):
             
 
     def load_help(self):
+        # type: () -> None
         dirname = os.path.split(__file__)[0]
         fname = os.path.join(dirname, "helptext.json")
         data = json.loads(open(fname).read())
@@ -1499,7 +1563,7 @@ class SuperTool(ManagedWindow):
         self.loadstate(self.get_configfile(), loadtitle=False, set_dirname=False)
 
     def loadstate(self, filename, loadtitle=True, set_dirname=True):
-        # type: (str, bool) -> None
+        # type: (str, bool, bool) -> None
         scriptfile = ScriptFile()
         self.query = scriptfile.load(filename)
         query = self.query
@@ -1512,13 +1576,14 @@ class SuperTool(ManagedWindow):
 
 
     def loadstate_from_note(self, notetext):
-        # type: (str, bool) -> None
+        # type: (str) -> None
         self.query = Query.text_to_query(notetext)
         self.loadstate_from_query(self.query)
 
 
     
     def loadstate_from_query(self, query):
+        # type: (Query) -> None
         if self.desc_win:
             print("closing")
             self.desc_win.destroy()
@@ -1555,6 +1620,7 @@ class SuperTool(ManagedWindow):
     def makefilter(
         self, category, filtername, filtertext, initial_statements, statements
     ):
+        # type: (supertool_utils.Category, str, str, str, str) -> None
         the_filter = GenericFilterFactory(category.objclass)()
         rule = category.filterrule([filtertext, initial_statements, statements])
         if not filtername:
@@ -1605,6 +1671,7 @@ class SuperTool(ManagedWindow):
 
     @contextmanager
     def progress(self, title1, title2, count):
+        # type: (str, str, int) -> Iterator[Callable]
         self._progress = ProgressMeter(title1, can_cancel=True)
         self._progress.set_pass(title2, count, ProgressMeter.MODE_FRACTION)
         try:
@@ -1646,7 +1713,10 @@ class SuperTool(ManagedWindow):
         choose_file_dialog.destroy()
 
     def save_in_note(self, _widget):
+        # type: (Gtk.Widget) -> None
+        choose_note_dialog: NoteSaveDialog
         def handle_response(dialog, response):
+            # type: (Gtk.Dialog, int) -> None
             if response == NoteSaveDialog.CANCEL:
                 choose_note_dialog.destroy()
                 return
@@ -1670,6 +1740,7 @@ class SuperTool(ManagedWindow):
         
 
     def save_as_filter(self, obj):
+        # type: (Gtk.Widget) -> None
         filtername = self.title.get_text().strip()
         filtertext = get_text(self.filter).strip()
         initial_statements = get_text(self.initial_statements).strip()
@@ -1682,6 +1753,7 @@ class SuperTool(ManagedWindow):
         )
 
     def save_settings(self, _widget):
+        # type: (Gtk.Widget) -> None
         loc_entry = self.settings.get_child_object("include_location")
         loc = loc_entry.get_filename()
         config.set("defaults.include_location", loc)
@@ -1693,7 +1765,7 @@ class SuperTool(ManagedWindow):
         return self.savestate(self.get_configfile(), save_dirname=True)
 
     def save_to_query(self):  # save UI data in a Query
-        # type: (str) -> Query
+        # type: () -> Query
         query = self.query
         query.category = self.category_name
         query.title = self.title.get_text()
@@ -1715,14 +1787,14 @@ class SuperTool(ManagedWindow):
         return query
     
     def savestate(self, filename, save_dirname=False):
-        # type: (str) -> Query
+        # type: (str, bool) -> Query
         query = self.save_to_query()
         scriptfile = ScriptFile()
         scriptfile.save(filename, query, save_dirname)
         return query
 
     def savestate_to_note(self, note):
-        # type: (str) -> Query
+        # type: (Note) -> Query
         query = self.save_to_query()
         text = query.to_text()
         note.set(text)
@@ -1735,9 +1807,9 @@ class SuperTool(ManagedWindow):
         if not self.db.is_open(): return
         self.category_name = self.uistate.viewmanager.active_page.get_category()
         self.category = supertool_utils.get_category_info(self.db, self.category_name)
-
-    def set_error(self, msg, context="", codeline="", src="", fname="", linenum=""):
-        # type: (str, str, str) -> None
+        
+    def set_error(self, msg, context="", codeline="", src="", fname="", linenum=0):
+        # type: (str, str, str, str, str, int) -> None
         msg = html.escape(msg)
         codeline = html.escape(codeline)
         s = "<span font_family='monospace' color='red' size='larger'>{msg}</span>"
@@ -1763,6 +1835,7 @@ class SuperTool(ManagedWindow):
         self.errormsg.set_markup(s)
 
     def set_font(self, widget):
+        # type: (Gtk.Widget) -> None
         font = widget.get_font()
         font_description = widget.get_font_desc()
         self.window.modify_font(font_description)
@@ -1770,6 +1843,7 @@ class SuperTool(ManagedWindow):
         config.save()
 
     def set_window_title(self, modified):
+        # type: (bool) -> None
         title = self.window.get_title()
         if modified:
             if not title.startswith("* "):
@@ -1779,6 +1853,7 @@ class SuperTool(ManagedWindow):
                 self.window.set_title(title[2:])
     
     def settings_dialog(self, _widget):
+        # type: (Gtk.Widget) -> None
         dialog = self.settings.toplevel
         config.load()
         loc = config.get("defaults.include_location")
@@ -1788,13 +1863,15 @@ class SuperTool(ManagedWindow):
         self.settings.toplevel.hide()
 
     def show_about_dialog(self, _widget):
+        # type: (Gtk.Widget) -> None
         rsp = self.about_dialog.run()
         self.about_dialog.hide()
 
     def show_description(self, _widget, _event):
-        # type: (Gtk.Widget) -> None
+        # type: (Gtk.Widget, Gtk.Event) -> None
     
         def handle_response(dialog, response):
+            # type: (Gtk.Dialog, int) -> None
             if response == Gtk.ResponseType.OK:
                 # save description in current query
                 self.query.description = dialog.get_description()
@@ -1838,10 +1915,12 @@ class Tool(tool.Tool):
         self.run(pd)
 
     def get_plugindata(self, plugin_id):
+        # type: (str) -> Any
         preg = PluginRegister.get_instance()
         return preg.get_plugin(plugin_id)
     
     def run_cli(self):
+        # type: () -> None
         script_filename = self.options.handler.options_dict["script"]
         if not script_filename:
             print("No script_filename")
@@ -1903,7 +1982,7 @@ class Tool(tool.Tool):
         print(msg)
 
     def run(self, plugindata):
-        # type: () -> None
+        # type: (Any) -> None
         m = SuperTool(self.user, self.dbstate, plugindata)
 
 
@@ -1918,6 +1997,7 @@ class Options(tool.ToolOptions):
     """
 
     def __init__(self, name, person_id=None):
+        # type: (str, str) -> None
         tool.ToolOptions.__init__(self, name, person_id)
         #print("person_id:", person_id)
 
