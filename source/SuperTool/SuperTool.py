@@ -1778,8 +1778,8 @@ class SuperTool(ManagedWindow):
         query.scope = scope
         query.expressions = get_text(self.expressions)
         query.filter = get_text(self.filter)
-        query.statements = get_text(self.statements)
-        query.initial_statements = get_text(self.initial_statements)
+        query.statements = textwrap.dedent(get_text(self.statements))
+        query.initial_statements = textwrap.dedent(get_text(self.initial_statements))
 
         query.unwind_lists = self.unwind_lists.get_active()
         query.commit_changes = self.commit_checkbox.get_active()

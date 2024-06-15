@@ -99,7 +99,6 @@ class Proxy:
     def __init__(self, db, handle, obj=None):
         # type: (DbGeneric, str, PrimaryObject) -> None
         self.db = CacheProxyDb(db)
-        #self.db = db
         self.handle = handle
 
     def __eq__(self, other):
