@@ -63,14 +63,11 @@ except:
 from gi.repository import Gtk, Gdk, GObject, Gio
 
 from gramps.gen.config import config as configman
-from gramps.gen.const import GRAMPS_LOCALE as glocale, CUSTOM_FILTERS
+from gramps.gen.const import GRAMPS_LOCALE as glocale
 from gramps.gen.db.txn import DbTxn
 from gramps.gen.dbstate import DbState
 from gramps.gen.lib import PrimaryObject
 
-from gramps.gen.filters._genericfilter import GenericFilterFactory
-from gramps.gen.filters._filterlist import FilterList
-from gramps.gen.filters import reload_custom_filters
 from gramps.gen.plug import PluginRegister
 from gramps.gen.utils.debug import profile
 from gramps.gen.user import User
@@ -1618,36 +1615,15 @@ class SuperTool(ManagedWindow):
         self, category, filtername, filtertext, initial_statements, statements
     ):
         # type: (supertool_utils.Context, str, str, str, str) -> None
-        the_filter = GenericFilterFactory(category.objclass)()
-        rule = category.filterrule([filtertext, initial_statements, statements])
-        if not filtername:
+        ok, msg =supertool_utils.makefilter(
+            category, filtername, filtertext, initial_statements, statements
+        )
+        if not ok:
             OkDialog(
-                _("Error"), "Please supply a title/name", parent=self.uistate.window
+                _("Error"), msg, parent=self.uistate.window
             )
             return
-        if not filtertext:
-            OkDialog(
-                _("Error"),
-                "Please supply a filtering condition",
-                parent=self.uistate.window,
-            )
-            return
-        the_filter.add_rule(rule)
-        the_filter.set_name(filtername)
-        filterdb = FilterList(CUSTOM_FILTERS)
-        filterdb.load()
-        filters = filterdb.get_filters_dict(category.objclass)
-        if filtername in filters:
-            msg = "Filter '{}' already exists; choose another name".format(filtername)
-            OkDialog(_("Error"), msg, parent=self.uistate.window)
-            return
-        filterdb.add(category.objclass, the_filter)
-        # print("added filter", the_filter)
-        filterdb.save()
-        reload_custom_filters()
         self.uistate.emit("filters-changed", (category.objclass,))
-
-        msg = "Created filter {0}".format(filtername)
         OkDialog(_("Done"), msg, parent=self.uistate.window)
 
 
