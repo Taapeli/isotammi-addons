@@ -168,7 +168,7 @@ def get_categories():
     return CATEGORIES
 
 
-class Category:
+class Context:
     if TYPE_CHECKING:
         category_name: str
         get_all_objects_func: Callable
@@ -178,13 +178,14 @@ class Category:
         editfunc: Callable
         objcls: Type[PrimaryObject]
         objclass: Optional[str]
+        #namespace: Optional[str]
         filterrule: Type[genfilter.GenericFilterRule]
         proxyclass: Type[engine.Proxy]
 
-def get_category_info(db, category_name):
-    # type: (DbGeneric ,str) -> Category
+def get_context(db, category_name):
+    # type: (DbGeneric ,str) -> Context
 
-    info = Category()
+    info = Context()
 
     info.category_name = category_name
     info.objclass = None
@@ -662,8 +663,6 @@ def supertool_execute_query(*, query, dbstate=None, db=None, trans=None, handles
         # type: (SuperTool.Query,Any,Any,Any,List[str],str) -> Any
         env = {
             "args": args, 
-            #"category": category, 
-            #"namespace": category_info.objclass
         }
 
         if dbstate is None and db is None:
@@ -675,13 +674,11 @@ def supertool_execute_query(*, query, dbstate=None, db=None, trans=None, handles
             
         if query.category not in CATEGORIES:
             raise RuntimeError("Invalid category: " + query.category)
-        category_info = get_category_info(dbstate.db, query.category)
-        
-        
+        context = get_context(dbstate.db, query.category)
         
         if handles is None:
-            if category_info.objclass:
-                selected_handles = category_info.get_all_objects_func()
+            if context.objclass:
+                selected_handles = context.get_all_objects_func()
             else:
                 selected_handles = []
         else:
@@ -694,7 +691,7 @@ def supertool_execute_query(*, query, dbstate=None, db=None, trans=None, handles
         gramps_engine = SuperTool.GrampsEngine(
             dbstate,
             user,
-            category_info,
+            context,
             selected_handles,
             query,
             env=env,

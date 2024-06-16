@@ -675,19 +675,19 @@ class GrampsEngine:
         self,
         dbstate,
         user,
-        category,
+        context,
         selected_handles,
         query,
         step=None,
         env=None,
         raw_values=False,
     ):
-        # type: (DbState, User, supertool_utils.Category, List[str], Query, Callable, Any, bool) -> None
+        # type: (DbState, User, supertool_utils.Context, List[str], Query, Callable, Any, bool) -> None
         self.dbstate = dbstate
         self.db = dbstate.db
         self.user = user
         self.uistate = user.uistate
-        self.category = category
+        self.context = context
         self.selected_handles = selected_handles
         self.total_objects = len(self.selected_handles)
         self.query = query
@@ -723,7 +723,7 @@ class GrampsEngine:
 
     def evaluate_condition(self, obj, cond, env):
         # type: (Any,str,Dict[str,Any]) -> Tuple[bool, Dict[str,Any]]
-        return self.category.execute_func(self.dbstate, obj, cond, env)
+        return self.context.execute_func(self.dbstate, obj, cond, env)
 
     def generate_values(self, env, result):
         # type: (Dict[str,Any],Result) -> Iterator[Tuple[Any,Dict[str,Any],List[Any]]]
@@ -735,11 +735,11 @@ class GrampsEngine:
                 if self.step():  # user clicked 'Cancel', stop
                     return
 
-            obj = self.category.getfunc(handle)
+            obj = self.context.getfunc(handle)
             obj.commit_ok = True
             try:
                 if self.query.statements_compiled:
-                    value, env = self.category.execute_func(
+                    value, env = self.context.execute_func(
                         self.dbstate,
                         obj,
                         self.query.statements_compiled,
@@ -752,7 +752,7 @@ class GrampsEngine:
                         continue
     
                 if self.query.commit_changes and obj.commit_ok:
-                    self.category.commitfunc(obj, self.trans)
+                    self.context.commitfunc(obj, self.trans)
     
                 for values in result.fetch_rows():
                     yield None, env, values
@@ -765,7 +765,7 @@ class GrampsEngine:
                     continue
                 
                 if self.query.expressions_compiled:
-                    res, env = self.category.execute_func(
+                    res, env = self.context.execute_func(
                         self.dbstate,
                         obj,
                         self.query.expressions_compiled,
@@ -774,7 +774,7 @@ class GrampsEngine:
                     if type(res) != tuple:
                         res = (res,)
                     for values in self.generate_rows(res):
-                        yield obj, env, [obj.gramps_id] + values + [self.category.category_name, handle]
+                        yield obj, env, [obj.gramps_id] + values + [self.context.category_name, handle]
             except Exception as e:
                 e.gramps_id = obj.gramps_id # type: ignore
                 raise e
@@ -783,8 +783,6 @@ class GrampsEngine:
         # type: (DbTxn, Result) -> Generator
         self.trans = trans
 
-        #         if not self.category.execute_func:
-        #             return
         self.object_count = 0
         env = supertool_utils.get_globals()  # type: Dict[str,Any]
         env["trans"] = trans
@@ -793,9 +791,9 @@ class GrampsEngine:
         env["dbstate"] = self.dbstate
         env["db"] = self.db
         env["result"] = result
-        env["category"] = self.category.category_name
-        env["namespace"] = self.category.objclass
-        env["supertool_run"] = (lambda category=self.category.category_name, **kwargs: 
+        env["category"] = self.context.category_name
+        env["namespace"] = self.context.objclass
+        env["supertool_run"] = (lambda category=self.context.category_name, **kwargs: 
                                     supertool_utils.supertool_execute(category=category, 
                                               dbstate=self.dbstate, 
                                               trans=trans, 
@@ -812,7 +810,7 @@ class GrampsEngine:
                 env["active_person"] = engine.PersonProxy(self.db, handle)
 
         if self.query.initial_statements_compiled:
-            value, env = self.category.execute_func(
+            value, env = self.context.execute_func(
                 self.dbstate, None, self.query.initial_statements_compiled, env, "exec"
             )
             yield from result.fetch_rows()
@@ -825,7 +823,7 @@ class GrampsEngine:
 
         if self.query.summary_only:
             if self.query.expressions_compiled:
-                res, env = self.category.execute_func(
+                res, env = self.context.execute_func(
                     self.dbstate, None, self.query.expressions_compiled, env
                 )
                 if type(res) != tuple:
@@ -853,6 +851,7 @@ class SuperTool(ManagedWindow):
         self.ignore_changes = True
         self.saved_query = None # type: Optional[Query]
         self.listview = None  # type: Optional[Gtk.TreeView]   
+#        self.context = None # type: Optional[supertool_utils.Context]
         self.init()
 
     def build_menu_names(self, obj): 
@@ -870,7 +869,7 @@ class SuperTool(ManagedWindow):
         for cat_name in supertool_utils.get_categories():
             print(cat_name)
             data[cat_name] = []
-            info = supertool_utils.get_category_info(self.db, cat_name)
+            info = supertool_utils.get_context(self.db, cat_name)
             if not info.objclass:
                 continue
             box = Gtk.VBox()
@@ -951,11 +950,11 @@ class SuperTool(ManagedWindow):
                 category_name = row[-2]
                 handle = row[-1]
                 if category_name:
-                    category = supertool_utils.get_category_info(self.db, category_name)
+                    context = supertool_utils.get_context(self.db, category_name)
                 else:
-                    category = self.category                
-                obj = category.getfunc(handle)
-                category.editfunc(self.dbstate, self.uistate, [], obj)
+                    context = self.context                
+                obj = context.getfunc(handle)
+                context.editfunc(self.dbstate, self.uistate, [], obj)
                 return True
         except:
             traceback.print_exc()
@@ -967,7 +966,7 @@ class SuperTool(ManagedWindow):
 
     def check_category(self):
         # type: () -> None
-        category_ok = self.category.objclass is not None
+        category_ok = self.context.objclass is not None
         if category_ok:
             self.label_filter.show()
             self.label_statements.show()
@@ -1294,8 +1293,6 @@ class SuperTool(ManagedWindow):
         self.errormsg.set_text("")
         t1 = time.time()
 
-        #         if not self.category.execute_func:
-        #             return
         if self.listview:
             self.output_window.remove(self.listview)
         self.listview = None
@@ -1303,13 +1300,13 @@ class SuperTool(ManagedWindow):
         
         if TYPE_CHECKING:
             selected_handles: List[str]
-        if self.category.objclass:
+        if self.context.objclass:
             if self.selected_objects.get_active():
                 selected_handles = (
                     self.uistate.viewmanager.active_page.selected_handles()
                 )
             elif self.all_objects.get_active():
-                selected_handles = self.category.get_all_objects_func()
+                selected_handles = self.context.get_all_objects_func()
             elif self.filtered_objects.get_active():
                 selected_handles = []  # ???
                 store = self.uistate.viewmanager.active_page.model
@@ -1330,7 +1327,7 @@ class SuperTool(ManagedWindow):
             gramps_engine = GrampsEngine(
                 self.dbstate,
                 self.user,
-                self.category,
+                self.context,
                 selected_handles,
                 query,
                 step,
@@ -1620,7 +1617,7 @@ class SuperTool(ManagedWindow):
     def makefilter(
         self, category, filtername, filtertext, initial_statements, statements
     ):
-        # type: (supertool_utils.Category, str, str, str, str) -> None
+        # type: (supertool_utils.Context, str, str, str, str) -> None
         the_filter = GenericFilterFactory(category.objclass)()
         rule = category.filterrule([filtertext, initial_statements, statements])
         if not filtername:
@@ -1749,7 +1746,7 @@ class SuperTool(ManagedWindow):
         statements = get_text(self.statements).strip()
         statements = statements.replace("\n", "<br>")
         self.makefilter(
-            self.category, filtername, filtertext, initial_statements, statements
+            self.context, filtername, filtertext, initial_statements, statements
         )
 
     def save_settings(self, _widget):
@@ -1806,7 +1803,7 @@ class SuperTool(ManagedWindow):
         if self.uistate.viewmanager.active_page is None: return
         if not self.db.is_open(): return
         self.category_name = self.uistate.viewmanager.active_page.get_category()
-        self.category = supertool_utils.get_category_info(self.db, self.category_name)
+        self.context = supertool_utils.get_context(self.db, self.category_name)
         
     def set_error(self, msg, context="", codeline="", src="", fname="", linenum=0):
         # type: (str, str, str, str, str, int) -> None
@@ -1950,9 +1947,9 @@ class Tool(tool.Tool):
             return
         print("category_name:", category_name)
         t1 = time.time()
-        category = supertool_utils.get_category_info(self.db, category_name)
-        if category.objclass:
-            selected_handles = category.get_all_objects_func()
+        context = supertool_utils.get_context(self.db, category_name)
+        if context.objclass:
+            selected_handles = context.get_all_objects_func()
         else:
             selected_handles = []
 
@@ -1960,10 +1957,10 @@ class Tool(tool.Tool):
         gramps_engine = GrampsEngine(
             self.dbstate,
             self.user,
-            category,
+            context,
             selected_handles,
             query,
-            env={"args":args, "category":category_name, "namespace":category.objclass}
+            env={"args":args, "category":category_name, "namespace":context.objclass}
         )
         result = Result()
         if output_filename:

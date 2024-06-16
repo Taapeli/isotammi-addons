@@ -141,7 +141,7 @@ class GenericFilterRule(Rule):
         dbstate = self  # self emulates dbstate (i.e. contains dbstate.db)
         self.rule = self.list[0].replace("<br>", " ").strip()
 
-        cat_info = supertool_utils.get_category_info(db, self.category_name)
+        context = supertool_utils.get_context(db, self.category_name)
 
         self.initial_statements = self.list[1].replace("<br>", "\n").strip()
         self.initial_statements, files = supertool_utils.process_includes(self.initial_statements)
@@ -160,7 +160,7 @@ class GenericFilterRule(Rule):
 
         self.init_env["result"] = None
         self.init_env["category"] = self.category_name
-        self.init_env["namespace"] = cat_info.objclass
+        self.init_env["namespace"] = context.objclass
 
         s = self.initial_statements
         if s:
