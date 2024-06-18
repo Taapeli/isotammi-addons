@@ -620,7 +620,7 @@ class ScriptFile:
             return {}
 
 class Row:
-    def __init__(self, row, gramps_id, category, handle):
+    def __init__(self, row, gramps_id, namespace, handle):
         # type: (List, Optional[str], Optional[str], Optional[str]) -> None
         self.row = []
         for v in row:
@@ -631,7 +631,7 @@ class Row:
             self.row.append(value)
 
         self.gramps_id = gramps_id
-        self.category = category
+        self.namespace = namespace
         self.handle = handle
         
 class Result:
@@ -642,13 +642,18 @@ class Result:
         self.headers = []   # type: List[str]
         self.max = 0
         self.read_limit = 0
-    def add_row(self, row, gramps_id=None,category=None, handle=None):
+    def add_row(self, row, *, obj=None, gramps_id=None, namespace=None, category=None, handle=None):
         # type: (List, str, str, str) -> None
-        self.rows.append(Row(row,gramps_id, category, handle))
+        if obj:
+            gramps_id = obj.gramps_id
+            namespace = obj.namespace
+        elif namespace is None and category:
+            namespace = supertool_utils.category_to_namespace[category] 
+        self.rows.append(Row(row, gramps_id, namespace, handle))
     def fetch_rows(self):
         # type: () -> Iterator[List[Optional[str]]]
         for row in self.rows:
-            yield [row.gramps_id] + row.row + [row.category,row.handle]
+            yield [row.gramps_id] + row.row + [row.namespace, row.handle]
         self.rows = []
     def set_coltypes(self, coltypes):
         # type: (List[Any]) -> None
