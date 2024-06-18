@@ -159,6 +159,20 @@ CATEGORIES = [
     "Notes",
 ]
 
+namespace_to_category = {
+    'Person': 'People',
+    'Family': 'Families',
+    'Event': 'Events',
+    'Place': 'Places',
+    'Citation': 'Citations',
+    'Source': 'Sources',
+    'Repository': 'Repositories',
+    'Media': 'Media',
+    'Note': 'Notes',
+}
+
+category_to_namespace = {cat:ns for ns,cat in namespace_to_category.items()}
+
 def gentolist(orig):
     # type: (Callable) -> Callable
 
@@ -187,6 +201,10 @@ class Context:
         #namespace: Optional[str]
         filterrule: Type[genfilter.GenericFilterRule]
         proxyclass: Type[engine.Proxy]
+
+def get_context_from_namespace(db, namespace):
+    # type: (DbGeneric ,str) -> Context
+    return get_context(db, namespace_to_category[namespace])
 
 def get_context(db, category_name):
     # type: (DbGeneric ,str) -> Context
@@ -718,7 +736,7 @@ def supertool_execute_query(*, query, dbstate=None, db=None, trans=None, handles
 def makefilter(
         category, filtername, filtertext, initial_statements, statements
     ):
-        # type: (supertool_utils.Context, str, str, str, str) -> None
+        # type: (Context, str, str, str, str) -> Tuple[bool, str]
         the_filter = GenericFilterFactory(category.objclass)()
         rule = category.filterrule([filtertext, initial_statements, statements])
         if not filtername:
