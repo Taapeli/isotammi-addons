@@ -643,10 +643,11 @@ class Result:
         self.max = 0
         self.read_limit = 0
     def add_row(self, row, *, obj=None, gramps_id=None, namespace=None, category=None, handle=None):
-        # type: (List, str, str, str) -> None
+        # type: (List, Any, str, str, str, str) -> None
         if obj:
             gramps_id = obj.gramps_id
             namespace = obj.namespace
+            handle = obj.handle
         elif namespace is None and category:
             namespace = supertool_utils.category_to_namespace[category] 
         self.rows.append(Row(row, gramps_id, namespace, handle))
@@ -776,7 +777,7 @@ class GrampsEngine:
                     if type(res) != tuple:
                         res = (res,)
                     for values in self.generate_rows(res):
-                        yield obj, env, [obj.gramps_id] + values + [self.context.category_name, handle]
+                        yield obj, env, [obj.gramps_id] + values + [self.context.objclass, handle]
             except Exception as e:
                 e.gramps_id = obj.gramps_id # type: ignore
                 raise e
@@ -949,10 +950,10 @@ class SuperTool(ManagedWindow):
             if event.type == Gdk.EventType.DOUBLE_BUTTON_PRESS and event.button == 1:
                 model, treeiter = self.listview.get_selection().get_selected() # type: ignore
                 row = list(model[treeiter])
-                category_name = row[-2]
+                namespace = row[-2]
                 handle = row[-1]
-                if category_name:
-                    context = supertool_utils.get_context(self.db, category_name)
+                if namespace:
+                    context = supertool_utils.get_context_from_namespace(self.db, namespace)
                 else:
                     context = self.context                
                 obj = context.getfunc(handle)
@@ -1031,7 +1032,7 @@ class SuperTool(ManagedWindow):
         stringio = io.StringIO()
         writer = csv.writer(stringio)
         for row in self.store:
-            writer.writerow(row[0:-1])  # don't write the handle
+            writer.writerow(row)
         clipboard.set_text(stringio.getvalue(), -1)
         OkDialog("Info", "Result list copied to clipboard")
 
@@ -1213,7 +1214,7 @@ class SuperTool(ManagedWindow):
                         delimiter=delimiter,
                     )
                     for row in self.store:
-                        writer.writerow(row[0:-1])  # don't write the handle
+                        writer.writerow(row)
                 except Exception as e:
                     msg = traceback.format_exc()
                     ErrorDialog("Saving the file failed", msg)
@@ -1375,7 +1376,7 @@ class SuperTool(ManagedWindow):
                 
 
     def get_attributes(self, objclass, proxyclass):
-        # type: (PrimaryObject, Type[engine.Proxy]) -> Iterator[str]
+        # type: (Type[PrimaryObject], Type[engine.Proxy]) -> Iterator[str]
         obj = objclass()
         for name in dir(obj):
             if name.startswith("_"):
