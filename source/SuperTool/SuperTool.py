@@ -25,6 +25,7 @@
 # -------------------------------------------------------------------------
 
 import csv
+import functools
 import html
 import json
 import os
@@ -802,7 +803,7 @@ class GrampsEngine:
                                               trans=trans, 
                                               **kwargs))
         env["step"] = self.step
-    
+        env["getproxy"] = functools.partial(supertool_utils.getproxy, self.db)
 
         env.update(self.env)
 
