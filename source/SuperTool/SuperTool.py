@@ -807,12 +807,15 @@ class GrampsEngine:
 
         env.update(self.env)
 
-        env["active_person"] = None
         if self.uistate:
-            handle = self.uistate.get_active('Person')
-            if handle:
-                env["active_person"] = engine.PersonProxy(self.db, handle)
-
+            cat = self.uistate.viewmanager.active_page.category
+            if cat == 'Relationships':
+                active_handle = self.uistate.viewmanager.active_page.get_active()
+            else:
+                active_handle = self.uistate.get_active('Person')
+            if active_handle:
+                env["active_person"] = engine.PersonProxy(self.db, active_handle)
+    
         if self.query.initial_statements_compiled:
             value, env = self.context.execute_func(
                 self.dbstate, None, self.query.initial_statements_compiled, env, "exec"
