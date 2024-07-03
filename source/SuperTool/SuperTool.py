@@ -940,7 +940,6 @@ class SuperTool(ManagedWindow):
             col.set_sort_column_id(colnum)
             self.listview.append_column(col)
 
-        self.output_window.set_size_request(600, 400)
         self.output_window.add(self.listview)
 
         self.store = Gtk.ListStore(*coltypes)
@@ -998,6 +997,7 @@ class SuperTool(ManagedWindow):
         self.selected_objects.set_sensitive(category_ok)
 
         self.summary_checkbox.set_sensitive(category_ok)
+        self.capture_checkbox.set_sensitive(category_ok)
 
     def clear(self, _widget):
         # type: (Any) -> None
@@ -1010,6 +1010,7 @@ class SuperTool(ManagedWindow):
         self.unwind_lists.set_active(False)
         self.commit_checkbox.set_active(False)
         self.summary_checkbox.set_active(False)
+        self.capture_checkbox.set_active(False)
         self.query = Query()
         if self.desc_win:
             self.desc_win.destroy()
@@ -1069,6 +1070,7 @@ class SuperTool(ManagedWindow):
         self.unwind_lists = glade.get_child_object("unwind_lists")
         self.commit_checkbox = glade.get_child_object("commit_checkbox")
         self.summary_checkbox = glade.get_child_object("summary_checkbox")
+        self.capture_checkbox = glade.get_child_object("capture_checkbox")
 
         self.btn_execute = glade.get_child_object("btn_execute")
         self.btn_csv = glade.get_child_object("btn_csv")
@@ -1236,7 +1238,6 @@ class SuperTool(ManagedWindow):
     def execute(self, _widget):
         # type: (Gtk.Widget) -> None
         self.statusmsg.set_text("")
-        #self.output_window.hide()
         self.output_notebook.hide()
         self.btn_csv.hide()
         self.btn_copy.hide()
@@ -1244,19 +1245,41 @@ class SuperTool(ManagedWindow):
         if not self.uistate.viewmanager.active_page:
             return
         query = self.saveconfig()
+        
+        class Capturer:
+            LINELIMIT = 1000
+            LIMIT_KB = 100
+            LIMIT = LIMIT_KB * 1000
+            def __init__(self):
+                self.data = ""
+                self.size = 0
+                self.overflow = False
+            
+            def write(self, data):
+                if self.overflow: return
+                encoded = data.encode('utf-8')
+                numbytes = len(encoded)
+                if self.size + numbytes > Capturer.LIMIT:
+                    self.overflow = True
+                    return
+                self.data += data 
+                self.size += numbytes
+
         try:
             self.commit_changes = self.commit_checkbox.get_active()
             txtitle = "Executing SuperTool"
             if self.title.get_text():
                 txtitle += " ({})".format(self.title.get_text())
 
+            self.set_error("")
             with DbTxn(txtitle, self.dbstate.db) as self.trans:
-                self.output  = io.StringIO()
-                with redirect_stdout(self.output), redirect_stderr(self.output):
-                    self.execute1(query)
-                #self.output_notebook.show()
-                #self.output_notebook.set_current_page(self.current_notebook_page)
-
+                self.print_output_buffer.set_text("")
+                if self.capture_checkbox.get_active():
+                    self.output  = Capturer() #self.print_output_buffer)
+                    with redirect_stdout(self.output): #, redirect_stderr(self.output):
+                        self.execute1(query)
+                else:
+                        self.execute1(query)
                 # profile(self.__execute1, query)
         except Exception as e:
             traceback.print_exc()
@@ -1299,7 +1322,21 @@ class SuperTool(ManagedWindow):
                 codeline = source.splitlines()[linenum-1]
             self.set_error(errortext, context, codeline, src, fname, linenum=linenum2)
         finally:
-            self.print_output_buffer.set_text(self.output.getvalue()) #[0:10000])
+            self.output_window.set_size_request(600, 400)
+            if self.capture_checkbox.get_active():
+                size = 0
+                if self.output.overflow:
+                    msg = "Printout exceeds the limit of {} kB".format(Capturer.LIMIT_KB)
+                    self.set_error(msg)
+                for line in self.output.data.splitlines(keepends=True):
+                    encoded = line.encode('utf-8')
+                    numbytes = len(encoded)
+                    if len(line) > Capturer.LINELIMIT+1:
+                        msg = "Print line exceeds the limit of {} characters".format(Capturer.LINELIMIT)
+                        self.set_error(msg)
+                        break
+                    size += numbytes
+                    self.print_output_buffer.insert_at_cursor(line, numbytes)
             self.output_notebook.show()
 
     def execute1(self, query):
@@ -1374,8 +1411,6 @@ class SuperTool(ManagedWindow):
         else:
             self.btn_csv.hide()
             self.btn_copy.hide()
-        #self.output_window.show()
-        #self.output_notebook.show()
 
         
     def exit(self, _widget):
@@ -1401,7 +1436,6 @@ class SuperTool(ManagedWindow):
             if name.startswith("_"):
                 continue
             attr = getattr(obj, name)
-            #             if type(attr) == types.FunctionType: continue
             if type(attr) == types.MethodType:
                 continue
         from unittest import mock
@@ -1458,8 +1492,6 @@ class SuperTool(ManagedWindow):
         self.last_filename = config.get("defaults.last_filename")
         self.show()
         self.check_category()
-        #self.current_notebook_page = 0
-        #self.output_notebook.set_current_page(self.current_notebook_page)
         
     def load(self, _widget):
         # type: (Gtk.Widget) -> None
