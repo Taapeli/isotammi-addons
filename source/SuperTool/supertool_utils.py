@@ -759,12 +759,12 @@ def makefilter(
         return (True, msg)
 
 def getproxy(db, obj):
-    # (Primaryobject) -> engine.Proxy
+    # type: (DbGeneric, PrimaryObject) -> engine.Proxy
     if isinstance(obj, Person): return engine.PersonProxy(db, obj.handle)
     if isinstance(obj, Family): return engine.FamilyProxy(db, obj.handle)
     if isinstance(obj, Event): return engine.EventProxy(db, obj.handle)
     if isinstance(obj, Place): return engine.PlaceProxy(db, obj.handle)
-    if isinstance(obj, Citation): return engine.CitationnProxy(db, obj.handle)
+    if isinstance(obj, Citation): return engine.CitationProxy(db, obj.handle)
     if isinstance(obj, Source): return engine.SourceProxy(db, obj.handle)
     if isinstance(obj, Repository): return engine.RepositoryProxy(db, obj.handle)
     if isinstance(obj, Media): return engine.MediaProxy(db, obj.handle)
