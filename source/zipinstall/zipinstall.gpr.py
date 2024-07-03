@@ -21,7 +21,7 @@
 """
 Gramps registration file
 """
-from gramps.version import major_version
+from gramps.version import major_version, VERSION_TUPLE
 from gramps.gui import plug
 plug.tool.tool_categories["Isotammi"] = ("Isotammi", _("Isotammi tools"))
 
@@ -31,11 +31,17 @@ plug.tool.tool_categories["Isotammi"] = ("Isotammi", _("Isotammi tools"))
 #
 #------------------------------------------------------------------------
 
+
+if VERSION_TUPLE < (5, 2, 0):
+    additional_args = {}
+else:
+    additional_args = {"audience": EXPERT}
+
 register(TOOL, 
     id    = 'zipinstall',
     name  = _("ZipInstall"),
     description =  _("Install a plugin from a ZIP file"),
-    version = '1.1.4',
+    version = '1.1.7',
     gramps_target_version = major_version,
     status = STABLE,
     fname = 'zipinstall.py',
@@ -43,5 +49,6 @@ register(TOOL,
     category = "Isotammi",
     toolclass = 'Tool',
     optionclass = 'Options',
-    tool_modes = [TOOL_MODE_GUI, TOOL_MODE_CLI]
+    tool_modes = [TOOL_MODE_GUI, TOOL_MODE_CLI],
+    **additional_args,
 )

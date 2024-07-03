@@ -26,6 +26,24 @@
 import sys
 import traceback
 
+try:
+    from typing import TYPE_CHECKING
+    from typing import Any
+    from typing import Callable
+    from typing import Dict
+    from typing import Generator
+    from typing import Iterator
+    from typing import List
+    from typing import Optional
+    from typing import Tuple
+    from typing import Type
+    from typing import Union
+    from gramps.gen.user import User
+    from gramps.gen.db import DbGeneric
+    from gramps.gen.lib import PrimaryObject
+except:
+    TYPE_CHECKING = False
+
 # -------------------------------------------------------------------------
 #
 # Gramps modules
@@ -34,6 +52,8 @@ import traceback
 from gi.repository import Gtk
 from gramps.gen.filters.rules import Rule
 from gramps.gen.const import GRAMPS_LOCALE as glocale
+from gramps.gen.errors import FilterError
+
 _ = glocale.translation.gettext
 
 
@@ -52,23 +72,28 @@ import supertool_utils
 # -------------------------------------------------------------------------
 class MyTextView(Gtk.TextView):
     def __init__(self, db):
+        # type: (DbGeneric) -> None
         Gtk.TextView.__init__(self)
 
     def get_text(self):
+        # type: () -> str
         buf = self.get_buffer()
         text = buf.get_text(buf.get_start_iter(), buf.get_end_iter(), True)
         return text.replace("\n", "<br>")
 
     def set_text(self, text):
+        # type: (str) -> None
         self.get_buffer().set_text(text.replace("<br>", "\n"))
 
 
 class MyBoolean(Gtk.CheckButton):
     def __init__(self, db):
+        # type: (DbGeneric) -> None
         Gtk.CheckButton.__init__(self)
         self.show()
 
     def get_text(self):
+        # type: () -> str
         """
         Return the text to save.
 
@@ -81,6 +106,7 @@ class MyBoolean(Gtk.CheckButton):
         return str(int(self.get_active()))
 
     def set_text(self, val):
+        # type: (str) -> None
         """
         Set the selector state to display the passed value.
         """
@@ -108,13 +134,14 @@ class GenericFilterRule(Rule):
     category = _("Isotammi filters")
 
     def prepare(self, db, user):
+        # type: (DbGeneric, User) -> None
         # things we want to do just once, not for every handle
         self.db = db
         self.user = user
         dbstate = self  # self emulates dbstate (i.e. contains dbstate.db)
         self.rule = self.list[0].replace("<br>", " ").strip()
 
-        cat_info = supertool_utils.get_category_info(db, self.category_name)
+        context = supertool_utils.get_context(db, self.category_name)
 
         self.initial_statements = self.list[1].replace("<br>", "\n").strip()
         self.initial_statements, files = supertool_utils.process_includes(self.initial_statements)
@@ -133,7 +160,7 @@ class GenericFilterRule(Rule):
 
         self.init_env["result"] = None
         self.init_env["category"] = self.category_name
-        self.init_env["namespace"] = cat_info.objclass
+        self.init_env["namespace"] = context.objclass
 
         s = self.initial_statements
         if s:
@@ -142,6 +169,7 @@ class GenericFilterRule(Rule):
             )
 
     def apply(self, db, obj):
+        # type: (DbGeneric, PrimaryObject) -> bool
         self.db = db
         dbstate = self  # self emulates dbstate
         try:
@@ -152,13 +180,15 @@ class GenericFilterRule(Rule):
                 value, env = self.execute_func(dbstate, obj, s, env, "exec")
             res, env = self.execute_func(dbstate, obj, self.rule, env)
             return res
-        except:
+        except Exception as e:
             traceback.print_exc()
-            return False
+            self.user.end_progress()
+            raise FilterError("SuperTool Query Error", str(e))
 
 
 class GenericFilterRule_Family(GenericFilterRule):
     def __init__(self, *args):
+        # type: (Any) -> None
         GenericFilterRule.__init__(self, *args)
         self.category_name = "Families"
         self.execute_func = engine.execute_family
@@ -166,6 +196,7 @@ class GenericFilterRule_Family(GenericFilterRule):
 
 class GenericFilterRule_Person(GenericFilterRule):
     def __init__(self, *args):
+        # type: (Any) -> None
         GenericFilterRule.__init__(self, *args)
         self.category_name = "People"
         self.execute_func = engine.execute_person
@@ -173,6 +204,7 @@ class GenericFilterRule_Person(GenericFilterRule):
 
 class GenericFilterRule_Place(GenericFilterRule):
     def __init__(self, *args):
+        # type: (Any) -> None
         GenericFilterRule.__init__(self, *args)
         self.category_name = "Places"
         self.execute_func = engine.execute_place
@@ -180,6 +212,7 @@ class GenericFilterRule_Place(GenericFilterRule):
 
 class GenericFilterRule_Event(GenericFilterRule):
     def __init__(self, *args):
+        # type: (Any) -> None
         GenericFilterRule.__init__(self, *args)
         self.category_name = "Events"
         self.execute_func = engine.execute_event
@@ -187,6 +220,7 @@ class GenericFilterRule_Event(GenericFilterRule):
 
 class GenericFilterRule_Source(GenericFilterRule):
     def __init__(self, *args):
+        # type: (Any) -> None
         GenericFilterRule.__init__(self, *args)
         self.category_name = "Sources"
         self.execute_func = engine.execute_source
@@ -194,6 +228,7 @@ class GenericFilterRule_Source(GenericFilterRule):
 
 class GenericFilterRule_Citation(GenericFilterRule):
     def __init__(self, *args):
+        # type: (Any) -> None
         GenericFilterRule.__init__(self, *args)
         self.category_name = "Citations"
         self.execute_func = engine.execute_citation
@@ -201,6 +236,7 @@ class GenericFilterRule_Citation(GenericFilterRule):
 
 class GenericFilterRule_Repository(GenericFilterRule):
     def __init__(self, *args):
+        # type: (Any) -> None
         GenericFilterRule.__init__(self, *args)
         self.category_name = "Repositories"
         self.execute_func = engine.execute_repository
@@ -208,6 +244,7 @@ class GenericFilterRule_Repository(GenericFilterRule):
 
 class GenericFilterRule_Note(GenericFilterRule):
     def __init__(self, *args):
+        # type: (Any) -> None
         GenericFilterRule.__init__(self, *args)
         self.category_name = "Notes"
         self.execute_func = engine.execute_note
@@ -215,6 +252,7 @@ class GenericFilterRule_Note(GenericFilterRule):
 
 class GenericFilterRule_Media(GenericFilterRule):
     def __init__(self, *args):
+        # type: (Any) -> None
         GenericFilterRule.__init__(self, *args)
         self.category_name = "Media"
         self.execute_func = engine.execute_media

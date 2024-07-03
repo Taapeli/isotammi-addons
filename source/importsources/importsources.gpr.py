@@ -22,7 +22,7 @@
 """
 Gramps registration file
 """
-from gramps.version import major_version
+from gramps.version import major_version, VERSION_TUPLE
 from gramps.gui import plug
 plug.tool.tool_categories["Isotammi"] = ("Isotammi", _("Isotammi tools"))
 
@@ -32,18 +32,25 @@ plug.tool.tool_categories["Isotammi"] = ("Isotammi", _("Isotammi tools"))
 #
 #------------------------------------------------------------------------
 
+
+if VERSION_TUPLE < (5, 2, 0):
+    additional_args = {}
+else:
+    additional_args = {"audience": EXPERT}
+
 register(TOOL, 
-id    = 'importsources',
-name  = _("Import Sources"),
-description =  _("Import Sources from a CSV file"),
-version = '0.0.4',
-gramps_target_version = major_version,
-status = STABLE,
-fname = 'importsources.py',
-authors = ["KKu"],
-category = "Isotammi",
-toolclass = 'Tool',
-optionclass = 'Options',
-tool_modes = [TOOL_MODE_GUI, TOOL_MODE_CLI]
+    id    = 'importsources',
+    name  = _("Import Sources"),
+    description =  _("Import Sources from a CSV file"),
+    version = '0.0.6',
+    gramps_target_version = major_version,
+    status = STABLE,
+    fname = 'importsources.py',
+    authors = ["KKu"],
+    category = "Isotammi",
+    toolclass = 'Tool',
+    optionclass = 'Options',
+    tool_modes = [TOOL_MODE_GUI, TOOL_MODE_CLI],
+    **additional_args,
 )
 

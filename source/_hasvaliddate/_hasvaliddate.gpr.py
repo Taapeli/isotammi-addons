@@ -21,13 +21,19 @@
 """
 Filter rule to match events with with a valid date
 """
-from gramps.version import major_version
+from gramps.version import major_version, VERSION_TUPLE
+
+
+if VERSION_TUPLE < (5, 2, 0):
+    additional_args = {}
+else:
+    additional_args = {"audience": EXPERT}
 
 register(RULE,
   id    = 'HasValidDate',
   name  = _("Events with a valid date"),
   description = _("Events with a valid date"),
-  version = '1.0.8',
+  version = '1.0.9',
   authors = ["Kari Kujansuu"],
   authors_email = ["kari.kujansuu@gmail.com"],
   gramps_target_version = major_version,
@@ -35,13 +41,14 @@ register(RULE,
   fname = "_hasvaliddate.py",
   ruleclass = 'HasValidDate',  # must be rule class name
   namespace = 'Event',  # one of the primary object classes
+  **additional_args,
 )
 
 register(RULE,
   id    = 'HasInValidDate',
   name  = _("Events with an in valid date"),
   description = _("Events with an invalid date"),
-  version = '1.0.8',
+  version = '1.0.9',
   authors = ["Kari Kujansuu"],
   authors_email = ["kari.kujansuu@gmail.com"],
   gramps_target_version = major_version,
@@ -49,5 +56,6 @@ register(RULE,
   fname = "_hasvaliddate.py",
   ruleclass = 'HasInValidDate',  # must be rule class name
   namespace = 'Event',  # one of the primary object classes
+  **additional_args,
 )
 

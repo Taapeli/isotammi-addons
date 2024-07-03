@@ -1,11 +1,17 @@
-from gramps.version import major_version
+from gramps.version import major_version, VERSION_TUPLE
+
+
+if VERSION_TUPLE < (5, 2, 0):
+    additional_args = {}
+else:
+    additional_args = {"audience": EXPERT}
 
 register(GRAMPLET,
          id = "PlaceTool",
          name = _("PlaceTool"),
          description = _("Gramplet to manipulate multiple places"),
          status = STABLE,
-         version = '1.1.3',
+         version = '1.1.6',
          gramps_target_version = major_version,
          fname = "PlaceTool.py",
          gramplet = 'PlaceTool',
@@ -17,4 +23,5 @@ register(GRAMPLET,
          help_url="PlaceTool Gramplet",
          include_in_listing = True,
          navtypes=["Place"],
+         **additional_args,
         )

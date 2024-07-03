@@ -1,4 +1,10 @@
-from gramps.version import major_version
+from gramps.version import major_version, VERSION_TUPLE
+
+
+if VERSION_TUPLE < (5, 2, 0):
+    additional_args = {}
+else:
+    additional_args = {"audience": EXPERT}
 
 register(GRAMPLET,
          id="Multimergegramplet Gramplet",
@@ -14,9 +20,10 @@ register(GRAMPLET,
          gramplet_title=_("MultiMergeGramplet"),
          detached_width = 510,
          detached_height = 480,
-         version = '1.2.0',
+         version = '1.2.3',
          gramps_target_version = major_version,
          help_url="http://github.com/Taapeli/isotammi-addons/tree/master/source/multimergegramplet/README.md",
          navtypes=["Person","Family","Place","Source","Repository","Note","Event",
                    "Citation","Media"],
+         **additional_args,
          )

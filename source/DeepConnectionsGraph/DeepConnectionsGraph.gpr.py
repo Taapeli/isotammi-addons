@@ -1,4 +1,10 @@
-from gramps.version import major_version
+from gramps.version import major_version, VERSION_TUPLE
+
+
+if VERSION_TUPLE < (5, 2, 0):
+    additional_args = {}
+else:
+    additional_args = {"audience": EXPERT}
 
 register(GRAMPLET,
          id="DeepConnectionsGraph",
@@ -12,10 +18,11 @@ register(GRAMPLET,
          gramplet_title=_("Deep Connections Graph"),
          detached_width = 510,
          detached_height = 480,
-         version = '1.1.6',
+         version = '1.1.9',
          gramps_target_version = major_version,
          help_url="",
          navtypes=["Dashboard"],
+         **additional_args,
          )
 
 

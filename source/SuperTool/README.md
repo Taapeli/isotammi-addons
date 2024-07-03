@@ -1,6 +1,6 @@
 # SuperTool
-v1.3.8<br>
-8 jan 2024<br>
+v1.4.2<br>
+6 May 2024<br>
 Author: kari.kujansuu@gmail.com<br>
 
  [Introduction](#introduction)
@@ -12,7 +12,6 @@ Author: kari.kujansuu@gmail.com<br>
 <br> [General variables](#general-variables)
 <br> [Help feature](#help-feature)
 <br> [Options](#options)
-<br> [Row limit](#row-limit)
 <br> [Editing objects](#editing-objects)
 <br> [Download/copy as CSV](#download-or-copy-as-csv)
 <br> [Title field](#title-field)
@@ -188,15 +187,6 @@ Next are three checkboxes:
 * Commit changes - any changes to the selected objects are automatically committed if this is checked
 * Summary only - do not display values for every object, only a summary after processing all objects
 
-## Row limit
-
-There is a hard limit of 1000 rows that can be displayed. This is because Gramps seems to become unstable if an attempt is made to display greater number of rows (maybe a Gtk limitation). If the limit is exceeded then you will get a warning and only the first 1000 rows are processed and displayed:
-
-![SuperTool](Warning.png)
-
-The row limit does not apply when you use the tool in the [command line mode](#running-from-the-command-line).
-
-
 ## Editing objects
 
 Double clicking a row in the result list will open the corresponding object for editing (in the Gramps regular edit dialog). This does not work in "Summary only" mode because then results do not correspond to any individual object.
@@ -345,7 +335,7 @@ This is because the tool automatically commits all processed objects if the "Com
 
 ## Saving the query as a script file
 
-The File menu has choices to save the query in a file (Save) and load a query from a file (Open). With this you can save useful queries and also distribute them to other Gramps users. These files are also called script files. They are human-readable text files that can also be edited with an external editor. Be careful not to mix spaces and tabs though.
+The File menu has choices to save the query in a file (Save) and load a query from a file (Open). With this you can save useful queries and also distribute them to other Gramps users. These files are also called script files. They are human-readable text files that can also be edited with an external editor. Be careful not to mix spaces and tabs though. These files are always stored in UTF-8 encoding.
 
 The script files have the extension ".script" by default.
 
@@ -359,7 +349,7 @@ A query can also be saved in the current Gramps database (family tree) as a Note
 
 ![SuperTool](SuperTool-file-menu-2.png)
 
-Selecting 'Load from Note' displays a list of saved notes (if any) and allows the user to load one of them as the current query:
+Selecting 'Load from Note' displays a list of saved notes (if any) and allows the user to edit them or load one of them as the current query:
 
 ![SuperTool](load-note.png)
 
@@ -425,17 +415,12 @@ SuperTool internally uses "proxy objects" to represent the Gramps internal objec
 
 For example, a person's birth event - the "birth" attribute - is actually an EventProxy object. If you display it you will get something like "Event[E0123]". To get the event date and place you need to append the corresponding event attributes: "birth.date" and "birth.place". And even then the "birth.place" refers to a PlaceProxy and to fetch the name of the place you need to use "birth.place.name" or "birth.place.longname".
 
-Proxy objects are created when they are needed. This means also that identical expressions do not always refer to the same objects. For example, in People category, the expression <i>birth.place.obj</i> refers to a Gramps internal Place object. But if you use the same expression multiple times in the same query then each one will refer to a different Place object. This matters only if you intend to update the object - changes in one object will not be seen in the other and calling db.commit_place() would not have any effect. Solution is to save the object reference in a local variable, e.g.
+Proxy objects are created when they are needed. In an earlier version of SuperTool his meant also that identical expressions did not always refer to the same objects. This is not a problem any longer since all objects are cached automatically (using CacheProxyDb) and therefore there will be only one memory object per handle. You can update attributes for example in the following way:
 
 ```python
-# does not work:
-birth.place.obj.set_latitude(90)
-db.commit_place(birth.place.obj, trans)
-
 # ok:
-placeobj = birth.place.obj
-placeobj.set_latitude(90)
-db.commit_place(placeobj, trans)
+death.obj.description = 'Died in war'
+db.commit_place(death.obj, trans)
 ```
 
 ## Date arithmetic
@@ -487,7 +472,7 @@ However, the "supertool" directory can be changed from [settings](#settings)
 
 So it is intended that the user can store often used include files in her own "supertool" folder.
 
-The text from the specified file is included 'as-is' at the point where the include command was found. So this is not the same as importing the module - although the include file contains Python code and usually has the .py extension.
+The text from the specified file is included 'as-is' at the point where the include command was found. So this is not the same as importing the module - although the include file contains Python code and usually has the .py extension. These files should always be stored in UTF-8 encoding.
 
 The included code cannot contain @include statements.
 
@@ -526,7 +511,7 @@ Normally the column headers are "Value 1", "Value 2" etc. With 'set_headers' you
 result.set_headers(["Name", "Age"])
 ```
  
-With 'set_max' you can specify the maximum number of rows displayed. The default maximum is 1000 rows as explained above and you cannot set the maximum greater that 1000. This maximum takes effect after the 'Filter' is processed. The method has also a second parameter 'read_limit' that specifies the maximum number of objects to process before filtering.
+With 'set_max' you can specify the maximum number of rows displayed. This maximum takes effect after the 'Filter' is processed. The method has also a second parameter 'read_limit' that specifies the maximum number of objects to process before filtering.
 
 ## Settings
 
@@ -616,6 +601,7 @@ confidence           | Confidence value (0-4)                             | inte
 date                 | Date of the citation                               | DateProxy
 gramps_id            | Gramps id, e.g. C0123                              | string
 handle               | Gramps internal handle                             | string
+media_list           | List of media objects                              | list of MediaProxy objects
 notes                | List of notes                                      | list of NoteProxy objects
 obj                  | This Gramps Citation object (same as 'citation')   | Citation
 page                 | Page value                                         | string
@@ -634,6 +620,7 @@ description          | Event description                                        
 event                | This Gramps Event object (same as 'obj')                             | Event
 gramps_id            | Gramps id, e.g. E0123                                                | string
 handle               | Gramps internal handle                                               | string
+media_list           | List of media objects                                                | list of MediaProxy objects
 notes                | List of notes                                                        | list of NoteProxy objects
 obj                  | This Gramps Event object (same as 'event')                           | Event
 participants         | Participants of the event (person objects)                           | list of PersonProxy objects
@@ -657,6 +644,7 @@ family               | This Gramps Family object (same as 'obj')      | Family
 father               | Person object of the family's father           | PersonProxy
 gramps_id            | Gramps id, e.g. F0123                          | string
 handle               | Gramps internal handle                         | string
+media_list           | List of media objects                          | list of MediaProxy objects
 mother               | Person object of the family's mother           | PersonProxy
 notes                | List of notes                                  | list of NoteProxy objects
 obj                  | This Gramps Family object (same as 'family')   | Family
@@ -715,6 +703,7 @@ father               | Person's father                                  | Person
 gender               | Gender as as string: male, female or unknown     | string
 gramps_id            | Gramps id, e.g. I0123                            | string
 handle               | Gramps internal handle                           | string
+media_list           | List of media objects                          | list of MediaProxy objects
 mother               | Person's mother                                  | PersonProxy object (or Nullproxy)
 name                 | Primary name as string                           | string
 nameobjs             | List of Gramps internal Name objects             | list of Name objects
@@ -743,6 +732,7 @@ events               | List of events that occurred in this place   | list of Ev
 gramps_id            | Gramps id, e.g. P0123                        | string
 handle               | Gramps internal handle                       | string
 longname             | Full name including enclosing places         | string
+media_list           | List of media objects                        | list of MediaProxy objects
 name                 | Name of the place                            | string
 notes                | List of notes                                | list of NoteProxy objects
 obj                  | This Gramps Place object (same as 'place')   | Place
@@ -777,6 +767,7 @@ author               | Author                                         | string
 citations            | List of citations                              | list of CitationProxy objects
 gramps_id            | Gramps id, e.g. S0123                          | string
 handle               | Gramps internal handle                         | string
+media_list           | List of media objects                          | list of MediaProxy objects
 notes                | List of notes                                  | list of NoteProxy objects
 obj                  | This Gramps Source object (same as 'source')   | Source
 pubinfo              | Publication info                               | string

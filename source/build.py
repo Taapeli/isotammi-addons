@@ -168,6 +168,10 @@ def update_listings():
                         ptype = p.ptype_numeric
                     d = dict(t=ptype, i=p.id, n=p.name, v=p.version, g=gver, # p.gramps_target_version,
                              d=p.description, z=tgzfile, s=3)
+                    if hasattr(p, "audience"):
+                        d["a"] = p.audience
+                    if hasattr(p, "help_url"):
+                        d["h"] = p.help_url
                     #print(d)
                     listings[(grampsver,lang)].append(d)
 

@@ -42,14 +42,24 @@ Note
 
 help_url = "https://gramps-project.org/wiki/index.php/Addon:Isotammi_addons#Filter.2B"
 
+if VERSION_TUPLE < (5, 2, 0):
+    additional_args = {}
+else:
+    additional_args = {
+        "audience": EXPERT,
+        "help_url": help_url,
+    }
+
+
 for obj in objs.splitlines():
     obj = obj.strip()
     if obj == "": continue
+
     register(GRAMPLET,
              id=obj + "-Filter+",
              name=_(obj + " Filter+"),
              description = _("Gramplet providing a filter (enhanced)"),
-             version="1.0.6",
+             version="1.0.9",
              gramps_target_version=major_version,
              status = STABLE,
              fname="filter+.py",
@@ -57,19 +67,15 @@ for obj in objs.splitlines():
              gramplet = obj + 'FilterPlus',
              gramplet_title=_("Filter+"),
              navtypes=[obj],
-             help_url=help_url,
+             **additional_args,
      )
 
-if VERSION_TUPLE < (5, 2, 0):
-    additional_args = {}
-else:
-    additional_args = {"help_url": help_url}
 
 register(RULE,
   id    = 'HasEventBase+',
   name  = _("HasEventBase+"),
   description = _("HasEventBase+ - used by Filter+"),
-  version = '1.0.6',
+  version = '1.0.9',
   authors = ["Kari Kujansuu"],
   authors_email = ["kari.kujansuu@gmail.com"],
   gramps_target_version = major_version,
@@ -84,7 +90,7 @@ register(RULE,
   id    = 'HasSourceBase+',
   name  = _("HasSourceBase+"),
   description = _("HasSourceBase+ - used by Filter+"),
-  version = '1.0.6',
+  version = '1.0.9',
   authors = ["Kari Kujansuu"],
   authors_email = ["kari.kujansuu@gmail.com"],
   gramps_target_version = major_version,

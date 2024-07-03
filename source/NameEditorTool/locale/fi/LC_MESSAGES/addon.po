@@ -21,11 +21,11 @@ msgstr ""
 msgid "Isotammi tools"
 msgstr "Isotammi-työkalut"
 
-#: NameEditorTool/NameEditorTool.gpr.py:36
+#: NameEditorTool/NameEditorTool.gpr.py:42
 msgid "Name Editor Tool"
 msgstr "Nimien  muokkaustyökalu"
 
-#: NameEditorTool/NameEditorTool.gpr.py:37
+#: NameEditorTool/NameEditorTool.gpr.py:43
 msgid "Edit names"
 msgstr "Muokkaa nimiä"
 

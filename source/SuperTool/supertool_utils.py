@@ -31,12 +31,42 @@ import textwrap
 
 from pprint import pprint
 from types import SimpleNamespace
+from builtins import str
+
+try:
+    from typing import TYPE_CHECKING
+    from typing import Any
+    from typing import Callable
+    from typing import Dict
+    from typing import Generator
+    from typing import Iterator
+    from typing import List
+    from typing import Optional
+    from typing import Set
+    from typing import Tuple
+    from typing import Type
+    from typing import Union
+    from gramps.gen.user import User
+    from gramps.gen.db import DbGeneric
+    #from gramps.gen.lib import PrimaryObject
+except:
+    TYPE_CHECKING = False
 
 # -------------------------------------------------------------------------
 #
 # Gramps modules
 #
 # -------------------------------------------------------------------------
+from gramps.gen.const import CUSTOM_FILTERS
+
+from gramps.gen.db import DbGeneric
+
+from gramps.gen.filters._genericfilter import GenericFilterFactory
+from gramps.gen.filters._filterlist import FilterList
+from gramps.gen.filters import reload_custom_filters
+
+from gramps.gen.lib import PrimaryObject
+
 from gramps.gen.lib import Address
 from gramps.gen.lib import Attribute
 from gramps.gen.lib import AttributeType
@@ -129,23 +159,57 @@ CATEGORIES = [
     "Notes",
 ]
 
+namespace_to_category = {
+    'Person': 'People',
+    'Family': 'Families',
+    'Event': 'Events',
+    'Place': 'Places',
+    'Citation': 'Citations',
+    'Source': 'Sources',
+    'Repository': 'Repositories',
+    'Media': 'Media',
+    'Note': 'Notes',
+}
+
+category_to_namespace = {cat:ns for ns,cat in namespace_to_category.items()}
+
 def gentolist(orig):
+    # type: (Callable) -> Callable
+
     @functools.wraps(orig)
     def f(*args):
+        # type: (List[Any]) -> List[Any]
         return list(orig(*args))
 
     return f
 
 def get_categories():
+    # type: () -> List[str]
     return CATEGORIES
 
 
-def get_category_info(db, category_name):
-    # type: () -> None
-    class Category:
-        pass
+class Context:
+    if TYPE_CHECKING:
+        category_name: str
+        get_all_objects_func: Callable
+        getfunc: Callable
+        commitfunc: Callable
+        execute_func: Callable
+        editfunc: Callable
+        objcls: Type[PrimaryObject]
+        objclass: Optional[str]
+        #namespace: Optional[str]
+        filterrule: Type[genfilter.GenericFilterRule]
+        proxyclass: Type[engine.Proxy]
 
-    info = Category()
+def get_context_from_namespace(db, namespace):
+    # type: (DbGeneric ,str) -> Context
+    return get_context(db, namespace_to_category[namespace])
+
+def get_context(db, category_name):
+    # type: (DbGeneric ,str) -> Context
+
+    info = Context()
 
     info.category_name = category_name
     info.objclass = None
@@ -243,6 +307,7 @@ def get_category_info(db, category_name):
     return info
 
 def find_fullname(fname, scriptfile_location, default_location):
+    # type: (str, Optional[str], str) -> str
     mydir = os.path.split(__file__)[0]
     fullnames = []
     locations = []
@@ -269,15 +334,24 @@ def find_fullname(fname, scriptfile_location, default_location):
 
 
 def process_includes(code, scriptfile_location=None):
-    # type (str) -> Tuple[str, List[Tuple(str,int,int)]]
+    # type: (str, str) -> Tuple[str, List[Tuple[str,int,int]]]
+
+    def readfile(filename):
+        # type: (str) -> List[str]
+        try:
+            return open(filename, 'rt', encoding='utf-8').readlines()
+        except UnicodeError:
+            # include files should be in utf-8 but if that fails then try the default encoding
+            return open(filename, 'rt').readlines()
+
     config.load()
     default_location = config.get("defaults.include_location")
     if not default_location:
         TOOL_DIR = "supertool"
         from gramps.gen.const import USER_HOME
         default_location = os.path.join(USER_HOME, TOOL_DIR)
-    newlines = []
-    files = []
+    newlines = [] # type: List[str]
+    files = []  # type: List[Tuple[str,int,int]]
     for line in code.splitlines(keepends=True):
         parts = line.split(maxsplit=1)
         if len(parts) > 0 and parts[0] == "@include":
@@ -286,7 +360,7 @@ def process_includes(code, scriptfile_location=None):
             fname = parts[1].strip()
             fullname = find_fullname(fname, scriptfile_location, default_location)
             startline = len(newlines)+1
-            for line2 in open(fullname):
+            for line2 in readfile(fullname):
                 newlines.append(line2)
             endline = len(newlines)
             files.append((fullname,startline,endline))
@@ -295,20 +369,23 @@ def process_includes(code, scriptfile_location=None):
     return "".join(newlines), files
 
 def compile_statements(statements, source):
+    # type: (str, str) -> Any
     if statements.strip() == "": return None
     return compile(statements, source, 'exec')
 
 def compile_expression(expression, source):
+    # type: (str, str) -> Any
     if expression.strip() == "": return None
     return compile(expression.strip().replace("\n"," "), source, 'eval')
 
 
 def getargs_dialog(**kwargs):
+    # type: (Dict[str, Union[str, Tuple[str,str,str]]]) -> Any
     from types import SimpleNamespace
 
 
     from gi.repository import Gtk
-    from gramps.gen.const import GRAMPS_LOCALE as glocale, CUSTOM_FILTERS
+    from gramps.gen.const import GRAMPS_LOCALE as glocale
     _ = glocale.translation.gettext
 
     config = configman.register_manager("supertool")
@@ -328,16 +405,17 @@ def getargs_dialog(**kwargs):
     widgets = []
     initvalue = None
     for row, param in enumerate(kwargs.items()):
-        param_name, title = param
+        param_name, val = param
         key = "default-params." + param_name
         config.register(key, "")
         value = config.get(key)
         
-        if type(title) == str:
+        if type(val) == str:
+            title = val
             widget = Gtk.Entry()
             widget.set_text(value)
-        if type(title) == tuple:
-            title, paramtype, initvalue = title
+        if type(val) == tuple:
+            title, paramtype, initvalue = val # type: ignore
             if paramtype == bool:
                 widget = Gtk.CheckButton()
                 if value == "":
@@ -348,7 +426,7 @@ def getargs_dialog(**kwargs):
                     value = False
                 widget.set_active(value)
             if paramtype == list:
-                initvalue = list(initvalue)  # ensure this is a real list
+                initvalue = list(initvalue)  # type: ignore # ensure this is a real list
                 widget = Gtk.ComboBoxText()
                 widget.set_entry_text_column(0)
                 widget.append_text("")
@@ -382,7 +460,7 @@ def getargs_dialog(**kwargs):
             if index <= 0:  # 0 or -1
                 value = ""    # none selected
             else:
-                value = initvalue[index-1]
+                value = initvalue[index-1] # type: ignore
         values[param_name] = value
         key = "default-params." + param_name
         config.set(key, str(value))
@@ -392,10 +470,12 @@ def getargs_dialog(**kwargs):
 
 
 def uniq(items):
+    # type: (List[Any]) -> List[Any]
     return list(set(items))
 
 
 def makedate(year, month=0, day=0, about=False):
+    # type: (int, int, int, bool) -> engine.DateProxy
     d = GrampsDate()
     d.set_yr_mon_day(year, month, day)
     if about:
@@ -404,15 +484,18 @@ def makedate(year, month=0, day=0, about=False):
 
 
 def today():
+    # type: () -> engine.DateProxy
     return engine.DateProxy(Today())
 
 
 def size(x):
+    # type: (Any) -> int
     return len(list(x))
 
 
 @gentolist
 def old_flatten(lists):
+    # type: (List[Any]) -> Iterator[Any]
     for sublist in lists:
         for item in sublist:
             yield item
@@ -421,17 +504,18 @@ from types import GeneratorType
 
 @gentolist
 def flatten(a):
+    # type: (List[Any]) -> Iterator[Any]
     if type(a) in [list, GeneratorType]:
         for x in a:
             yield from flatten(x)
     else:
         yield a
 
-def commit(db, trans, proxyobj): # not used, possible future use
-    print("commit", trans, proxyobj.name)
-    if trans is not None:
-        proxyobj._commit(db, trans)
-
+# def commit(db, trans, proxyobj): # not used, possible future use
+#     # type: (DbGeneric, DbTxn, engine.Proxy) -> None
+#     print("commit", trans, proxyobj.name)
+#     if trans is not None:
+#         proxyobj._commit(db, trans)
 
 
 
@@ -439,28 +523,34 @@ class DummyTxn:
     "Implements nested transactions"
 
     def __init__(self, trans):
+        # type: (DbTxn) -> None
         if trans is None:
             raise engine.SupertoolException("Need a transaction (check 'Commit changes')")
         self.trans = trans
 
         class _Txn:
             def __init__(self, msg, db):
+                # type: (str, DbGeneric) -> None
                 pass
 
             def __enter__(self):
+                # type: () -> DbTxn
                 return trans
 
             def __exit__(self, *args):
+                # type: (List[Any]) -> Any
                 return False
 
         self.txn = _Txn
 
 class Lazyenv(dict):
     def __init__(self, **kwargs):
+        # type: (Any) -> None
         dict.__init__(self, **kwargs)
         self.obj = None
-        self.attrs = set()
+        self.attrs = set() # type: Set[str]
     def __getitem__(self, attrname):
+        # type: (str) -> Any
         if attrname in self:
             return dict.__getitem__(self, attrname)
         if attrname in self.attrs:
@@ -472,6 +562,7 @@ class Lazyenv(dict):
 
         
 def get_globals():
+    # type: () -> Lazyenv
     return Lazyenv(
         uniq=uniq,
         makedate=makedate,
@@ -546,6 +637,8 @@ def get_globals():
 
 class Response:
     def __init__(self, rows, query, result):
+        # type: (List[List[Any]], Any, Any) -> None
+        # xtype: (List[List[Any]], Query, Result) -> None
         self.rows = rows
         self.query = query
         self.result = result
@@ -567,6 +660,7 @@ def supertool_execute( *,
     unwind_lists=False, 
     commit_changes=False, 
     args=""):
+        # type: (str,Any,Any,Any,List[str],str,str,str,str,bool,bool,bool,str) -> Any
         query = SuperTool.Query()
         if initial_statements:
             query.initial_statements = textwrap.dedent(initial_statements)
@@ -584,15 +678,15 @@ def supertool_execute( *,
         return supertool_execute_query(query=query, dbstate=dbstate, db=db, trans=trans, handles=handles, args=args) 
 
 def supertool_execute_script(*, script, dbstate=None, db=None, trans=None, handles=None, args=""): 
+        # type: (str,Any,Any,Any,List[str],str) -> Any
         scriptfile = SuperTool.ScriptFile()
         query = scriptfile.load(script)
         return supertool_execute_query(query=query, dbstate=dbstate, db=db, trans=trans, handles=handles, args=args) 
 
 def supertool_execute_query(*, query, dbstate=None, db=None, trans=None, handles=None, args=""): 
+        # type: (SuperTool.Query,Any,Any,Any,List[str],str) -> Any
         env = {
             "args": args, 
-            #"category": category, 
-            #"namespace": category_info.objclass
         }
 
         if dbstate is None and db is None:
@@ -604,11 +698,11 @@ def supertool_execute_query(*, query, dbstate=None, db=None, trans=None, handles
             
         if query.category not in CATEGORIES:
             raise RuntimeError("Invalid category: " + query.category)
-        category_info = get_category_info(dbstate.db, query.category)
+        context = get_context(dbstate.db, query.category)
         
         if handles is None:
-            if category_info.objclass:
-                selected_handles = category_info.get_all_objects_func()
+            if context.objclass:
+                selected_handles = context.get_all_objects_func()
             else:
                 selected_handles = []
         else:
@@ -621,7 +715,7 @@ def supertool_execute_query(*, query, dbstate=None, db=None, trans=None, handles
         gramps_engine = SuperTool.GrampsEngine(
             dbstate,
             user,
-            category_info,
+            context,
             selected_handles,
             query,
             env=env,
@@ -637,4 +731,44 @@ def supertool_execute_query(*, query, dbstate=None, db=None, trans=None, handles
                 for values in gramps_engine.get_values(trans, result):
                     rows.append(values[1:-2])
         return Response(rows=rows, query=query, result=result)
+    
+
+def makefilter(
+        category, filtername, filtertext, initial_statements, statements
+    ):
+        # type: (Context, str, str, str, str) -> Tuple[bool, str]
+        the_filter = GenericFilterFactory(category.objclass)()
+        rule = category.filterrule([filtertext, initial_statements, statements])
+        if not filtername:
+            return (False, "Please supply a title/name")
+        if not filtertext:
+            return (False, "Please supply a filtering condition")
+        the_filter.add_rule(rule)
+        the_filter.set_name(filtername)
+        filterdb = FilterList(CUSTOM_FILTERS)
+        filterdb.load()
+        filters = filterdb.get_filters_dict(category.objclass)
+        if filtername in filters:
+            msg = "Filter '{}' already exists; choose another name".format(filtername)
+            return (False, msg)
+        filterdb.add(category.objclass, the_filter)
+        filterdb.save()
+        reload_custom_filters()
+
+        msg = "Created filter '{}'".format(filtername)
+        return (True, msg)
+
+def getproxy(db, obj):
+    # (Primaryobject) -> engine.Proxy
+    if isinstance(obj, Person): return engine.PersonProxy(db, obj.handle)
+    if isinstance(obj, Family): return engine.FamilyProxy(db, obj.handle)
+    if isinstance(obj, Event): return engine.EventProxy(db, obj.handle)
+    if isinstance(obj, Place): return engine.PlaceProxy(db, obj.handle)
+    if isinstance(obj, Citation): return engine.CitationnProxy(db, obj.handle)
+    if isinstance(obj, Source): return engine.SourceProxy(db, obj.handle)
+    if isinstance(obj, Repository): return engine.RepositoryProxy(db, obj.handle)
+    if isinstance(obj, Media): return engine.MediaProxy(db, obj.handle)
+    if isinstance(obj, Note): return engine.NoteProxy(db, obj.handle)
+    raise engine.SupertoolException("Unknown object type: " + str(type(obj)))
+
     

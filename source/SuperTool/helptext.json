@@ -173,6 +173,10 @@
             "Gramps internal handle"
         ],
         [
+            "media_list",
+            "List of media"
+        ],
+        [
             "mother",
             "Person's mother"
         ],
@@ -263,6 +267,10 @@
             "Gramps internal handle"
         ],
         [
+            "media_list",
+            "List of media"
+        ],
+        [
             "mother",
             "Person object of the family's mother"
         ],
@@ -315,6 +323,10 @@
         [
             "handle",
             "Gramps internal handle"
+        ],
+        [
+            "media_list",
+            "List of media"
         ],
         [
             "notes",
@@ -403,6 +415,10 @@
             "Full name including enclosing places"
         ],
         [
+            "media_list",
+            "List of media"
+        ],
+        [
             "name",
             "Name of the place"
         ],
@@ -465,6 +481,10 @@
             "Gramps internal handle"
         ],
         [
+            "media_list",
+            "List of media"
+        ],
+        [
             "notes",
             "List of notes"
         ],
@@ -513,6 +533,10 @@
         [
             "handle",
             "Gramps internal handle"
+        ],
+        [
+            "media_list",
+            "List of media"
         ],
         [
             "notes",
