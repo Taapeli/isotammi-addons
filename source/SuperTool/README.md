@@ -1,13 +1,15 @@
 # SuperTool
-v1.4.2<br>
-6 May 2024<br>
+v1.4.5<br>
+13 July 2024<br>
 Author: kari.kujansuu@gmail.com<br>
 
  [Introduction](#introduction)
 <br> [User interface](#user-interface)
 <br> [Basic examples](#basic-examples)
 <br> [Pre-defined variables](#pre-defined-variables)
-<br> [Example](#example)
+<br> [Examples](#examples)
+<br> [Script description](#script-description)
+<br> [Capturing print output](#capturing-print-output)
 <br> [Accessing Gramps objects](#accessing-gramps-objects)
 <br> [General variables](#general-variables)
 <br> [Help feature](#help-feature)
@@ -78,6 +80,8 @@ The tool has five input text fields:
 
 However, if the current category is Dashboard, Relationships, Charts or Geography then the fields "Statements executed for each object" and "Filter" are hidden because they don't make sense in those cases.
 
+The result of the query is displayed in the "Result" tab in the bottom part of the dialog. In addition, if the "Capture output" checkbox is selected, any output from print statements is displayed in the "Print output" tab.
+
 ## Basic examples
 
 All the input fields (except Title) will be in Python syntax. All fields are optional but if you want to see any results then the last field, "Expressions to display" must contain something (comma separated Python expressions). For example, if the People category is selected you can simply write "name" in the field, select one or more people from the person list and click "Execute"
@@ -144,6 +148,21 @@ We can order the rows by any column by clicking the column header:
 
 Note that none of the above experiments required saving the Python code in a file - everything is executed in memory within the tool. Later we will see how to save a query in a script file.
 
+## Script description
+
+The "Initialization statements" part can be used to briefly document the script by including Python comments. However, the space there is very limited. The "Description" link in the top right corner can be used to write a longer description. That description is also stored in the script file (see [Saving the query as a script file](#saving-the-query-as-a-script-file)).
+
+Clicking the link will open a new window where the description can be written or edited. Clicking OK will then save the description in SuperTool - but it will NOT be stored in a script file until the script is saved from the menu (File > Save). The asterisk at the window header will indicate that there are unsaved changes.
+
+## Capturing print output
+
+Python code can contain print statements (e.g. "<i>print('Value is', value)</i>". If Gramps is started in console mode then the print output will normally go to the console. Without the console the output is lost except that in Windows it goes to the GrampsXX.log file (e.g. Gramps51.log). Print output is free-form, so it cannot be displayed in the Result tab.
+
+However, if the "Capture output" checkbox is checked, then SuperTool will save the output and display it in the "Print output" tab. This can be used e.g. for debugging the script or other purposes.
+
+There are restrictions: each print line can be at most 1000 characters long the and the complete output must be at most 100 kB. This is because I noticed that, at least in some Linux systems, Gramps will get an X Window error and crash if the output is longer. 
+
+
 ## Accessing Gramps objects
 
 The last predefined variable (person/obj) refers to the actual Gramps Person object (gramps.gen.lib.Person). The variables "person" and "obj" are the same object (i.e. "obj" is an alias for "person"). By using the Person object you can access any internal field or method you like. It goes without saying that this might be quite dangerous if you don't know what you are doing!
@@ -206,7 +225,7 @@ The second input field ("Initialization statements") can contain any Python stat
 
 This field can contain regular Python comments (lines starting with a hash sign: #).
 
-In this example a counter is used to find duplicate places in the database. The city of Philadelphia appears twice in the database, using Gramps IDs P1313 and P1413.
+In this example a counter is used to find duplicate places in the database. The city of Philadelphia appears twice in the database, using Gramps IDs P1313 and P1413. Run this in the Places category.
 
 ![SuperTool](SuperTool-duplicate-places.png)
 
@@ -488,20 +507,19 @@ This is an experimental feature. There is a pre-defined variable 'result' which 
 
 Normally the rows displayed will correspond to the processed Gramps objects. With 'result.add_row(data)' you can add arbitrary data to the result. The 'data' argument must be a list with values to be displayed. The number and types of the values must be consistent: there must be the same number of values in each call of add_row and the number must be the same as the number of items in the "Expressions to display" field (if any). The types (str, int or float) must also match (all other types are converted to strings).
 
-The 'add_row' function also accepts three optional parameters: gramps_id, category and handle. These can be used if you want the row to correspond to a specific Gramps object. The parameter 'gramps_id' should be a string that will be inserted as the first column in the display. The parameters 'category' and 'handle' specify the object that the row corresponds to. Double-clicking the row will then open the corresponding object editor. For example this code will display the parents of the family and their children - and also allow the children be edited (this should be run in the Families category):
+The 'add_row' function also accepts thee optional parameter 'obj'. These can be used if you want the row to correspond to a specific Gramps object. Double-clicking the row will then open the corresponding object editor. For example this code will display the parents of the family and their children - and also allow the children be edited (this should be run in the Families category):
 
 ```python
-result.add_row([father.name, mother.name], gramps_id=gramps_id, category='Families', handle=handle)
+result.add_row([father.name, mother.name], obj=self)
 for child in children:
-    result.add_row(["", child.name], gramps_id=child.gramps_id, category='People', handle=child.handle)
+    result.add_row(["", child.name], obj=child)
 ```
 
 Note that both families and individuals appear in the result:
 
 ![SuperTool](add_row.png)
 
-
-The default for 'category' is the current category.
+Note: the 'add_row' method also accepts parameters gramps_id, handle, namespace and category which can also be used to specify the object. However, in most cases it is sufficient and simpler to use the 'obj' parameter.
 
 Normally the types of the columns are detected when the first row is generated. The subsequent rows must use the same types. The 'set_coltypes' can be called in advance to set the column types. It is not clear if this is ever needed, though :-)
 
@@ -543,6 +561,7 @@ The arguments to supertool_execute mirror the input fields in the SuperTool user
 def supertool_execute( *, 
     category, 
     dbstate, 
+    db, 
     trans=None,
     handles=None, 
     initial_statements=None, 
@@ -584,6 +603,7 @@ An asterisk after the type name means that the attribute is a list of objects, e
 
 ![SuperTool](supertool.svg)
 
+Note: the 'media_list' attribute is missing from this diagram.
 
 The corresponding diagram for Gramps object (Gramps Data Model) is at https://gramps-project.org/wiki/index.php/Gramps_Data_Model
 
