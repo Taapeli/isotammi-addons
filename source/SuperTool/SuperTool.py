@@ -996,8 +996,8 @@ class SuperTool(ManagedWindow):
         self.filtered_objects.set_sensitive(category_ok)
         self.selected_objects.set_sensitive(category_ok)
 
+        self.commit_checkbox.set_sensitive(category_ok)
         self.summary_checkbox.set_sensitive(category_ok)
-        self.capture_checkbox.set_sensitive(category_ok)
 
     def clear(self, _widget):
         # type: (Any) -> None
