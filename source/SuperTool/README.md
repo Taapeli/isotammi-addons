@@ -198,13 +198,14 @@ Under the text input fields there is a set of three radio buttons that determine
 * Filtered objects - all displayed objects (applicable if a Gramps regular sidebar filter is used)
 * Selected objects - only the object or objects that the user has selected from the list (the default)
 
-Next are three checkboxes:
+Next are four checkboxes:
 
 ![SuperTool-options](SuperTool-options.png)
 
 * Unwind lists - if any value in the "Expressions to display" is a list then each member of the list will be shown on a separate row
 * Commit changes - any changes to the selected objects are automatically committed if this is checked
 * Summary only - do not display values for every object, only a summary after processing all objects
+* Capture output - capture output of print statements and show it in the 'Print output' tab
 
 ## Editing objects
 
