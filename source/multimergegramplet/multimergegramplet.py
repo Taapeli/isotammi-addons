@@ -392,12 +392,19 @@ class MultiMergeGramplet(Gramplet):
             dialog.vbox.pack_start(lbl1, False, False, 5)
             self.primary_handle = None
             group = None
+            sw = Gtk.ScrolledWindow()
+#             sw.set_hexpand(True)
+#             sw.set_vexpand(True)      
+            sw.set_size_request(600, 400)      
+            itemsbox = Gtk.VBox()
+            dialog.vbox.pack_start(sw, False, True, 0)
+            sw.add(itemsbox)
             for handle in possible_handles:
                 obj = context.getfunc(handle)
                 title = context.titlefunc(obj)
                 group = Gtk.RadioButton.new_with_label_from_widget(group, title)
                 group.connect("toggled", self.cb_set_primary, handle)
-                dialog.vbox.pack_start(group, False, True, 0)
+                itemsbox.pack_start(group, False, True, 0)
                 # first one is the default:
                 if self.primary_handle is None:
                     group.set_active(True)
