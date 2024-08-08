@@ -194,7 +194,7 @@ class MyListModel(Gtk.ListStore):
 
         for (title, colnum, width) in columns:
             renderer = Gtk.CellRendererText()
-            col = Gtk.TreeViewColumn(title, renderer, text=colnum, weight_set=True)
+            col = Gtk.TreeViewColumn(title, renderer, text=colnum)
             if colnum == 7: # name type column
                 col.set_cell_data_func(renderer, datafunc)
             col.set_clickable(True)
