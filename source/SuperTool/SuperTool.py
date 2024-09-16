@@ -1245,6 +1245,10 @@ class SuperTool(ManagedWindow):
         if not self.uistate.viewmanager.active_page:
             return
         query = self.saveconfig()
+        if self.last_filename:
+            query.dirname = str(Path(self.last_filename).parent)
+        else:
+            query.dirname = None
         
         class Capturer:
             LINELIMIT = 1000
