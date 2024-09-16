@@ -1269,7 +1269,8 @@ class SuperTool(ManagedWindow):
                     return
                 self.data += data 
                 self.size += numbytes
-
+        if query.dirname:
+            sys.path.insert(0, query.dirname)
         try:
             self.commit_changes = self.commit_checkbox.get_active()
             txtitle = "Executing SuperTool"
@@ -1327,6 +1328,8 @@ class SuperTool(ManagedWindow):
                 codeline = source.splitlines()[linenum-1]
             self.set_error(errortext, context, codeline, src, fname, linenum=linenum2)
         finally:
+            if query.dirname:
+                del sys.path[0]
             self.output_window.set_size_request(600, 400)
             if self.capture_checkbox.get_active():
                 size = 0
