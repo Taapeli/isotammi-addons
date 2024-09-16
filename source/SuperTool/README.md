@@ -181,6 +181,7 @@ In addition to the variables mentioned above, the following general/global varia
 * getargs - ask the user for input 
 * category - Dashboard, People, Families etc.
 * namespace - Person, Family, Event etc.
+* getproxy - a function to convert a Gramps internal object to a proxy object
 
 ## Help feature
 
@@ -275,19 +276,23 @@ If the type is 'bool' then the dialog displays a checkbox. The value can be True
 
 If the type is 'list' then value must be a list of values that are displayed in a dropdown list. The values can be of any type (that can be converted to a string).
 
+If the type is 'person' (as a string, include the quotes) then the returned value is a person proxy object. There is also a text box that contains the gramps ID of the person and a 'Select' button that allows the user to select a specific person. It is also possible to select a person by filling the gramps ID field and pressing Enter. The name of the selected person is displayed beside the 'Select' button. 
 For example:
 
 ```python
-args = getargs(text="Searchtext", 
-    case_sensitive=("Case sensitive", bool, False), 
-    limit=("Limit", list, [50,100,500]))
+args = getargs(text="Searchtext:", 
+    case_sensitive=("Case sensitive:", bool, True), 
+    limit=("Limit:", list, [50,100,500]),
+    person=("Person:", 'person', "I0123")
+    )
 ```
 This will first display a dialog like
 
 ![Getargs dialog](SuperTool-getargs2.png)
 
 
-The given values are saved and reused as defaults when getargs is called the next time.
+The given values are saved and reused as defaults when getargs is called the next time. 
+Note: if you change to another database, then the saved gramps ID (for a person selection) will point to a person in the current database.
 
 If the user presses "Cancel" then the query is canceled:
 
@@ -809,6 +814,7 @@ dbstate              | Database state  object                                   
 filter               | Function that returns a custom filter by name                                         | 
 flatten              | Function that returns elements from nested lists                                      | 
 getargs              | Function that asks the user for parameters to be used in the query                    | 
+getproxy             | Function to convert a Gramps internal object to a proxy object                        | 
 makedate             | Function to construct a date value; e.g. makedate(1800, 12, 31) or makedate(1800)     | 
 namespace            | E.g. 'Person', 'Family' etc. None for unsupported categories (Dashboard etc.)         |
 referrers(category)  | Function returning objects of type 'category' that refer to this object               |

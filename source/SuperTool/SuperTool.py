@@ -806,6 +806,7 @@ class GrampsEngine:
                                               **kwargs))
         env["step"] = self.step
         env["getproxy"] = functools.partial(supertool_utils.getproxy, self.db)
+        env["getargs"] = functools.partial(supertool_utils.getargs_dialog, self.dbstate, self.uistate)
 
         env.update(self.env)
 

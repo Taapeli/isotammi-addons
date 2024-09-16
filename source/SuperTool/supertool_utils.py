@@ -136,6 +136,8 @@ from gramps.gen.db import DbTxn
 from gramps.gen.lib.date import Today
 from gramps.gen.user import User
 
+from gramps.gui.selectors.selectperson import SelectPerson
+
 # -------------------------------------------------------------------------
 #
 # Local modules
@@ -379,14 +381,34 @@ def compile_expression(expression, source):
     return compile(expression.strip().replace("\n"," "), source, 'eval')
 
 
-def getargs_dialog(**kwargs):
+def getargs_dialog(dbstate, uistate, **kwargs):
     # type: (Dict[str, Union[str, Tuple[str,str,str]]]) -> Any
     from types import SimpleNamespace
 
-
-    from gi.repository import Gtk
+    from gi.repository import Gtk, Gdk
     from gramps.gen.const import GRAMPS_LOCALE as glocale
     _ = glocale.translation.gettext
+
+    def select_person(param):
+        sel = SelectPerson(dbstate, uistate, [], "Select Person")
+        result = sel.run()
+        print("result:", result)
+        if result:
+            p = getproxy(dbstate.db, result)
+            param.value = p
+            param.entry.set_text(p.gramps_id)
+            param.lbl.set_label(p.name)
+
+    def keypress(param, event):
+        if event.keyval in (Gdk.KEY_Return, Gdk.KEY_KP_Enter):
+            p = dbstate.db.get_person_from_gramps_id(param.entry.get_text())
+            if p:
+                value = getproxy(dbstate.db, p)
+                param.lbl.set_label(value.name)
+                param.value = value
+            else:
+                param.lbl.set_label("")
+                param.value = None
 
     config = configman.register_manager("supertool")
     config.load()
@@ -402,20 +424,26 @@ def getargs_dialog(**kwargs):
     grid = Gtk.Grid()
     grid.set_row_spacing(10)
     grid.set_column_spacing(10)
-    widgets = []
+
     initvalue = None
-    for row, param in enumerate(kwargs.items()):
-        param_name, val = param
+
+    class Param: pass
+    params = []
+    
+    for row, (param_name, val) in enumerate(kwargs.items()):
         key = "default-params." + param_name
         config.register(key, "")
         value = config.get(key)
         
+        param = Param()        
         if type(val) == str:
             title = val
             widget = Gtk.Entry()
             widget.set_text(value)
+            paramtype = str
         if type(val) == tuple:
             title, paramtype, initvalue = val # type: ignore
+            param.initvalue = initvalue
             if paramtype == bool:
                 widget = Gtk.CheckButton()
                 if value == "":
@@ -433,40 +461,81 @@ def getargs_dialog(**kwargs):
                 for index, v in enumerate(initvalue):
                     widget.append_text(str(v))
                     if str(v) == value:
+                        print(widget)
                         widget.set_active(index+1)                
+            if paramtype == 'person':
+                widget = Gtk.HBox()
+                widget.set_spacing(10)
+                entry = Gtk.Entry() #self.get_widget(opttype)
+                lbl = Gtk.Label()
+                button = Gtk.Button("Select")
+                widget.pack_start(entry, False, False, 0)
+                widget.pack_start(button, False, False, 0)
+                widget.pack_end(lbl, False, False, 0)
+
+                param.entry = entry
+                param.lbl = lbl
+                param.value = None
+                if not value and initvalue:
+                    value = initvalue
+                if value:
+                    p = dbstate.db.get_person_from_gramps_id(value)
+                    if p:
+                        entry.set_text(value)
+                        param.value = getproxy(dbstate.db, p)
+                        lbl.set_label(param.value.name)
+
+                entry.connect("key-press-event",lambda _widget, event,
+                              param=param: keypress(param, event))
+                button.connect("clicked", lambda _, param=param: select_person(param))
+
+        param.name = param_name
+        param.paramtype = paramtype
+        param.widget = widget
+        params.append(param)
                 
         lbl_title = Gtk.Label(title)
         lbl_title.set_halign(Gtk.Align.START)
         grid.attach(lbl_title, 0, row, 1, 1)
         grid.attach(widget, 1, row, 1, 1)
-        widgets.append((param_name, initvalue, widget))
 
     dialog.vbox.pack_start(grid, False, False, 5)
     dialog.show_all()
-    result = dialog.run()
-    if result != Gtk.ResponseType.OK:
+    try:
+        result = dialog.run()
+        if result != Gtk.ResponseType.OK:
+            raise engine.SupertoolException("canceled")
+    
+        values = {}
+        for param in params:
+            if param.paramtype == str:
+                value = param.widget.get_text()
+            if param.paramtype == bool:
+                value = param.widget.get_active()
+            if param.paramtype == list:
+                index = param.widget.get_active()
+                if index <= 0:  # 0 or -1
+                    value = ""    # none selected
+                else:
+                    value = param.initvalue[index-1] # type: ignore
+                print(index, value)
+            configvalue = value
+            if param.paramtype == 'person':
+                value = param.value
+                if value is None:
+                    gid = param.entry.get_text()
+                    if gid:
+                        p = dbstate.db.get_person_from_gramps_id(gid)
+                        if p:
+                            value = getproxy(dbstate.db, p)
+                configvalue = value.gramps_id if value else ""
+            values[param.name] = value
+            key = "default-params." + param.name
+            config.set(key, str(configvalue))
+        config.save()
+        return SimpleNamespace(**values)
+    finally:
         dialog.destroy()
-        raise engine.SupertoolException("canceled")
-        return False
-
-    values = {}
-    for param_name, initvalue, widget in widgets:
-        if isinstance(widget, Gtk.Entry):
-            value = widget.get_text()
-        if isinstance(widget, Gtk.CheckButton):
-            value = widget.get_active()
-        if isinstance(widget, Gtk.ComboBoxText):
-            index = widget.get_active()
-            if index <= 0:  # 0 or -1
-                value = ""    # none selected
-            else:
-                value = initvalue[index-1] # type: ignore
-        values[param_name] = value
-        key = "default-params." + param_name
-        config.set(key, str(value))
-    config.save()
-    dialog.destroy()
-    return SimpleNamespace(**values)
 
 
 def uniq(items):
@@ -631,7 +700,6 @@ def get_globals():
         
         DummyTxn=DummyTxn,
         #commit=functools.partial(commit, dbstate.db, envvars["trans"]),
-        getargs=getargs_dialog,
         null=engine.nullproxy,
     )
 
