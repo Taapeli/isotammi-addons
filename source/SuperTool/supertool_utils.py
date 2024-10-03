@@ -392,7 +392,6 @@ def getargs_dialog(dbstate, uistate, **kwargs):
     def select_person(param):
         sel = SelectPerson(dbstate, uistate, [], "Select Person")
         result = sel.run()
-        print("result:", result)
         if result:
             p = getproxy(dbstate.db, result)
             param.value = p
