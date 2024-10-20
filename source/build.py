@@ -12,7 +12,7 @@ from gramps.gen.const import GRAMPS_LOCALE as glocale
 from gramps.gen.plug import make_environment, PTYPE_STR
 
 grampsversions = [("5.0","gramps50"), ("5.1","gramps51"), ("5.2","gramps52")]
-languages = ["en","fi","sv"]
+languages = ["en","fi","sv","da"]
 
 def ignore(fname):
     if fname.endswith("/__pycache__"): return True

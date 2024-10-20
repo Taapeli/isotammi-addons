@@ -1,0 +1,218 @@
+# English translations for PROJECT.
+# Copyright (C) 2019 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2019.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2019-06-13 10:47+0300\n"
+"PO-Revision-Date: 2024-10-20 16:39+0300\n"
+"Last-Translator: Kaj Mikkelsen <kmi@vgdata.dk>\n"
+"Language-Team: en <LL@li.org>\n"
+"Language: da_DK\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Generated-By: Babel 2.6.0\n"
+"X-Generator: Poedit 2.3\n"
+
+#: PlaceTool/PlaceTool.gpr.py:11 PlaceTool/PlaceTool.gpr.py:22
+msgid "PlaceTool"
+msgstr "Sted værktøj"
+
+#: PlaceTool/PlaceTool.gpr.py:12
+msgid "Gramplet to manipulate multiple places"
+msgstr "Gramplet til at redigere flere steder"
+
+#: PlaceTool/PlaceTool.py:74 PlaceTool/PlaceTool.py:129
+msgid "None"
+msgstr "Ingen"
+
+#: PlaceTool/PlaceTool.py:92
+msgid ""
+"This gramplet allows setting properties for multiple places at the same time"
+msgstr ""
+"Denne Gramplet giver dig mulighed for at angive egenskaber for flere steder "
+"på samme tid"
+
+#: PlaceTool/PlaceTool.py:97
+msgid "Place type:"
+msgstr "Stedtype:"
+
+#: PlaceTool/PlaceTool.py:100
+msgid "New place type for the selected places"
+msgstr "Nye stedtyper for de valgte steder"
+
+#: PlaceTool/PlaceTool.py:103
+msgid "Tag:"
+msgstr "Mærkat:"
+
+#: PlaceTool/PlaceTool.py:106
+msgid "New tag for the selected places"
+msgstr "Ny mærkat til valgte steder"
+
+#: PlaceTool/PlaceTool.py:109
+msgid "Timespan:"
+msgstr "Tidsrum:"
+
+#: PlaceTool/PlaceTool.py:113
+msgid "Set timespan for enclosing places"
+msgstr "Set tidsrummet for omsluttende steder"
+
+#: PlaceTool/PlaceTool.py:124
+msgid "New enclosing place:"
+msgstr "Nyt omsluttende sted:"
+
+#: PlaceTool/PlaceTool.py:131
+msgid "New enclosing place for the selected places"
+msgstr "Nyt omsluttende sted for de valgte steder"
+
+#: PlaceTool/PlaceTool.py:149
+msgid "Select enclosing place"
+msgstr "Vælg omsluttende sted"
+
+#: PlaceTool/PlaceTool.py:151
+msgid "Select a new enclosing place for the selected places"
+msgstr "Vælg et nyt omsluttende sted for de valgte steder"
+
+#: PlaceTool/PlaceTool.py:154
+msgid "Clear original enclosing places"
+msgstr "Ryd de oprindelige omsluttende steder"
+
+#: PlaceTool/PlaceTool.py:155
+msgid ""
+"If checked then any previous enclosing place will be removed from the "
+"selected places"
+msgstr ""
+"Hvis flueben sat, så vil alle tidligere omsluttende steder blive fjernet fra "
+"de valgte steder"
+
+#: PlaceTool/PlaceTool.py:158
+msgid "Clear tags"
+msgstr "Ryd mærkater"
+
+#: PlaceTool/PlaceTool.py:159
+msgid ""
+"If checked then any previous tag will be removed from the selected places"
+msgstr ""
+"Hvis flueben sat, så vil alle tidligere mærkater blive fjernet fra de valgte "
+"steder"
+
+#: PlaceTool/PlaceTool.py:162
+msgid "Generate hierarchy"
+msgstr "Dan hieraki"
+
+#: PlaceTool/PlaceTool.py:164
+msgid ""
+"If checked then a place hierarchy will be generated, based on the names of "
+"the original places"
+msgstr ""
+"Hvis flueben sat så vil der bilve dannet et nyt hierarki, baseret på navnene "
+"af se oprindelige steder"
+
+#: PlaceTool/PlaceTool.py:172
+msgid "Separator:"
+msgstr "Adskillelsestegn:"
+
+#: PlaceTool/PlaceTool.py:176
+msgid "Comma"
+msgstr "Komma"
+
+#: PlaceTool/PlaceTool.py:178
+msgid ""
+"If selected then the original names will be split at commas to create the "
+"new hierarchy"
+msgstr ""
+"Hvis flueben sat vil de oprindelige navne blive delt ved kommaer for at "
+"danne et nyt hierarki"
+
+#: PlaceTool/PlaceTool.py:184
+msgid "Space"
+msgstr "Mellemrum"
+
+#: PlaceTool/PlaceTool.py:186
+msgid ""
+"If selected then the original names will be split at blank spaces to create "
+"the new hierarchy"
+msgstr ""
+"Hvis flueben sat vil de oprindelige navne blive delt ved mellemrum for at "
+"danne et nyt hierarki"
+
+#: PlaceTool/PlaceTool.py:193
+msgid "reverse hierarchy"
+msgstr "omvend hieraki"
+
+#: PlaceTool/PlaceTool.py:194
+msgid ""
+"If checked then the original name is assumed to start with the largest place "
+"in the hierarchy"
+msgstr ""
+"Hvis flueben sat forudsættes det at det oprindelige navn starter med det "
+"største sted i hierarkiet"
+
+#: PlaceTool/PlaceTool.py:200
+msgid "Replace text"
+msgstr "Erstat tekst"
+
+#: PlaceTool/PlaceTool.py:201
+msgid ""
+"If checked then a specified text is replaced with a new text in the selected "
+"place names"
+msgstr ""
+"Hvis flueben sat så vil den angivne tekst blive erstattet med en ny tekst i "
+"de valgte steders navne"
+
+#: PlaceTool/PlaceTool.py:204
+msgid "Use regex"
+msgstr "Benyt regex"
+
+#: PlaceTool/PlaceTool.py:205
+msgid ""
+"If checked then the old text can be a regular expression and the new text "
+"can contain substitutions (\\1, \\2 etc.)"
+msgstr ""
+"Hvis flueben sat kan den gamle tekst være en \"regular expression\" og den "
+"nye tekst kan indeholde substitutter (\\1, \\2 o.s.v.)"
+
+#: PlaceTool/PlaceTool.py:214
+msgid "Old text:"
+msgstr "Gammel tekst:"
+
+#: PlaceTool/PlaceTool.py:217
+msgid "The original text (or regular expression) to be  replaced"
+msgstr "Den oprindelige tekst (eller regular expression) der skal erstattes"
+
+#: PlaceTool/PlaceTool.py:219
+msgid "New text:"
+msgstr "Ny tekst:"
+
+#: PlaceTool/PlaceTool.py:222
+msgid "The new text that will replace the old text"
+msgstr "Den nye tekst, der vil erstatte den gamle tekst"
+
+#: PlaceTool/PlaceTool.py:232
+msgid "Clear selections"
+msgstr "Ryd valgene"
+
+#: PlaceTool/PlaceTool.py:234
+msgid "Clears all settings"
+msgstr "Ryd alle indstillinger"
+
+#: PlaceTool/PlaceTool.py:237
+msgid "Apply to selected places"
+msgstr "Anvend på valgte steder"
+
+#: PlaceTool/PlaceTool.py:239
+msgid "Executes all specified operations for selected places"
+msgstr "Udfør alle angivne handlinger for valgte steder"
+
+#: PlaceTool/PlaceTool.py:280
+msgid "Setting place properties"
+msgstr "Angiver egenskaber for sted"
+
+#: PlaceTool/PlaceTool.py:318
+msgid "Regex operation failed: {}"
+msgstr "Regex handlingen mislykkedes: {}"

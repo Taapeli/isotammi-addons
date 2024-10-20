@@ -1,0 +1,43 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: Kaj Mikkelsen <kmi@vgdata.dk>\n"
+"Language-Team: \n"
+"Language: da_DK\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 2.3\n"
+
+#: DeepConnectionsGraph/DeepConnectionsGraph.gpr.py:11
+#: DeepConnectionsGraph/DeepConnectionsGraph.gpr.py:18
+#: DeepConnectionsGraph/DeepConnectionsGraph.py:153
+msgid "Deep Connections Graph"
+msgstr "Skema over dybe slægtskaber"
+
+#: DeepConnectionsGraph/DeepConnectionsGraph.gpr.py:12
+msgid "DeepConnectionsGraph Gramplet"
+msgstr "DybeSlægtskaberSkema Gramplet"
+
+#: DeepConnectionsGraph/DeepConnectionsGraph.py:194
+msgid "Port:"
+msgstr "Port:"
+
+#: DeepConnectionsGraph/DeepConnectionsGraph.py:209
+msgid "Start server"
+msgstr "Start server"
+
+#: DeepConnectionsGraph/DeepConnectionsGraph.py:214
+msgid "Stop server"
+msgstr "Stop server"
+
+#: DeepConnectionsGraph/DeepConnectionsGraph.py:221
+msgid "Refresh tree"
+msgstr "Gendindlæs træ"
+
+#: DeepConnectionsGraph/DeepConnectionsGraph.py:227
+msgid "Start browser"
+msgstr "Start browser"

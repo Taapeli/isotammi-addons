@@ -1,0 +1,70 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PropertyEditor\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-04-03 19:37+0300\n"
+"PO-Revision-Date: 2024-10-20 16:40+0300\n"
+"Last-Translator: Kaj Mikkelsen <kmi@vgdata.dk>\n"
+"Language-Team: \n"
+"Language: da_DK\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 2.3\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+
+#: PropertyEditor/PropertyEditor.gpr.py:11
+#: PropertyEditor/PropertyEditor.gpr.py:22
+msgid "PropertyEditor"
+msgstr "Redigering af egenskaber"
+
+#: PropertyEditor/PropertyEditor.gpr.py:12
+msgid "Gramplet to edit attributes of multiple objects"
+msgstr "Gramplet til at redigere egenskaber for flere objekter"
+
+#: PropertyEditor/PropertyEditor.py:144
+#, python-format
+msgid ""
+"This gramplet allows editing attributes for multiple %s objects at the same "
+"time"
+msgstr ""
+"Denne gramplet giver mulighed for at redigere attributter for flere %s "
+"objekter på samme tid"
+
+#: PropertyEditor/PropertyEditor.py:178
+msgid "Use regex"
+msgstr "Benyt regex"
+
+#: PropertyEditor/PropertyEditor.py:186
+msgid "Old text:"
+msgstr "Gammel tekst:"
+
+#: PropertyEditor/PropertyEditor.py:191
+msgid "New text:"
+msgstr "Ny tekst:"
+
+#: PropertyEditor/PropertyEditor.py:203
+msgid "Clear"
+msgstr "Ryd"
+
+#: PropertyEditor/PropertyEditor.py:207
+msgid "Apply to selected objects"
+msgstr "Anvend på valgte objekter"
+
+#: PropertyEditor/PropertyEditor.py:212
+msgid "_Help"
+msgstr "_Hjælp"
+
+#: PropertyEditor/PropertyEditor.py:253
+msgid "Setting properties"
+msgstr "Sæt indstillinger"
+
+#: PropertyEditor/PropertyEditor.py:272
+msgid "Regex operation failed: {}"
+msgstr "Regex handlingen mislykkedes: {}"

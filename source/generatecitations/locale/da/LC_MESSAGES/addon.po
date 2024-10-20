@@ -1,0 +1,89 @@
+# English translations for PROJECT.
+# Copyright (C) 2018 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2018.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2018-12-08 15:39+0200\n"
+"PO-Revision-Date: 2024-10-20 16:38+0300\n"
+"Last-Translator: Kaj Mikkelsen <kmi@vgdata.dk>\n"
+"Language-Team: en <LL@li.org>\n"
+"Language: da_DK\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Generated-By: Babel 2.6.0\n"
+"X-Generator: Poedit 2.3\n"
+
+#: generatecitations/generatecitations.gpr.py:27
+msgid "Isotammi tools"
+msgstr "Isotammi værktøjer"
+
+#: generatecitations/generatecitations.gpr.py:43
+#: generatecitations/generatecitations.gpr.py:44
+msgid "Generate source citations from notes"
+msgstr "Dan kildehenvisninger fra noter"
+
+#: generatecitations/generatecitations.py:119
+msgid "Error occurred, please report this message:"
+msgstr "Der opstod en fejl, rapportér venligst denne besked:"
+
+#: generatecitations/generatecitations.py:185
+msgid "Generating citations"
+msgstr "Danner kildehenvisninger"
+
+#: generatecitations/generatecitations.py:232
+msgid "Add citations"
+msgstr "Tilføj kildehenvisninger"
+
+#: generatecitations/generatecitations.py:287
+#, python-brace-format
+msgid "Total objects processed: {total_objects}"
+msgstr "Totalt behandlet objekter: {total_objects}"
+
+#: generatecitations/generatecitations.py:288
+#, python-brace-format
+msgid "Total notes: {total_notes}"
+msgstr "Totalt noter: {total_notes}"
+
+#: generatecitations/generatecitations.py:289
+#, python-brace-format
+msgid "Matching notes: {matching_notes}"
+msgstr "Matchende Noter:{matching_notes}"
+
+#: generatecitations/generatecitations.py:290
+#, python-brace-format
+msgid "Unique matching notes: {unique_matching_notes}"
+msgstr "Unikke matchende noter: {unique_matching_notes}"
+
+#: generatecitations/generatecitations.py:291
+#, python-brace-format
+msgid "Skipped notes: {skipped}"
+msgstr "Oversprungne noter: {skipped}"
+
+#: generatecitations/generatecitations.py:292
+#, python-brace-format
+msgid "Citations added: {citations_added}"
+msgstr "Kildehenvisninger tilføjet: {citations_added}"
+
+#: generatecitations/generatecitations.py:293
+#, python-brace-format
+msgid "Sources added: {sources_added}"
+msgstr "Kilder tilføjet: {sources_added}"
+
+#: generatecitations/generatecitations.py:294
+#, python-brace-format
+msgid "Repositories added: {repos_added}"
+msgstr "Arkiver tilføjet: {repos_added}"
+
+#: generatecitations/generatecitations.py:296
+msgid "You can undo all changes with Ctrl-Z."
+msgstr "Du kan fortryde alle ændringer med Ctrl-Z."
+
+#: generatecitations/generatecitations.py:298
+msgid "All events processed"
+msgstr "Alle hændelser behandlet"

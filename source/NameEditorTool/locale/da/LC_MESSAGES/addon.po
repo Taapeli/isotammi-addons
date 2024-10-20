@@ -1,0 +1,188 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-12-16 16:48+0200\n"
+"PO-Revision-Date: 2024-10-20 16:39+0300\n"
+"Last-Translator: Kaj Mikkelsen <kmi@vgdata.dk>\n"
+"Language-Team: \n"
+"Language: da_DK\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 2.3\n"
+
+#: NameEditorTool/NameEditorTool.gpr.py:26
+msgid "Isotammi tools"
+msgstr "Isotammi værktøjer"
+
+#: NameEditorTool/NameEditorTool.gpr.py:42
+msgid "Name Editor Tool"
+msgstr "Værktøj  Redigering af navne"
+
+#: NameEditorTool/NameEditorTool.gpr.py:43
+msgid "Edit names"
+msgstr "Rediger navne"
+
+#: NameEditorTool/NameEditorTool.py:240
+msgid "Name editor"
+msgstr "Redigering af navne"
+
+#: NameEditorTool/NameEditorTool.py:292
+msgid "Id"
+msgstr "Id"
+
+#: NameEditorTool/NameEditorTool.py:293
+msgid "Gender"
+msgstr "Køn"
+
+#: NameEditorTool/NameEditorTool.py:294
+msgid "Prefix"
+msgstr "Forstavelse"
+
+#: NameEditorTool/NameEditorTool.py:295
+msgid "Surname"
+msgstr "Efternavn"
+
+#: NameEditorTool/NameEditorTool.py:296
+msgid "First name"
+msgstr "Fornavn:"
+
+#: NameEditorTool/NameEditorTool.py:297
+msgid "Suffix"
+msgstr "Efterstavelse"
+
+#: NameEditorTool/NameEditorTool.py:298
+msgid "Title"
+msgstr "Titel"
+
+#: NameEditorTool/NameEditorTool.py:299
+msgid "Type"
+msgstr "Type"
+
+#: NameEditorTool/NameEditorTool.py:502
+msgid "Clear|name-editor"
+msgstr "Ryd|navne-redigering"
+
+#: NameEditorTool/NameEditorTool.py:503
+msgid "Copy from prefix"
+msgstr "Kopier fra forstavelse"
+
+#: NameEditorTool/NameEditorTool.py:504
+msgid "Copy from surname"
+msgstr "Kopier fra efternavn"
+
+#: NameEditorTool/NameEditorTool.py:505
+msgid "Copy from firstname"
+msgstr "Kopier fra fornavn"
+
+#: NameEditorTool/NameEditorTool.py:506
+msgid "Copy from suffix"
+msgstr "Kopier fra efterstavelse"
+
+#: NameEditorTool/NameEditorTool.py:507
+msgid "Copy from title"
+msgstr "Kopier fra titel"
+
+#: NameEditorTool/NameEditorTool.py:508
+msgid "Append prefix"
+msgstr "Tilføj forstavelse"
+
+#: NameEditorTool/NameEditorTool.py:509
+msgid "Append surname"
+msgstr "Tilføj efternavn"
+
+#: NameEditorTool/NameEditorTool.py:510
+msgid "Append firstname"
+msgstr "Tilføj fornavn"
+
+#: NameEditorTool/NameEditorTool.py:511
+msgid "Append suffix"
+msgstr "Tilføj efterstavelse"
+
+#: NameEditorTool/NameEditorTool.py:512
+msgid "Append from title"
+msgstr "Tilføj fra titel"
+
+#: NameEditorTool/NameEditorTool.py:608 NameEditorTool/NameEditorTool.py:629
+msgid "Names:"
+msgstr "Navne:"
+
+#: NameEditorTool/NameEditorTool.py:656
+msgid "Updating names"
+msgstr "Opdaterer navne"
+
+#~ msgid "Replace"
+#~ msgstr "Erstat"
+
+#~ msgid "Use regex"
+#~ msgstr "Benyt regex"
+
+#~ msgid "Old value"
+#~ msgstr "Gammel værdi"
+
+#~ msgid "New value"
+#~ msgstr "Ny værdi"
+
+#~ msgid "Undo"
+#~ msgstr "Fortryd"
+
+#~ msgid "Special operations"
+#~ msgstr "Specielle handlinger"
+
+#~ msgid "Clear form"
+#~ msgstr "Ryd formular"
+
+#~ msgid "Help"
+#~ msgstr "Hjælp"
+
+#~ msgid "Find"
+#~ msgstr "Find"
+
+#~ msgid "List all"
+#~ msgstr "List alle"
+
+#~ msgid "Filter"
+#~ msgstr "Filter"
+
+#~ msgid "All"
+#~ msgstr "Alt"
+
+#~ msgid "Primary"
+#~ msgstr "Primær"
+
+#~ msgid "Alternate"
+#~ msgstr "Skiftende"
+
+#~ msgid "Name type:"
+#~ msgstr "Navnetype:"
+
+#~ msgid "Unknown"
+#~ msgstr "Ukendt"
+
+#~ msgid "Female"
+#~ msgstr "Kvinde"
+
+#~ msgid "Male"
+#~ msgstr "Mand"
+
+#~ msgid "Gender:"
+#~ msgstr "Køn:"
+
+#~ msgid "label"
+#~ msgstr "mærke"
+
+#~ msgid "Names: {}"
+#~ msgstr "Navne: {}"
+
+#~ msgid "count"
+#~ msgstr "Antal"
+
+#~ msgid "Clear"
+#~ msgstr "Ryd"
