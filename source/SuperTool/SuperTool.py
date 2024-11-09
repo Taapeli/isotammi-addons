@@ -963,7 +963,10 @@ class SuperTool(ManagedWindow):
                 else:
                     context = self.context                
                 obj = context.getfunc(handle)
-                context.editfunc(self.dbstate, self.uistate, [], obj)
+                try:
+                    EditPerson(self.dbstate, self.uistate, [], obj)
+                except WindowActiveError:
+                    pass
                 return True
         except:
             traceback.print_exc()

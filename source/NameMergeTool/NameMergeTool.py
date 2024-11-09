@@ -33,6 +33,8 @@ from gramps.gen.db import DbReadBase
 from gramps.gen.dbstate import DbState
 from gramps.gen.display.name import displayer as name_displayer
 from gramps.gen.errors import WindowActiveError
+import contextlib
+import io
 from gramps.gen.lib import Name
 from gramps.gen.lib import Person
 from gramps.gen.user import User
@@ -504,7 +506,11 @@ class NameDialog(ManagedWindow, DbGUIElement):
         row = list(model[treeiter])
         handle = row[2]
         person = self.dbstate.db.get_person_from_handle(handle)
-        EditPerson(self.dbstate, self.uistate, [], person)
+        try:
+            with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
+                EditPerson(self.dbstate, self.uistate, [], person)
+        except WindowActiveError:
+            pass
 
     def __button_press(self, treeview, event):
         # type: (Gtk.TreeView, Gdk.Event) -> bool
@@ -876,7 +882,11 @@ class Personlist(ManagedWindow):
         row = list(model[treeiter])
         handle = row[2]
         person = self.dbstate.db.get_person_from_handle(handle)
-        EditPerson(self.dbstate, self.uistate, [], person)
+        try:
+            with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
+                EditPerson(self.dbstate, self.uistate, [], person)
+        except WindowActiveError:
+            pass
 
     def cb_button_press(self, treeview, event):
         # type: (Any,Any) -> bool
