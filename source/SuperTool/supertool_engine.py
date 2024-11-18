@@ -228,6 +228,7 @@ class DateProxy:
         # type: (Date) -> None
         self.dateobj = dateobj
         self.obj = dateobj
+        self.ymd = dateobj.get_ymd()
 
     def __eq__(self, other):
         # type: (Any, Any) -> bool
