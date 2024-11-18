@@ -838,8 +838,10 @@ class GrampsEngine:
                 )
                 if type(res) != tuple:
                     res = (res,)
+                yield from result.fetch_rows()
                 for values in self.generate_rows(res):
-                    yield [None] + values + [None, None]
+                    if values != ['None'] and values != [None]:
+                        yield [None] + values + [None, None]
 
 
 class SuperTool(ManagedWindow):
