@@ -18,70 +18,110 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Poedit 2.3\n"
 
-#: Dates/Dates.gpr.py:11 Dates/Dates.gpr.py:12 Dates/Dates.gpr.py:22
+#: Dates/Dates.gpr.py:32 Dates/Dates.gpr.py:45
 msgid "Dates"
 msgstr "Datoer"
 
-#: Dates/Dates.py:78
+#: Dates/Dates.gpr.py:33
+msgid "Search and replace within Event date strings"
+msgstr ""
+
+#: Dates/Dates.py:106
 msgid "Correct invalid dates"
 msgstr "Ret ugyldige datoer"
 
-#: Dates/Dates.py:90
+#: Dates/Dates.py:118
 msgid "This gramplet helps to correct invalid dates..."
 msgstr "Denne gramplet hjælper med at rette ugyldige datoer..."
 
-#: Dates/Dates.py:95
+#: Dates/Dates.py:123
 msgid "Replace text"
 msgstr "Erstat tekst"
 
-#: Dates/Dates.py:98
-msgid "Use regex"
-msgstr "Benyt regex"
+#: Dates/Dates.py:126
+msgid "Use regular expressions"
+msgstr ""
 
-#: Dates/Dates.py:107
-msgid "Old text:"
-msgstr "Gammel tekst:"
+#: Dates/Dates.py:135
+msgid "Find:"
+msgstr ""
 
-#: Dates/Dates.py:112
-msgid "New text:"
-msgstr "Ny tekst:"
+#: Dates/Dates.py:140
+#, fuzzy
+msgid "Replace:"
+msgstr "Erstat tekst"
 
-#: Dates/Dates.py:125
-msgid "31.12.1888 -> 1888-12-31"
+#: Dates/Dates.py:155
+#, fuzzy
+msgid "31.12.1888  1888-12-31"
 msgstr "31.12.1888 -> 1888-12-31"
 
-#: Dates/Dates.py:128
-msgid ".12.1888 -> 1888-12"
+#: Dates/Dates.py:158
+#, fuzzy
+msgid "12.31.1888  1888-12-31"
+msgstr "31.12.1888 -> 1888-12-31"
+
+#: Dates/Dates.py:161
+#, fuzzy
+msgid "1888.12.31  1888-12-31"
+msgstr "31.12.1888 -> 1888-12-31"
+
+#: Dates/Dates.py:164
+#, fuzzy
+msgid "1888.31.12  1888-12-31"
+msgstr "31.12.1888 -> 1888-12-31"
+
+#: Dates/Dates.py:167
+#, fuzzy
+msgid ".12.1888  1888-12"
 msgstr ".12.1888 -> 1888-12"
 
-#: Dates/Dates.py:131
-msgid "31..1888 -> 1888-00-31"
+#: Dates/Dates.py:170
+#, fuzzy
+msgid "31..1888  1888-00-31"
 msgstr "31..1888 -> 1888-00-31"
 
-#: Dates/Dates.py:134
-msgid "..1888 -> 1888"
+#: Dates/Dates.py:173
+#, fuzzy
+msgid "..1888  1888"
 msgstr "..1888 -> 1888"
 
-#: Dates/Dates.py:137
-msgid "1888-99 -> 1888 - 1899"
+#: Dates/Dates.py:176
+#, fuzzy
+msgid "1888-99  1888 - 1899"
 msgstr "1888-99 -> 1888 - 1899"
 
-#: Dates/Dates.py:143
-msgid "<1888/-1888 -> before 1888"
+#: Dates/Dates.py:182
+#, fuzzy
+msgid "<1888 (or -1888)  before 1888"
 msgstr "<1888/-1888 -> before 1888"
 
-#: Dates/Dates.py:146
-msgid ">1888/1888- -> after 1888"
+#: Dates/Dates.py:185
+#, fuzzy
+msgid ">1888 (or 1888-)  after 1888"
 msgstr ">1888/1888- -> after 1888"
 
-#: Dates/Dates.py:151
+#: Dates/Dates.py:188
+msgid "Dot (period) means any of: dot, comma, hyphen, slash."
+msgstr ""
+
+#: Dates/Dates.py:191
 msgid "Execute"
 msgstr "Udfør"
 
-#: Dates/Dates.py:167
+#: Dates/Dates.py:205
 msgid "Correcting invalid dates"
 msgstr "Retter ugyldige datoer"
 
-#: Dates/Dates.py:198
+#: Dates/Dates.py:232
 msgid "Regex operation failed: {}"
 msgstr "Regex handlingen mislykkedes: {}"
+
+#~ msgid "Use regex"
+#~ msgstr "Benyt regex"
+
+#~ msgid "Old text:"
+#~ msgstr "Gammel tekst:"
+
+#~ msgid "New text:"
+#~ msgstr "Ny tekst:"
