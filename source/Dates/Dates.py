@@ -20,12 +20,11 @@
 #
 
 import datetime
-import json
 import pprint
 import re
 import traceback
 
-from gi.repository import Gtk, Gdk, GObject
+from gi.repository import Gtk
 
 # ------------------------------------------------------------------------
 #
@@ -33,22 +32,11 @@ from gi.repository import Gtk, Gdk, GObject
 #
 # ------------------------------------------------------------------------
 
+from gramps.gen.datehandler import parser
 from gramps.gen.plug import Gramplet
-from gramps.gui.plug import tool
-from gramps.gui.utils import ProgressMeter
 from gramps.gen.db import DbTxn
-from gramps.gen.lib import (
-    Place,
-    PlaceRef,
-    PlaceName,
-    PlaceType,
-    Event,
-    EventRef,
-    EventType,
-    Tag,
-    Date,
-)
-from gramps.gui.dialog import OkDialog
+from gramps.gen.lib import Date
+
 from gramps.gen.const import GRAMPS_LOCALE as glocale
 
 try:
@@ -83,12 +71,8 @@ def optional(pat):
 
 def match(s, *args):
     pat = "".join(args)
-    print("match:")
-    print(" ", s)
-    print(" ", pat)
     flags = re.VERBOSE
     r = re.fullmatch(pat, s, flags)
-    print(" ", r)
     if r is None:
         return None
 
@@ -101,7 +85,6 @@ def match(s, *args):
 
 
 def dateval(y, m, d):
-    print(y, m, d)
     try:
         y = int(y)
         m = int(m)
@@ -166,8 +149,20 @@ class Dates(Gramplet):
         replace_grid.attach(self.new_text, 2, 1, 1, 1)
         vbox.pack_start(replace_grid, False, True, 0)
 
+#         self.reparse = Gtk.CheckButton(label=_("Re-parse date"))
+#         vbox.pack_start(self.reparse, False, True, 0)
+
         self.handle_dd_mm_yyyy = Gtk.CheckButton(label=_("31.12.1888 ⇒ 1888-12-31"))
         vbox.pack_start(self.handle_dd_mm_yyyy, False, True, 0)
+
+        self.handle_mm_dd_yyyy = Gtk.CheckButton(label=_("12.31.1888 ⇒ 1888-12-31"))
+        vbox.pack_start(self.handle_mm_dd_yyyy, False, True, 0)
+
+        self.handle_yyyy_mm_dd = Gtk.CheckButton(label=_("1888.12.31 ⇒ 1888-12-31"))
+        vbox.pack_start(self.handle_yyyy_mm_dd, False, True, 0)
+
+        self.handle_yyyy_dd_mm = Gtk.CheckButton(label=_("1888.31.12 ⇒ 1888-12-31"))
+        vbox.pack_start(self.handle_yyyy_dd_mm, False, True, 0)
 
         self.handle_mm_yyyy = Gtk.CheckButton(label=_(".12.1888 ⇒ 1888-12"))
         vbox.pack_start(self.handle_mm_yyyy, False, True, 0)
@@ -190,6 +185,9 @@ class Dates(Gramplet):
         self.handle_after = Gtk.CheckButton(label=_(">1888 (or 1888-) ⇒ after 1888"))
         vbox.pack_start(self.handle_after, False, True, 0)
 
+        msg = _("Dot (period) means any of: dot, comma, hyphen, slash.")
+        vbox.pack_start(Gtk.Label(msg), False, True, 0)
+
         btn_execute = Gtk.Button(label=_("Execute"))
         btn_execute.connect("clicked", self.__execute)
         vbox.pack_start(btn_execute, False, True, 20)
@@ -209,22 +207,17 @@ class Dates(Gramplet):
             num_places = len(selected_handles)
             for eventhandle in selected_handles:
                 event = self.dbstate.db.get_event_from_handle(eventhandle)
-                print(event)
+                # print(event)
                 dateobj = event.get_date_object()
                 datestr = dateobj.get_text()
-                pprint.pprint(dateobj.__dict__)
+                old_values = repr(dateobj.__dict__)
                 if dateobj.is_valid():
-                    print(dateobj, "is valid")
+                    # print(dateobj, "is valid")
                     continue
                 if datestr == "":
-                    print(dateobj, "is blank")
+                    # print(dateobj, "is blank")
                     continue
-                print(datestr, "is INvalid")
-                self.__fix_date(dateobj, datestr)
-                print("newdate:", repr(dateobj))
-                pprint.pprint(dateobj.__dict__)
-                # event.set_date_object(dateobj)
-                # dateobj.set_text_value(newdate)
+                old_values = repr(dateobj.__dict__)
 
                 if self.replace_text.get_active():
                     datestr = dateobj.get_text()
@@ -243,7 +236,17 @@ class Dates(Gramplet):
                     if new_datestr != datestr:
                         dateobj.set(text=new_datestr, modifier=Date.MOD_TEXTONLY)
 
-                self.dbstate.db.commit_event(event, self.trans)
+                datestr = dateobj.get_text()
+                self.__fix_date(dateobj, datestr)
+
+                if dateobj.get_modifier() == Date.MOD_TEXTONLY: 
+                    datestr = dateobj.get_text()
+                    dateobj = parser.parse(datestr)
+                    event.set_date_object(dateobj)
+
+                new_values = repr(dateobj.__dict__)
+                if new_values != old_values:
+                    self.dbstate.db.commit_event(event, self.trans)
 
     def __fix_date(self, dateobj, datestr):
         if self.handle_dd_mm_yyyy.get_active():
@@ -258,6 +261,63 @@ class Dates(Gramplet):
                 p(m=oneortwodigits),
                 sep,
                 p(y=fourdigits),
+            )
+            if r:
+                val = dateval(r.y, r.m, r.d)
+                if val:
+                    dateobj.set(value=val, modifier=Date.MOD_NONE)
+                    return
+
+        if self.handle_mm_dd_yyyy.get_active():
+            # 12.31.1888 ⇒ 31 DEC 1888
+            # 12,31,1888 ⇒ 31 DEC 1888
+            # 12-31-1888 ⇒ 31 DEC 1888
+            # 12/31/1888 ⇒ 31 DEC 1888
+            r = match(
+                datestr,
+                p(m=oneortwodigits),
+                sep,
+                p(d=oneortwodigits),
+                sep,
+                p(y=fourdigits),
+            )
+            if r:
+                val = dateval(r.y, r.m, r.d)
+                if val:
+                    dateobj.set(value=val, modifier=Date.MOD_NONE)
+                    return
+
+        if self.handle_yyyy_mm_dd.get_active():
+            # 1888.12.31 ⇒ 31 DEC 1888
+            # 1888,12,31 ⇒ 31 DEC 1888
+            # 1888-12-31 ⇒ 31 DEC 1888
+            # 1888/12/31 ⇒ 31 DEC 1888
+            r = match(
+                datestr,
+                p(y=fourdigits),
+                sep,
+                p(m=oneortwodigits),
+                sep,
+                p(d=oneortwodigits),
+            )
+            if r:
+                val = dateval(r.y, r.m, r.d)
+                if val:
+                    dateobj.set(value=val, modifier=Date.MOD_NONE)
+                    return
+
+        if self.handle_yyyy_dd_mm.get_active():
+            # 1888.31.12 ⇒ 31 DEC 1888
+            # 1888,31,12 ⇒ 31 DEC 1888
+            # 1888-31-12 ⇒ 31 DEC 1888
+            # 1888/31/12 ⇒ 31 DEC 1888
+            r = match(
+                datestr,
+                p(y=fourdigits),
+                sep,
+                p(d=oneortwodigits),
+                sep,
+                p(m=oneortwodigits),
             )
             if r:
                 val = dateval(r.y, r.m, r.d)
@@ -291,9 +351,8 @@ class Dates(Gramplet):
             # ..1888 ⇒ 1888
             r = match(datestr, sep, sep, p(y=fourdigits))
             if r:
-                if val:
-                    dateobj.set(value=(0, 0, int(r.y), False), modifier=Date.MOD_NONE)
-                    return
+                dateobj.set(value=(0, 0, int(r.y), False), modifier=Date.MOD_NONE)
+                return
 
         if self.handle_intervals.get_active():
             # 1888-1899
@@ -372,188 +431,3 @@ class Dates(Gramplet):
                 dateobj.set(modifier=Date.MOD_AFTER, value=(0, 0, int(r.y), False))
                 return
 
-    '''
-    class Date:
-    ...
-    def set(self, quality=None, modifier=None, calendar=None,
-            value=None, text=None, newyear=0):
-        """
-        Set the date to the specified value.
-
-        :param quality: The date quality for the date (see :meth:`get_quality`
-                        for more information).
-                        Defaults to the previous value for the date.
-        :param modified: The date modifier for the date (see
-                         :meth:`get_modifier` for more information)
-                         Defaults to the previous value for the date.
-        :param calendar: The calendar associated with the date (see
-                         :meth:`get_calendar` for more information).
-                         Defaults to the previous value for the date.
-        :param value: A tuple representing the date information. For a
-                      non-compound date, the format is (DD, MM, YY, slash)
-                      and for a compound date the tuple stores data as
-                      (DD, MM, YY, slash1, DD, MM, YY, slash2)
-                      Defaults to the previous value for the date.
-        :param text: A text string holding either the verbatim user input
-                     or a comment relating to the date.
-                     Defaults to the previous value for the date.
-        :param newyear: The newyear code, or tuple representing (month, day)
-                        of newyear day.
-                        Defaults to 0.
-
-        The sort value is recalculated.
-        """
-'''
-
-    def transform(self, item, options, phase):
-        """
-        Fix dates of the forms:
-
-        31.12.1888    ⇒ 31 DEC 1888
-        31,12,1888    ⇒ 31 DEC 1888
-        31-12-1888    ⇒ 31 DEC 1888
-        31/12/1888    ⇒ 31 DEC 1888
-        1888-12-31    ⇒ 31 DEC 1888
-        .12.1888      ⇒    DEC 1888
-        12.1888       ⇒    DEC 1888
-        12/1888       ⇒    DEC 1888
-        12-1888       ⇒    DEC 1888
-        0.12.1888     ⇒    DEC 1888
-        00.12.1888    ⇒    DEC 1888
-        00.00.1888    ⇒    1888
-        00 JAN 1888   ⇒    JAN 1888
-        1950-[19]59   ⇒ FROM 1950 TO 1959
-        1950-         ⇒ FROM 1950
-        >1950         ⇒ FROM 1950
-        -1950         ⇒ TO 1950
-        <1950         ⇒ TO 1950
-        """
-        self.options = options
-
-        if item.tag == "DATE":
-            value = item.value.strip()
-
-            if options.handle_dd_mm_yyyy:
-                # 31.12.1888 ⇒ 31 DEC 1888
-                # 31,12,1888 ⇒ 31 DEC 1888
-                # 31-12-1888 ⇒ 31 DEC 1888
-                # 31/12/1888 ⇒ 31 DEC 1888
-                r = match(
-                    value,
-                    p(d=oneortwodigits),
-                    sep,
-                    p(m=oneortwodigits),
-                    sep,
-                    p(y=fourdigits),
-                )
-                if r:
-                    val = fmtdate(r.y, r.m, r.d)
-                    if val:
-                        item.value = val
-                        return item
-
-            if options.handle_zeros:
-                # 0.0.1888 ⇒ 1888
-                # 00.00.1888 ⇒ 1888
-                r = match(value, zerototwozeros, dot, zerototwozeros, p(y=fourdigits))
-                if r:
-                    item.value = r.y
-                    return item
-
-                # 00.12.1888 ⇒ DEC 1888
-                # .12.1888 ⇒ DEC 1888
-                #  12.1888 ⇒ DEC 1888
-                r = match(
-                    value,
-                    zerototwozeros,
-                    dot,
-                    p(m=oneortwodigits),
-                    dot,
-                    p(y=fourdigits),
-                )
-                if not r:
-                    r = match(value, p(m=oneortwodigits), dot, p(y=fourdigits))
-                if r:
-                    val = fmtdate(r.y, r.m, 1)
-                    if val:
-                        item.value = val[3:]
-                        return item
-
-            if options.handle_zeros2:
-                # 0 JAN 1888   ⇒    JAN 1888
-                if value.startswith("0 "):
-                    item.value = item.value[2:]
-                    return item
-
-                # 00 JAN 1888   ⇒    JAN 1888
-                if value.startswith("00 "):
-                    item.value = item.value[3:]
-                    return item
-
-            if options.handle_intervals:
-                # 1888-1899
-                r = match(value, p(y1=fourdigits), dash, p(y2=fourdigits))
-                if r:
-                    century = r.y1[0:2]
-                    item.value = "FROM {r.y1} TO {r.y2}".format(**locals())
-                    return item
-
-                # 1888-99
-                r = match(value, p(y1=fourdigits), dash, p(y2=twodigits))
-                if r:
-                    if int(r.y2) > int(r.y1[2:]):
-                        century = r.y1[0:2]
-                        item.value = "FROM {r.y1} TO {century}{r.y2}".format(**locals())
-                        return item
-
-            if options.handle_intervals2:
-                # 1888-, >1888
-                tag = item.path.split(".")[-2]
-                kw = "AFT"
-                if tag in ("RESI", "OCCU"):
-                    kw = "FROM"
-                r = match(value, p(y=fourdigits), dash)
-                if r:
-                    item.value = "{kw} {r.y}".format(**locals())
-                    return item
-                r = match(value, gt, p(y=fourdigits))
-                if r:
-                    item.value = "{kw} {r.y}".format(**locals())
-                    return item
-
-            if options.handle_intervals3:
-                # -1888, <1888
-                tag = item.path.split(".")[-2]
-                kw = "BE"
-                if tag in ("RESI", "OCCU"):
-                    kw = "ennen"
-                r = match(value, dash, p(y=fourdigits))
-                if r:
-                    item.value = "{kw} {r.y}".format(**locals())
-                    return item
-                r = match(value, lt, p(y=fourdigits))
-                if r:
-                    item.value = "{kw} {r.y}".format(**locals())
-                    return item
-
-            if options.handle_yyyy_mm_dd:
-                # 1888-12-31
-                r = match(
-                    value, p(y=fourdigits), dash, p(m=twodigits), dash, p(d=twodigits)
-                )
-                if r:
-                    val = fmtdate(r.y, r.m, r.d)
-                    if val:
-                        item.value = val
-                        return item
-
-            if options.handle_yyyy_mm:
-                # 1888-12
-                r = match(value, p(y=fourdigits), dash, p(m=twodigits))
-                if r:
-                    val = fmtdate(r.y, r.m, 1)
-                    if val:
-                        item.value = val[3:]
-                        return item
-
-        return True
