@@ -103,7 +103,7 @@ class Dates(Gramplet):
         self.gui.get_container_widget().remove(self.gui.textview)
         self.gui.get_container_widget().add_with_viewport(self.root)
         self.selected_handle = None
-        self.set_tooltip(_("Correct invalid dates"))
+        self.set_tooltip(_("Transforms to correct invalid date formats"))
 
     def db_changed(self):
         self.__clear(None)
@@ -115,7 +115,7 @@ class Dates(Gramplet):
         vbox = Gtk.VBox(orientation=Gtk.Orientation.VERTICAL)
         vbox.set_spacing(4)
 
-        label = Gtk.Label(_("This gramplet helps to correct invalid dates..."))
+        label = Gtk.Label(_("This gramplet helps to correct invalid date formats:"))
         label.set_halign(Gtk.Align.START)
         label.set_line_wrap(True)
         vbox.pack_start(label, False, True, 0)
@@ -133,20 +133,22 @@ class Dates(Gramplet):
 
         old_text_label = Gtk.Label()
         old_text_label.set_markup("<b>{}</b>".format(_("Find:")))
-        self.old_text = Gtk.Entry()
+        self.old_text = Gtk.Entry(width_chars=30)
+        old_text_label.set_halign(Gtk.Align.END)
         self.old_text.set_sensitive(False)
 
         new_text_label = Gtk.Label()
         new_text_label.set_markup("<b>{}</b>".format(_("Replace:")))
-        self.new_text = Gtk.Entry()
+        self.new_text = Gtk.Entry(width_chars=30)
+        self.new_text.set_halign(Gtk.Align.END)
         self.new_text.set_sensitive(False)
 
         replace_grid = Gtk.Grid(column_spacing=10)
         replace_grid.set_margin_left(20)
         replace_grid.attach(old_text_label, 1, 0, 1, 1)
-        replace_grid.attach(self.old_text, 2, 0, 1, 1)
+        replace_grid.attach(self.old_text, 2, 0, 3, 1)
         replace_grid.attach(new_text_label, 1, 1, 1, 1)
-        replace_grid.attach(self.new_text, 2, 1, 1, 1)
+        replace_grid.attach(self.new_text, 2, 1, 3, 1)
         vbox.pack_start(replace_grid, False, True, 0)
 
 #         self.reparse = Gtk.CheckButton(label=_("Re-parse date"))
@@ -185,12 +187,15 @@ class Dates(Gramplet):
         self.handle_after = Gtk.CheckButton(label=_(">1888 (or 1888-) ⇒ after 1888"))
         vbox.pack_start(self.handle_after, False, True, 0)
 
-        msg = _("Dot (period) means any of: dot, comma, hyphen, slash.")
+        msg = _("Dot (period) means any delimiter: dot, comma, hyphen, slash.")
         vbox.pack_start(Gtk.Label(msg), False, True, 0)
 
         btn_execute = Gtk.Button(label=_("Execute"))
+        btn_execute.set_margin_start(50)
+        btn_execute.set_margin_end(50)
+        btn_execute.set_halign(Gtk.Align.CENTER)
         btn_execute.connect("clicked", self.__execute)
-        vbox.pack_start(btn_execute, False, True, 20)
+        vbox.pack_start(btn_execute, False, True, 30)
 
         vbox.show_all()
         return vbox
@@ -239,7 +244,7 @@ class Dates(Gramplet):
                 datestr = dateobj.get_text()
                 self.__fix_date(dateobj, datestr)
 
-                if dateobj.get_modifier() == Date.MOD_TEXTONLY: 
+                if dateobj.get_modifier() == Date.MOD_TEXTONLY:
                     datestr = dateobj.get_text()
                     dateobj = parser.parse(datestr)
                     event.set_date_object(dateobj)
@@ -430,4 +435,3 @@ class Dates(Gramplet):
                 text = "{r.y}".format(**locals())
                 dateobj.set(modifier=Date.MOD_AFTER, value=(0, 0, int(r.y), False))
                 return
-
