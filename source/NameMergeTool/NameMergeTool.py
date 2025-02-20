@@ -147,9 +147,22 @@ def fetch_names(db):
                         (pname, person_handle, person.gramps_id)
                     )
     print(n, "names")
-    firstnamelist = sorted(firstnameset.items())
-    suffixlist = sorted(suffixset.items())
-    surnamelist = sorted(surnameset.items())
+
+    import locale
+    def sortfunc_fi(nametuple):
+        return locale.strxfrm(nametuple[0][0].lower().replace("w", "v"))
+    def sortfunc_other(nametuple):
+        return locale.strxfrm(nametuple[0][0].lower())
+    
+    lang = locale.getlocale(locale.LC_COLLATE)[0].split("_")[0]
+    if lang in ["fi", "sv"]:
+        sortfunc = sortfunc_fi
+    else:
+        sortfunc = sortfunc_other
+ 
+    firstnamelist = sorted(firstnameset.items(), key=sortfunc)
+    suffixlist = sorted(suffixset.items(), key=sortfunc)
+    surnamelist = sorted(surnameset.items(), key=sortfunc)
     return firstnamelist, suffixlist, surnamelist
 
 
