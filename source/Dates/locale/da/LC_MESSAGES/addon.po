@@ -27,11 +27,13 @@ msgid "Search and replace within Event date strings"
 msgstr ""
 
 #: Dates/Dates.py:106
-msgid "Correct invalid dates"
-msgstr "Ret ugyldige datoer"
+#, fuzzy
+msgid "Transforms to correct invalid date formats"
+msgstr "Denne gramplet hjælper med at rette ugyldige datoer..."
 
 #: Dates/Dates.py:118
-msgid "This gramplet helps to correct invalid dates..."
+#, fuzzy
+msgid "This gramplet helps to correct invalid date formats:"
 msgstr "Denne gramplet hjælper med at rette ugyldige datoer..."
 
 #: Dates/Dates.py:123
@@ -46,76 +48,79 @@ msgstr ""
 msgid "Find:"
 msgstr ""
 
-#: Dates/Dates.py:140
+#: Dates/Dates.py:141
 #, fuzzy
 msgid "Replace:"
 msgstr "Erstat tekst"
 
-#: Dates/Dates.py:155
+#: Dates/Dates.py:157
 #, fuzzy
 msgid "31.12.1888  1888-12-31"
 msgstr "31.12.1888 -> 1888-12-31"
 
-#: Dates/Dates.py:158
+#: Dates/Dates.py:160
 #, fuzzy
 msgid "12.31.1888  1888-12-31"
 msgstr "31.12.1888 -> 1888-12-31"
 
-#: Dates/Dates.py:161
+#: Dates/Dates.py:163
 #, fuzzy
 msgid "1888.12.31  1888-12-31"
 msgstr "31.12.1888 -> 1888-12-31"
 
-#: Dates/Dates.py:164
+#: Dates/Dates.py:166
 #, fuzzy
 msgid "1888.31.12  1888-12-31"
 msgstr "31.12.1888 -> 1888-12-31"
 
-#: Dates/Dates.py:167
+#: Dates/Dates.py:169
 #, fuzzy
 msgid ".12.1888  1888-12"
 msgstr ".12.1888 -> 1888-12"
 
-#: Dates/Dates.py:170
+#: Dates/Dates.py:172
 #, fuzzy
 msgid "31..1888  1888-00-31"
 msgstr "31..1888 -> 1888-00-31"
 
-#: Dates/Dates.py:173
+#: Dates/Dates.py:175
 #, fuzzy
 msgid "..1888  1888"
 msgstr "..1888 -> 1888"
 
-#: Dates/Dates.py:176
+#: Dates/Dates.py:178
 #, fuzzy
 msgid "1888-99  1888 - 1899"
 msgstr "1888-99 -> 1888 - 1899"
 
-#: Dates/Dates.py:182
+#: Dates/Dates.py:184
 #, fuzzy
 msgid "<1888 (or -1888)  before 1888"
 msgstr "<1888/-1888 -> before 1888"
 
-#: Dates/Dates.py:185
+#: Dates/Dates.py:187
 #, fuzzy
 msgid ">1888 (or 1888-)  after 1888"
 msgstr ">1888/1888- -> after 1888"
 
-#: Dates/Dates.py:188
-msgid "Dot (period) means any of: dot, comma, hyphen, slash."
+#: Dates/Dates.py:190
+msgid "Dot (period) means any delimiter: dot, comma, hyphen, slash."
 msgstr ""
 
-#: Dates/Dates.py:191
+#: Dates/Dates.py:193
 msgid "Execute"
 msgstr "Udfør"
 
-#: Dates/Dates.py:205
+#: Dates/Dates.py:210
 msgid "Correcting invalid dates"
 msgstr "Retter ugyldige datoer"
 
-#: Dates/Dates.py:232
+#: Dates/Dates.py:237
 msgid "Regex operation failed: {}"
 msgstr "Regex handlingen mislykkedes: {}"
+
+#~ msgid "Correct invalid dates"
+#~ msgstr "Ret ugyldige datoer"
 
 #~ msgid "Use regex"
 #~ msgstr "Benyt regex"

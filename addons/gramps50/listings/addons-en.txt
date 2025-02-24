@@ -1,7 +1,7 @@
-{'t': 'Gramplet', 'i': 'isotammiconfig', 'n': 'Isotammi configuration', 'v': '1.1.7', 'g': '5.0', 'd': 'Isotammi configuration', 'z': 'IsotammiConfig.addon.tgz', 's': 3, 'a': 1, 'h': ''}
-{'t': 'Gramplet', 'i': 'Multimergegramplet Gramplet', 'n': 'Multimerge Gramplet', 'v': '1.2.4', 'g': '5.0', 'd': 'Multimerge Gramplet', 'z': 'multimergegramplet.addon.tgz', 's': 3, 'a': 1, 'h': 'http://github.com/Taapeli/isotammi-addons/tree/master/source/multimergegramplet/README.md'}
-{'t': 'Tool', 'i': 'zipinstall', 'n': 'ZipInstall', 'v': '1.1.7', 'g': '5.0', 'd': 'Install a plugin from a ZIP file', 'z': 'zipinstall.addon.tgz', 's': 3, 'a': 1}
-{'t': 'Tool', 'i': 'generatecitations', 'n': 'Generate source citations from notes', 'v': '1.2.5', 'g': '5.0', 'd': 'Generate source citations from notes', 'z': 'generatecitations.addon.tgz', 's': 3, 'a': 1}
+{'t': 'Gramplet', 'i': 'isotammiconfig', 'n': 'Isotammi configuration', 'v': '1.2.0', 'g': '5.0', 'd': 'Isotammi configuration', 'z': 'IsotammiConfig.addon.tgz', 's': 3, 'a': 1, 'h': ''}
+{'t': 'Gramplet', 'i': 'Multimergegramplet Gramplet', 'n': 'Multimerge Gramplet', 'v': '1.2.6', 'g': '5.0', 'd': 'Multimerge Gramplet', 'z': 'multimergegramplet.addon.tgz', 's': 3, 'a': 1, 'h': 'http://github.com/Taapeli/isotammi-addons/tree/master/source/multimergegramplet/README.md'}
+{'t': 'Tool', 'i': 'zipinstall', 'n': 'ZipInstall', 'v': '1.1.9', 'g': '5.0', 'd': 'Install a plugin from a ZIP file', 'z': 'zipinstall.addon.tgz', 's': 3, 'a': 1}
+{'t': 'Tool', 'i': 'generatecitations', 'n': 'Generate source citations from notes', 'v': '1.2.7', 'g': '5.0', 'd': 'Generate source citations from notes', 'z': 'generatecitations.addon.tgz', 's': 3, 'a': 1}
 {'t': 'Gramplet', 'i': 'Person-Filter+', 'n': 'Person Filter+', 'v': '1.0.9', 'g': '5.0', 'd': 'Gramplet providing a filter (enhanced)', 'z': 'Filter+.addon.tgz', 's': 3, 'a': 1, 'h': 'https://gramps-project.org/wiki/index.php/Addon:Isotammi_addons#Filter.2B'}
 {'t': 'Gramplet', 'i': 'Family-Filter+', 'n': 'Family Filter+', 'v': '1.0.9', 'g': '5.0', 'd': 'Gramplet providing a filter (enhanced)', 'z': 'Filter+.addon.tgz', 's': 3, 'a': 1, 'h': 'https://gramps-project.org/wiki/index.php/Addon:Isotammi_addons#Filter.2B'}
 {'t': 'Gramplet', 'i': 'Event-Filter+', 'n': 'Event Filter+', 'v': '1.0.9', 'g': '5.0', 'd': 'Gramplet providing a filter (enhanced)', 'z': 'Filter+.addon.tgz', 's': 3, 'a': 1, 'h': 'https://gramps-project.org/wiki/index.php/Addon:Isotammi_addons#Filter.2B'}
@@ -13,23 +13,23 @@
 {'t': 'Gramplet', 'i': 'Note-Filter+', 'n': 'Note Filter+', 'v': '1.0.9', 'g': '5.0', 'd': 'Gramplet providing a filter (enhanced)', 'z': 'Filter+.addon.tgz', 's': 3, 'a': 1, 'h': 'https://gramps-project.org/wiki/index.php/Addon:Isotammi_addons#Filter.2B'}
 {'t': 'Rule', 'i': 'HasEventBase+', 'n': 'HasEventBase+', 'v': '1.0.9', 'g': '5.0', 'd': 'HasEventBase+ - used by Filter+', 'z': 'Filter+.addon.tgz', 's': 3, 'a': 1, 'h': 'https://gramps-project.org/wiki/index.php/Addon:Isotammi_addons#Filter.2B'}
 {'t': 'Rule', 'i': 'HasSourceBase+', 'n': 'HasSourceBase+', 'v': '1.0.9', 'g': '5.0', 'd': 'HasSourceBase+ - used by Filter+', 'z': 'Filter+.addon.tgz', 's': 3, 'a': 1, 'h': 'https://gramps-project.org/wiki/index.php/Addon:Isotammi_addons#Filter.2B'}
-{'t': 'Gramplet', 'i': 'PropertyEditor', 'n': 'PropertyEditor', 'v': '1.1.7', 'g': '5.0', 'd': 'Gramplet to edit attributes of multiple objects', 'z': 'PropertyEditor.addon.tgz', 's': 3, 'a': 1, 'h': 'PropertyEditor Gramplet'}
-{'t': 'Tool', 'i': 'NameMergeTool', 'n': 'Name Merge Tool', 'v': '1.1.5', 'g': '5.0', 'd': 'Merge names', 'z': 'NameMergeTool.addon.tgz', 's': 3, 'a': 1}
-{'t': 'Exporter', 'i': 'isotammiexportxml', 'n': 'Isotammi XML export', 'v': '1.0.7', 'g': '5.0', 'd': 'Isotammi XML export', 'z': 'isotammiexportxml.addon.tgz', 's': 3, 'a': 1}
-{'t': 'Gramplet', 'i': 'PlaceTool', 'n': 'PlaceTool', 'v': '1.1.9', 'g': '5.0', 'd': 'Gramplet to manipulate multiple places', 'z': 'PlaceTool.addon.tgz', 's': 3, 'a': 1, 'h': 'PlaceTool Gramplet'}
-{'t': 'Tool', 'i': 'SuperTool', 'n': 'SuperTool', 'v': '1.5.2', 'g': '5.0', 'd': "General purpose scripting tool that can be used to do 'ad-hoc' queries against a Gramps family tree/database", 'z': 'SuperTool.addon.tgz', 's': 3, 'a': 1}
-{'t': 'Rule', 'i': 'person-genfilter', 'n': 'Generic person filter', 'v': '1.5.2', 'g': '5.0', 'd': 'Generic person filter', 'z': 'SuperTool.addon.tgz', 's': 3, 'a': 1}
-{'t': 'Rule', 'i': 'family-genfilter', 'n': 'Generic family filter', 'v': '1.5.2', 'g': '5.0', 'd': 'Generic family filter', 'z': 'SuperTool.addon.tgz', 's': 3, 'a': 1}
-{'t': 'Rule', 'i': 'place-genfilter', 'n': 'Generic place filter', 'v': '1.5.2', 'g': '5.0', 'd': 'Generic place filter', 'z': 'SuperTool.addon.tgz', 's': 3, 'a': 1}
-{'t': 'Rule', 'i': 'event-genfilter', 'n': 'Generic event filter', 'v': '1.5.2', 'g': '5.0', 'd': 'Generic event filter', 'z': 'SuperTool.addon.tgz', 's': 3, 'a': 1}
-{'t': 'Rule', 'i': 'citation-genfilter', 'n': 'Generic citation filter', 'v': '1.5.2', 'g': '5.0', 'd': 'Generic citation filter', 'z': 'SuperTool.addon.tgz', 's': 3, 'a': 1}
-{'t': 'Rule', 'i': 'source-genfilter', 'n': 'Generic source filter', 'v': '1.5.2', 'g': '5.0', 'd': 'Generic source filter', 'z': 'SuperTool.addon.tgz', 's': 3, 'a': 1}
-{'t': 'Rule', 'i': 'repository-genfilter', 'n': 'Generic repository filter', 'v': '1.5.2', 'g': '5.0', 'd': 'Generic repository filter', 'z': 'SuperTool.addon.tgz', 's': 3, 'a': 1}
-{'t': 'Rule', 'i': 'note-genfilter', 'n': 'Generic note filter', 'v': '1.5.2', 'g': '5.0', 'd': 'Generic note filter', 'z': 'SuperTool.addon.tgz', 's': 3, 'a': 1}
-{'t': 'Rule', 'i': 'media-genfilter', 'n': 'Generic media filter', 'v': '1.5.2', 'g': '5.0', 'd': 'Generic media filter', 'z': 'SuperTool.addon.tgz', 's': 3, 'a': 1}
-{'t': 'Tool', 'i': 'importsources', 'n': 'Import Sources', 'v': '0.0.6', 'g': '5.0', 'd': 'Import Sources from a CSV file', 'z': 'importsources.addon.tgz', 's': 3, 'a': 1}
-{'t': 'Tool', 'i': 'NameEditorTool', 'n': 'Name Editor Tool', 'v': '1.1.0', 'g': '5.0', 'd': 'Edit names', 'z': 'NameEditorTool.addon.tgz', 's': 3, 'a': 1}
-{'t': 'Gramplet', 'i': 'Dates', 'n': 'Dates', 'v': '1.2.0', 'g': '5.0', 'd': 'Search and replace within Event date strings', 'z': 'Dates.addon.tgz', 's': 3, 'a': 1, 'h': 'Addon:Isotammi_addons#Dates'}
-{'t': 'Tool', 'i': 'convert_narc_urls', 'n': 'Convert NARC URLs', 'v': '1.0.4', 'g': '5.0', 'd': '', 'z': 'convert_narc_urls.addon.tgz', 's': 3, 'a': 1}
-{'t': 'Gramplet', 'i': 'DeepConnectionsGraph', 'n': 'Deep Connections Graph', 'v': '1.2.2', 'g': '5.0', 'd': 'DeepConnectionsGraph Gramplet', 'z': 'DeepConnectionsGraph.addon.tgz', 's': 3, 'a': 1, 'h': ''}
-{'t': 'Gramplet', 'i': 'AddSourcesGramplet', 'n': 'AddSourcesGramplet', 'v': '0.9.6', 'g': '5.0', 'd': 'Gramplet to add sources', 'z': 'AddSourcesGramplet.addon.tgz', 's': 3, 'a': 1, 'h': 'Addon:Isotammi_addons#Add_Sources_Gramplet'}
+{'t': 'Gramplet', 'i': 'PropertyEditor', 'n': 'PropertyEditor', 'v': '1.1.9', 'g': '5.0', 'd': 'Gramplet to edit attributes of multiple objects', 'z': 'PropertyEditor.addon.tgz', 's': 3, 'a': 1, 'h': 'PropertyEditor Gramplet'}
+{'t': 'Tool', 'i': 'NameMergeTool', 'n': 'Name Merge Tool', 'v': '1.1.7', 'g': '5.0', 'd': 'Merge names', 'z': 'NameMergeTool.addon.tgz', 's': 3, 'a': 1}
+{'t': 'Exporter', 'i': 'isotammiexportxml', 'n': 'Isotammi XML export', 'v': '1.0.9', 'g': '5.0', 'd': 'Isotammi XML export', 'z': 'isotammiexportxml.addon.tgz', 's': 3, 'a': 1}
+{'t': 'Gramplet', 'i': 'PlaceTool', 'n': 'PlaceTool', 'v': '1.2.1', 'g': '5.0', 'd': 'Gramplet to manipulate multiple places', 'z': 'PlaceTool.addon.tgz', 's': 3, 'a': 1, 'h': 'PlaceTool Gramplet'}
+{'t': 'Tool', 'i': 'SuperTool', 'n': 'SuperTool', 'v': '1.5.4', 'g': '5.0', 'd': "General purpose scripting tool that can be used to do 'ad-hoc' queries against a Gramps family tree/database", 'z': 'SuperTool.addon.tgz', 's': 3, 'a': 1}
+{'t': 'Rule', 'i': 'person-genfilter', 'n': 'Generic person filter', 'v': '1.5.4', 'g': '5.0', 'd': 'Generic person filter', 'z': 'SuperTool.addon.tgz', 's': 3, 'a': 1}
+{'t': 'Rule', 'i': 'family-genfilter', 'n': 'Generic family filter', 'v': '1.5.4', 'g': '5.0', 'd': 'Generic family filter', 'z': 'SuperTool.addon.tgz', 's': 3, 'a': 1}
+{'t': 'Rule', 'i': 'place-genfilter', 'n': 'Generic place filter', 'v': '1.5.4', 'g': '5.0', 'd': 'Generic place filter', 'z': 'SuperTool.addon.tgz', 's': 3, 'a': 1}
+{'t': 'Rule', 'i': 'event-genfilter', 'n': 'Generic event filter', 'v': '1.5.4', 'g': '5.0', 'd': 'Generic event filter', 'z': 'SuperTool.addon.tgz', 's': 3, 'a': 1}
+{'t': 'Rule', 'i': 'citation-genfilter', 'n': 'Generic citation filter', 'v': '1.5.4', 'g': '5.0', 'd': 'Generic citation filter', 'z': 'SuperTool.addon.tgz', 's': 3, 'a': 1}
+{'t': 'Rule', 'i': 'source-genfilter', 'n': 'Generic source filter', 'v': '1.5.4', 'g': '5.0', 'd': 'Generic source filter', 'z': 'SuperTool.addon.tgz', 's': 3, 'a': 1}
+{'t': 'Rule', 'i': 'repository-genfilter', 'n': 'Generic repository filter', 'v': '1.5.4', 'g': '5.0', 'd': 'Generic repository filter', 'z': 'SuperTool.addon.tgz', 's': 3, 'a': 1}
+{'t': 'Rule', 'i': 'note-genfilter', 'n': 'Generic note filter', 'v': '1.5.4', 'g': '5.0', 'd': 'Generic note filter', 'z': 'SuperTool.addon.tgz', 's': 3, 'a': 1}
+{'t': 'Rule', 'i': 'media-genfilter', 'n': 'Generic media filter', 'v': '1.5.4', 'g': '5.0', 'd': 'Generic media filter', 'z': 'SuperTool.addon.tgz', 's': 3, 'a': 1}
+{'t': 'Tool', 'i': 'importsources', 'n': 'Import Sources', 'v': '0.0.8', 'g': '5.0', 'd': 'Import Sources from a CSV file', 'z': 'importsources.addon.tgz', 's': 3, 'a': 1}
+{'t': 'Tool', 'i': 'NameEditorTool', 'n': 'Name Editor Tool', 'v': '1.1.2', 'g': '5.0', 'd': 'Edit names', 'z': 'NameEditorTool.addon.tgz', 's': 3, 'a': 1}
+{'t': 'Gramplet', 'i': 'Dates', 'n': 'Dates', 'v': '1.2.3', 'g': '5.0', 'd': 'Search and replace within Event date strings', 'z': 'Dates.addon.tgz', 's': 3, 'a': 1, 'h': 'Addon:Isotammi_addons#Dates'}
+{'t': 'Tool', 'i': 'convert_narc_urls', 'n': 'Convert NARC URLs', 'v': '1.0.6', 'g': '5.0', 'd': '', 'z': 'convert_narc_urls.addon.tgz', 's': 3, 'a': 1}
+{'t': 'Gramplet', 'i': 'DeepConnectionsGraph', 'n': 'Deep Connections Graph', 'v': '1.2.4', 'g': '5.0', 'd': 'DeepConnectionsGraph Gramplet', 'z': 'DeepConnectionsGraph.addon.tgz', 's': 3, 'a': 1, 'h': ''}
+{'t': 'Gramplet', 'i': 'AddSourcesGramplet', 'n': 'AddSourcesGramplet', 'v': '0.9.8', 'g': '5.0', 'd': 'Gramplet to add sources', 'z': 'AddSourcesGramplet.addon.tgz', 's': 3, 'a': 1, 'h': 'Addon:Isotammi_addons#Add_Sources_Gramplet'}

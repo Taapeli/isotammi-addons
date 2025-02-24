@@ -27,11 +27,13 @@ msgid "Search and replace within Event date strings"
 msgstr ""
 
 #: Dates/Dates.py:106
-msgid "Correct invalid dates"
-msgstr "Korjaa virheellisiä päivämääriä"
+#, fuzzy
+msgid "Transforms to correct invalid date formats"
+msgstr "Tämä gramplet korjaa virheellisiä päivämääriä"
 
 #: Dates/Dates.py:118
-msgid "This gramplet helps to correct invalid dates..."
+#, fuzzy
+msgid "This gramplet helps to correct invalid date formats:"
 msgstr "Tämä gramplet korjaa virheellisiä päivämääriä"
 
 #: Dates/Dates.py:123
@@ -46,66 +48,69 @@ msgstr ""
 msgid "Find:"
 msgstr ""
 
-#: Dates/Dates.py:140
+#: Dates/Dates.py:141
 #, fuzzy
 msgid "Replace:"
 msgstr "Korvaa teksti"
 
-#: Dates/Dates.py:155
+#: Dates/Dates.py:157
 msgid "31.12.1888  1888-12-31"
 msgstr ""
 
-#: Dates/Dates.py:158
+#: Dates/Dates.py:160
 msgid "12.31.1888  1888-12-31"
 msgstr ""
 
-#: Dates/Dates.py:161
+#: Dates/Dates.py:163
 msgid "1888.12.31  1888-12-31"
 msgstr ""
 
-#: Dates/Dates.py:164
+#: Dates/Dates.py:166
 msgid "1888.31.12  1888-12-31"
 msgstr ""
 
-#: Dates/Dates.py:167
+#: Dates/Dates.py:169
 msgid ".12.1888  1888-12"
 msgstr ""
 
-#: Dates/Dates.py:170
+#: Dates/Dates.py:172
 msgid "31..1888  1888-00-31"
 msgstr ""
 
-#: Dates/Dates.py:173
+#: Dates/Dates.py:175
 msgid "..1888  1888"
 msgstr ""
 
-#: Dates/Dates.py:176
+#: Dates/Dates.py:178
 msgid "1888-99  1888 - 1899"
 msgstr ""
 
-#: Dates/Dates.py:182
+#: Dates/Dates.py:184
 msgid "<1888 (or -1888)  before 1888"
 msgstr ""
 
-#: Dates/Dates.py:185
+#: Dates/Dates.py:187
 msgid ">1888 (or 1888-)  after 1888"
 msgstr ""
 
-#: Dates/Dates.py:188
-msgid "Dot (period) means any of: dot, comma, hyphen, slash."
+#: Dates/Dates.py:190
+msgid "Dot (period) means any delimiter: dot, comma, hyphen, slash."
 msgstr ""
 
-#: Dates/Dates.py:191
+#: Dates/Dates.py:193
 msgid "Execute"
 msgstr "_Suorita"
 
-#: Dates/Dates.py:205
+#: Dates/Dates.py:210
 msgid "Correcting invalid dates"
 msgstr "Virheellisten päivämäärien korjaus"
 
-#: Dates/Dates.py:232
+#: Dates/Dates.py:237
 msgid "Regex operation failed: {}"
 msgstr "Toiminto epäonnistui"
+
+#~ msgid "Correct invalid dates"
+#~ msgstr "Korjaa virheellisiä päivämääriä"
 
 #~ msgid "Use regex"
 #~ msgstr "Käytä säännöllisiä lausekkeita"

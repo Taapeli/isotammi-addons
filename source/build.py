@@ -11,7 +11,12 @@ gi.require_version('Gtk', '3.0')
 from gramps.gen.const import GRAMPS_LOCALE as glocale
 from gramps.gen.plug import make_environment, PTYPE_STR
 
-grampsversions = [("5.0","gramps50"), ("5.1","gramps51"), ("5.2","gramps52")]
+grampsversions = [
+    ("5.0","gramps50"),
+    ("5.1","gramps51"),
+    ("5.2","gramps52"),
+    ("6.0","gramps60"),
+]
 languages = ["en","fi","sv","da"]
 
 def ignore(fname):
@@ -118,7 +123,8 @@ def update_translations(addon):
 
 def skip(gver, addon):        
     if addon.startswith("_") and gver == "5.0": return True # convention: filter rules start with "_"
-    if addon == "IsotammiConfig" and gver == "5.2": return True # not needed in 5.2
+    if addon == "IsotammiConfig" and gver >= "5.2": return True # not needed in 5.2
+    if addon == "Filter+" and gver >= "6.0": return True
     return False
 
 def rebuild(addon):
