@@ -309,7 +309,7 @@ class NameDialog(ManagedWindow, DbGUIElement):
             OkDialog("Error occurred", traceback.format_exc() + "\n\nRestart Gramps.")
             ok = False
         self.set_window(self.top, None, _("Name merge tool"))
-        self.setup_configs("interface.namemerge", 300, 350)
+        self.setup_configs("interface.namemerge", 920, 680)
         if ok:
             self.reset(None)
             self.show()

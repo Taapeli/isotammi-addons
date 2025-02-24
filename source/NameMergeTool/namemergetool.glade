@@ -100,21 +100,6 @@
             <child>
               <placeholder/>
             </child>
-            <child>
-              <placeholder/>
-            </child>
-            <child>
-              <placeholder/>
-            </child>
-            <child>
-              <placeholder/>
-            </child>
-            <child>
-              <placeholder/>
-            </child>
-            <child>
-              <placeholder/>
-            </child>
           </object>
           <packing>
             <property name="left_attach">0</property>
@@ -123,8 +108,8 @@
         </child>
         <child>
           <object class="GtkScrolledWindow" id="slist">
-            <property name="width_request">500</property>
-            <property name="height_request">1000</property>
+            <property name="width_request">600</property>
+            <property name="height_request">500</property>
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="shadow_type">in</property>
