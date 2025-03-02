@@ -1,5 +1,5 @@
 {'t': 'Gramplet', 'i': 'isotammiconfig', 'n': 'Isotammi opsætning', 'v': '1.2.0', 'g': '5.0', 'd': 'Isotammi opsætning', 'z': 'IsotammiConfig.addon.tgz', 's': 3, 'a': 1, 'h': ''}
-{'t': 'Tool', 'i': 'FilterParams', 'n': 'FilterParams', 'v': '1.2.0', 'g': '5.0', 'd': 'Display custom filters and allow changing their parameters', 'z': 'FilterParams.addon.tgz', 's': 3, 'a': 1, 'h': 'https://gramps-project.org/wiki/index.php/Addon:Isotammi_addons#FilterParams_tool'}
+{'t': 'Tool', 'i': 'FilterParams', 'n': 'FilterParams', 'v': '1.2.1', 'g': '5.0', 'd': 'Display custom filters and allow changing their parameters', 'z': 'FilterParams.addon.tgz', 's': 3, 'a': 1, 'h': 'https://gramps-project.org/wiki/index.php/Addon:Isotammi_addons#FilterParams_tool'}
 {'t': 'Gramplet', 'i': 'Multimergegramplet Gramplet', 'n': 'Multimerge Gramplet', 'v': '1.2.6', 'g': '5.0', 'd': 'Multimerge Gramplet', 'z': 'multimergegramplet.addon.tgz', 's': 3, 'a': 1, 'h': 'http://github.com/Taapeli/isotammi-addons/tree/master/source/multimergegramplet/README.md'}
 {'t': 'Tool', 'i': 'zipinstall', 'n': 'ZipInstall', 'v': '1.1.9', 'g': '5.0', 'd': 'Install a plugin from a ZIP file', 'z': 'zipinstall.addon.tgz', 's': 3, 'a': 1}
 {'t': 'Tool', 'i': 'generatecitations', 'n': 'Dan kildehenvisninger fra noter', 'v': '1.2.7', 'g': '5.0', 'd': 'Dan kildehenvisninger fra noter', 'z': 'generatecitations.addon.tgz', 's': 3, 'a': 1}
@@ -32,5 +32,5 @@
 {'t': 'Tool', 'i': 'NameEditorTool', 'n': 'Værktøj  Redigering af navne', 'v': '1.1.3', 'g': '5.0', 'd': 'Rediger navne', 'z': 'NameEditorTool.addon.tgz', 's': 3, 'a': 1}
 {'t': 'Gramplet', 'i': 'Dates', 'n': 'Datoer', 'v': '1.2.4', 'g': '5.0', 'd': 'Search and replace within Event date strings', 'z': 'Dates.addon.tgz', 's': 3, 'a': 1, 'h': 'Addon:Isotammi_addons#Dates'}
 {'t': 'Tool', 'i': 'convert_narc_urls', 'n': 'Convert NARC URLs', 'v': '1.0.6', 'g': '5.0', 'd': '', 'z': 'convert_narc_urls.addon.tgz', 's': 3, 'a': 1}
-{'t': 'Gramplet', 'i': 'DeepConnectionsGraph', 'n': 'Skema over dybe slægtskaber', 'v': '1.2.4', 'g': '5.0', 'd': 'DybeSlægtskaberSkema Gramplet', 'z': 'DeepConnectionsGraph.addon.tgz', 's': 3, 'a': 1, 'h': ''}
+{'t': 'Gramplet', 'i': 'DeepConnectionsGraph', 'n': 'Skema over dybe slægtskaber', 'v': '1.2.5', 'g': '5.0', 'd': 'DeepConnectionsGraph; a Dashboard Server Gramplet', 'z': 'DeepConnectionsGraph.addon.tgz', 's': 3, 'a': 1, 'h': 'Addon:Isotammi_addons#Deep_Connections_Graph'}
 {'t': 'Gramplet', 'i': 'AddSourcesGramplet', 'n': 'AddSourcesGramplet', 'v': '0.9.8', 'g': '5.0', 'd': 'Gramplet to add sources', 'z': 'AddSourcesGramplet.addon.tgz', 's': 3, 'a': 1, 'h': 'Addon:Isotammi_addons#Add_Sources_Gramplet'}

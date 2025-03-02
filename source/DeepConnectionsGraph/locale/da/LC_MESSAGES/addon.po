@@ -19,7 +19,8 @@ msgid "Deep Connections Graph"
 msgstr "Skema over dybe slægtskaber"
 
 #: DeepConnectionsGraph/DeepConnectionsGraph.gpr.py:12
-msgid "DeepConnectionsGraph Gramplet"
+#, fuzzy
+msgid "DeepConnectionsGraph; a Dashboard Server Gramplet"
 msgstr "DybeSlægtskaberSkema Gramplet"
 
 #: DeepConnectionsGraph/DeepConnectionsGraph.py:194

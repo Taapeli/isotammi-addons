@@ -26,7 +26,7 @@ msgstr "Syväsuhteet kaaviona"
 
 #: DeepConnectionsGraph/DeepConnectionsGraph.gpr.py:12
 #, fuzzy
-msgid "DeepConnectionsGraph Gramplet"
+msgid "DeepConnectionsGraph; a Dashboard Server Gramplet"
 msgstr "Syväsuhteet kaaviona -gramplet"
 
 #: DeepConnectionsGraph/DeepConnectionsGraph.py:194

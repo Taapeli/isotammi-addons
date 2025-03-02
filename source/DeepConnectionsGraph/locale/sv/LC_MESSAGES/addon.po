@@ -18,7 +18,7 @@ msgid "Deep Connections Graph"
 msgstr ""
 
 #: DeepConnectionsGraph/DeepConnectionsGraph.gpr.py:12
-msgid "DeepConnectionsGraph Gramplet"
+msgid "DeepConnectionsGraph; a Dashboard Server Gramplet"
 msgstr ""
 
 #: DeepConnectionsGraph/DeepConnectionsGraph.py:194
