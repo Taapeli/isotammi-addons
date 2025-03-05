@@ -61,6 +61,10 @@ def need_rebuild(addon):
             modtime = os.stat(fname).st_mtime
             if modtime > tgz_modtime:
                 print("modified:", grampsver, fname) 
+                t1 = time.asctime(time.localtime(modtime))
+                t2 = time.asctime(time.localtime(tgz_modtime))
+                print(f"- {modtime:10f} {t1} {fname}") 
+                print(f"- {tgz_modtime:10f} {t2} {tgz}") 
                 #print(f"- {modtime} > {tgz_modtime}")
                 return True
     return False        
