@@ -64,7 +64,7 @@ The tool allows arbitrary Python code so it can also be used to modify the datab
 
 The user interface looks like
 
-![SuperTool](SuperTool-1.png)
+![SuperTool](images/SuperTool-1.png)
 
 The tool has five input text fields:
 
@@ -88,11 +88,11 @@ All the input fields (except Title) will be in Python syntax. All fields are opt
 
 You will get the names of the selected person in tabular format in the lower part of the display. The Gramps ID for each person will be automatically inserted in the first column. For example:
 
-![SuperTool](SuperTool-2.png)
+![SuperTool](images/SuperTool-2.png)
 
 Multiple values are displayed in separate columns and the filter expression can be used to select the rows to be displayed:
 
-![SuperTool](SuperTool-3.png)
+![SuperTool](images/SuperTool-3.png)
 
 This is not very impressive but remember that you can use arbitrary Python syntax in each input field: you can execute one or more arbitrary statements for each object, use a complicated filter if that is needed and display whatever is needed. The result list can also be sorted by clicking the column headers. See examples later in this document.
 
@@ -132,19 +132,19 @@ These are described in more detail in the reference section below.
 
 Let's experiment with some of these:
 
-![SuperTool](SuperTool-4a.png)
+![SuperTool](images/SuperTool-4a.png)
 
 Here we display the birth and death dates for these individuals. And also their age at death by subtracting the death and birth dates - the result will be the number of days. We can divide the number of days by 365 to get the approximate age in years:
 
-![SuperTool](SuperTool-4b.png)
+![SuperTool](images/SuperTool-4b.png)
 
 Or by using a slightly different syntax:
 
-![SuperTool](SuperTool-4c.png)
+![SuperTool](images/SuperTool-4c.png)
 
 We can order the rows by any column by clicking the column header:
 
-![SuperTool](SuperTool-4d.png)
+![SuperTool](images/SuperTool-4d.png)
 
 Note that none of the above experiments required saving the Python code in a file - everything is executed in memory within the tool. Later we will see how to save a query in a script file.
 
@@ -187,13 +187,13 @@ In addition to the variables mentioned above, the following general/global varia
 
 The "Help" menu opens a small window that displays the variables (or "attributes") available globally or for each object type. There is also a link to this document.
 
-![SuperTool](Help-Window.png)
+![SuperTool](images/Help-Window.png)
 
 ## Options
 
 Under the text input fields there is a set of three radio buttons that determine which objects are processed:
 
-![SuperTool-scopes](SuperTool-scopes.png)
+![SuperTool-scopes](images/SuperTool-scopes.png)
 
 * All objects - all objects in the database of the current type/category
 * Filtered objects - all displayed objects (applicable if a Gramps regular sidebar filter is used)
@@ -201,7 +201,7 @@ Under the text input fields there is a set of three radio buttons that determine
 
 Next are four checkboxes:
 
-![SuperTool-options](SuperTool-options.png)
+![SuperTool-options](images/SuperTool-options.png)
 
 * Unwind lists - if any value in the "Expressions to display" is a list then each member of the list will be shown on a separate row
 * Commit changes - any changes to the selected objects are automatically committed if this is checked
@@ -229,7 +229,7 @@ This field can contain regular Python comments (lines starting with a hash sign:
 
 In this example a counter is used to find duplicate places in the database. The city of Philadelphia appears twice in the database, using Gramps IDs P1313 and P1413. Run this in the Places category.
 
-![SuperTool](SuperTool-duplicate-places.png)
+![SuperTool](images/SuperTool-duplicate-places.png)
 
 ## Statements executed for every object 
 
@@ -239,7 +239,7 @@ This field can contain regular Python comments (lines starting with a hash sign:
 
 This example sets the variable "number_of_names" and then uses it in the filter section:
 
-![SuperTool](SuperTool-number-of-names.png)
+![SuperTool](images/SuperTool-number-of-names.png)
 
 ## Supported object types
 
@@ -266,7 +266,7 @@ print("Limit is", args.limit)
 ```
 This will first display a dialog like
 
-![Getargs dialog](SuperTool-getargs.png)
+![Getargs dialog](images/SuperTool-getargs.png)
 
 If the user presses "OK" then the script continues normally. The supplied value can be used in the script by using the 'argname' as a property of the 'args' object, e.g. 'args.limit'.
 
@@ -288,7 +288,7 @@ args = getargs(text="Searchtext:",
 ```
 This will first display a dialog like
 
-![Getargs dialog](SuperTool-getargs2.png)
+![Getargs dialog](images/SuperTool-getargs2.png)
 
 
 The given values are saved and reused as defaults when getargs is called the next time. 
@@ -311,7 +311,7 @@ All queries are done under a transaction and any changes can be undone from the 
 
 For example, this will set the gender of selected people to FEMALE:
 
-![SuperTool](SuperTool-set-gender.png)
+![SuperTool](images/SuperTool-set-gender.png)
 
 Note that you cannot change the properties of the objects by simply assigning new values to properties of *Proxy* objects (see [Proxy objects](#proxy-objects)). For example, in the People category, this does not work:
 
@@ -366,21 +366,21 @@ The script files have the extension ".script" by default.
 
 The "New" command will clear all input fields.
 
-![SuperTool](SuperTool-file-menu.png)
+![SuperTool](images/SuperTool-file-menu.png)
 
 ## Saving the query in a Note
 
 A query can also be saved in the current Gramps database (family tree) as a Note of the type 'SuperTool Script'. This feature is available starting from SuperTool version 1.3.8 and it adds two new items in the 'File' menu:
 
-![SuperTool](SuperTool-file-menu-2.png)
+![SuperTool](images/SuperTool-file-menu-2.png)
 
 Selecting 'Load from Note' displays a list of saved notes (if any) and allows the user to edit them or load one of them as the current query:
 
-![SuperTool](load-note.png)
+![SuperTool](images/load-note.png)
 
 Selecting 'Save as Note' also displays the list of saved notes and allows the user to overwrite one of them with the current query or create a new Note:
 
-![SuperTool](save-note.png)
+![SuperTool](images/save-note.png)
 
 By default the lists only show queries for the current category.
 
@@ -523,7 +523,7 @@ for child in children:
 
 Note that both families and individuals appear in the result:
 
-![SuperTool](add_row.png)
+![SuperTool](images/add_row.png)
 
 Note: the 'add_row' method also accepts parameters gramps_id, handle, namespace and category which can also be used to specify the object. However, in most cases it is sufficient and simpler to use the 'obj' parameter.
 
@@ -545,7 +545,7 @@ The Settings menu opens a settings dialog where you can change two values:
 
 If you change the directory for the @include files then you should move all existing files to the new directory. Otherwise scripts (and filters) that use the files do not work anymore.
 
-![Settings](SuperTool-settings.png)
+![Settings](images/SuperTool-settings.png)
 
 ## The 'supertool_execute' function
 
@@ -607,7 +607,7 @@ An asterisk after the type name means that the attribute is a list of objects, e
     events: Event*
 
 
-![SuperTool](supertool.svg)
+![SuperTool](images/supertool.svg)
 
 Note: the 'media_list' attribute is missing from this diagram.
 
