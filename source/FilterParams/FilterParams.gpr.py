@@ -52,7 +52,7 @@ register(
     id="FilterParams",
     name=_("FilterParams"),
     description=_("Display custom filters and allow changing their parameters"),
-    version="1.2.2",
+    version="1.2.3",
     gramps_target_version=major_version,
     status=STABLE,
     fname="FilterParams.py",

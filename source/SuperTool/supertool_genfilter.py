@@ -188,6 +188,7 @@ class GenericFilterRule(Rule):
             self.user.end_progress()
             raise FilterError("SuperTool Query Error", str(e))
 
+    apply_to_one = apply  # for Gramps 6.0
 
 class GenericFilterRule_Family(GenericFilterRule):
     def __init__(self, *args):
