@@ -237,7 +237,7 @@ class Tool(tool.Tool, ManagedWindow):
 
     def initialize_category_and_filtername(self):
         # type: () -> None
-        self.current_filtername = None
+        self.current_filtername = ""
         self.filternames = []
         category = self.uistate.viewmanager.active_page.get_category()  # type: str
         if category == "People":

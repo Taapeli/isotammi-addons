@@ -3,7 +3,7 @@
     "t": 2,
     "i": "FilterParams",
     "n": "FilterParams",
-    "v": "1.2.1",
+    "v": "1.2.2",
     "g": "6.0",
     "d": "Display custom filters and allow changing their parameters",
     "z": "FilterParams.addon.tgz",
