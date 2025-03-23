@@ -844,7 +844,7 @@ class Filterfactory:
                 Filterfactory.filterdb.load()
             filter_dict = Filterfactory.filterdb.get_filters_dict(namespace)
             filt = filter_dict[filtername]
-            return lambda obj: filt.match(obj.handle, self.db)
+            return lambda obj: filt.apply(self.db, [obj.handle])
 
         return filterfunc
 
