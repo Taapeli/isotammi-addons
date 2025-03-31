@@ -742,7 +742,7 @@ class GrampsEngine:
                     return
 
             obj = self.context.getfunc(handle)
-            obj.commit_ok = True
+            obj._commit_ok = True
             try:
                 if self.query.statements_compiled:
                     value, env = self.context.execute_func(
@@ -757,7 +757,7 @@ class GrampsEngine:
                     if not ok:
                         continue
     
-                if self.query.commit_changes and obj.commit_ok:
+                if self.query.commit_changes and obj._commit_ok:
                     self.context.commitfunc(obj, self.trans)
     
                 for values in result.fetch_rows():
