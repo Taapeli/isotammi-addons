@@ -2,6 +2,8 @@ Generatecitations
 -----------------
 Author: kari.kujansuu@gmail.com
 
+This addon should work with both Gramps versions 5.x and 6.0.
+
 Generate citations from notes of a specific format. Supports certain Finnish digital archives.
 
 ### National Archives (Kansallisarkisto/Astia) 

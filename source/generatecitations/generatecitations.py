@@ -136,13 +136,13 @@ class GenerateCitations(tool.Tool):
         for classname,funcs in self.primary_objects.items():
             for obj in funcs['iter_func']():
                 step()
-                obj.primary_object_class = classname
-                obj.primary_object = obj
+                obj._primary_object_class = classname
+                obj._primary_object = obj
                 yield classname,obj
                 if hasattr(obj,'get_note_child_list'):
                     for obj2 in obj.get_note_child_list():
-                        obj2.primary_object_class = classname
-                        obj2.primary_object = obj
+                        obj2._primary_object_class = classname
+                        obj2._primary_object = obj
                         yield obj2.__class__.__name__, obj2
 
     def find_matching_notes(self,obj):
@@ -160,7 +160,7 @@ class GenerateCitations(tool.Tool):
         repos = defaultdict(Repository)
         for handle in self.db.iter_repository_handles():
             repo = self.db.get_repository_from_handle(handle)
-            repo.in_db = True
+            repo._in_db = True
             repos[repo.name] = repo
         return repos
 
@@ -168,7 +168,7 @@ class GenerateCitations(tool.Tool):
         sources = defaultdict(Source)
         for handle in self.db.iter_source_handles():
             source = self.db.get_source_from_handle(handle)
-            source.in_db = True
+            source._in_db = True
             sources[source.title] = source
         return sources
                                 
@@ -190,9 +190,9 @@ class GenerateCitations(tool.Tool):
             notes_to_remove = {}
             for classname,obj in self.yield_objects(step):
                 total_objects += 1
-                obj.classname = classname
-                obj.notes = []
-                obj.citations = []
+                obj._classname = classname
+                obj._notes = []
+                obj._citations = []
                 current_citations = None
                 for note,m,notehandle in self.find_matching_notes(obj):
                     matching_notes += 1
@@ -214,27 +214,27 @@ class GenerateCitations(tool.Tool):
                     repo = repos[m.reponame]
                     repo.set_name(m.reponame)
 
-                    source.repo = repo
+                    source._repo = repo
 
                     citation = Citation()
                     citation.set_page(m.citationpage)
-                    citation.source = source
-                    citation.note = m.details
+                    citation._source = source
+                    citation._note = m.details
 
-                    obj.citations.append(citation)
-                    obj.notes.append(notehandle)
+                    obj._citations.append(citation)
+                    obj._notes.append(notehandle)
                     
                     notelines = note.get().splitlines()
                     if len(notelines) == 1:
                         notes_to_remove[notehandle] = m
-                if obj.notes: objects.append(obj)
+                if obj._notes: objects.append(obj)
 
             with DbTxn(_("Add citations"), self.db) as trans:
                 for obj in objects:
                     self.log("Object {}".format(obj))
-                    for citation in obj.citations:
-                        source = citation.source
-                        repo = source.repo
+                    for citation in obj._citations:
+                        source = citation._source
+                        repo = source._repo
                         repo.set_type(RepositoryType.ARCHIVE)
                         citation_handle = self.db.add_citation(citation, trans)
                         source_handle = self.db.add_source(source, trans)
@@ -242,22 +242,22 @@ class GenerateCitations(tool.Tool):
 
                         self.log("- Adding citation: {}".format(citation.get_page()))
 
-                        if not hasattr(repo,"in_db"): 
+                        if not hasattr(repo,"_in_db"): 
                             repos_added += 1
                             self.log("- Adding repo: {}".format(repo.get_name()))
-                            repo.in_db = True
-                        if not hasattr(source,"in_db"): 
+                            repo._in_db = True
+                        if not hasattr(source,"_in_db"): 
                             sources_added += 1
                             self.log("- Adding source: {}".format(source.get_title()))
-                            source.in_db = True
+                            source._in_db = True
 
 
                         note = Note()
-                        note.set(citation.note)
+                        note.set(citation._note)
                         note.set_type(NoteType.CITATION)
                         note_handle = self.db.add_note(note, trans)
                         citation.add_note(note_handle)
-                        citation.newnote = note
+                        citation._newnote = note
                         
                         citation.set_reference_handle(source_handle)
                         if not source.has_repo_reference(repo_handle):
@@ -267,17 +267,17 @@ class GenerateCitations(tool.Tool):
                         obj.add_citation(citation_handle)
                         citations_added += 1
 
-                    for notehandle in obj.notes:
+                    for notehandle in obj._notes:
                         if notehandle in notes_to_remove:
                             obj.remove_note(notehandle)
                     
-                    commit_func = self.primary_objects[obj.primary_object_class]['commit_func']
-                    commit_func(obj.primary_object, trans)
-                    for citation in obj.citations:
+                    commit_func = self.primary_objects[obj._primary_object_class]['commit_func']
+                    commit_func(obj._primary_object, trans)
+                    for citation in obj._citations:
                         self.db.commit_citation(citation, trans)
-                        self.db.commit_source(citation.source, trans)
-                        self.db.commit_repository(source.repo, trans)
-                        self.db.commit_note(citation.newnote, trans)
+                        self.db.commit_source(citation._source, trans)
+                        self.db.commit_repository(source._repo, trans)
+                        self.db.commit_note(citation._newnote, trans)
 
                 for notehandle,m in notes_to_remove.items():
                     self.log("Removing note: {} {}".format(repr(notehandle),m.line))
