@@ -78,7 +78,7 @@ from gramps.gen.user import User
 from gramps.gen.lib import Note
 
 from gramps.gui.displaystate import DisplayState
-from gramps.gui.dialog import OkDialog, ErrorDialog
+from gramps.gui.dialog import OkDialog, ErrorDialog, QuestionDialog2
 from gramps.gui.editors import EditNote
 from gramps.gui.glade import Glade
 from gramps.gui.managedwindow import ManagedWindow
@@ -186,17 +186,6 @@ class NoteDialog(Gtk.Dialog):
         
         self.show_all()
         
-    def button_press(self, treeview, event):
-        # type: (Gtk.TreeView, Gdk.Event) -> bool
-        if event.type == Gdk.EventType.DOUBLE_BUTTON_PRESS and event.button == 1:
-            model, treeiter = self.listview.get_selection().get_selected()
-            if treeiter is None:
-                return False
-            row = list(model[treeiter])
-            self.emit("response", self.LOAD_NOTE)
-            return True
-        return False
-
     def list_notes(self, _widget):
         # type: (Gtk.Widget) -> None
         self.liststore.clear()
@@ -234,6 +223,17 @@ class NoteChooserDialog(NoteDialog):
         self.add_button("Cancel",  NoteChooserDialog.CANCEL)
         self.set_default_response(NoteChooserDialog.LOAD_NOTE)
 
+    def button_press(self, treeview, event):
+        # type: (Gtk.TreeView, Gdk.Event) -> bool
+        if event.type == Gdk.EventType.DOUBLE_BUTTON_PRESS and event.button == 1:
+            model, treeiter = self.listview.get_selection().get_selected()
+            if treeiter is None:
+                return False
+            row = list(model[treeiter])
+            self.emit("response", self.LOAD_NOTE)
+            return True
+        return False
+
 class NoteSaveDialog(NoteDialog):
     SAVE_NOTE = 3
     NEW_NOTE = 4
@@ -243,6 +243,19 @@ class NoteSaveDialog(NoteDialog):
         self.add_button("Overwrite",  NoteSaveDialog.SAVE_NOTE)
         self.add_button("New",  NoteSaveDialog.NEW_NOTE)
         self.add_button("Cancel",  NoteSaveDialog.CANCEL)
+
+    def button_press(self, treeview, event):
+        # type: (Gtk.TreeView, Gdk.Event) -> bool
+        if event.type == Gdk.EventType.DOUBLE_BUTTON_PRESS and event.button == 1:
+            note = self.get_note()
+            if not note: return False
+            dlg = QuestionDialog2("Overwrite?", f"Overwrite {note.gramps_id}?", "Overwrite", "Cancel")
+            ok = dlg.run()
+            if ok:
+                self.emit("response", self.SAVE_NOTE)
+                return True
+        return False
+
 
 class ScriptOpenFileChooserDialog(Gtk.FileChooserDialog):
     def __init__(self, uistate):
