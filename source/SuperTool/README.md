@@ -350,11 +350,13 @@ Note that the argument to "db.commit_person" is the actual Gramps object (child.
 
 ## Deleting objects
 
-If you delete an object from the database then you should set the object's "commit_ok" attribute to False:
+If you delete an object from the database then you should set the object's "_commit_ok" attribute to False:
 
 ```python
-obj.commit_ok = False
+obj._commit_ok = False
 ```
+
+Note: this used to be without the leading underscore: "commit_ok". Now it should be "_commit_ok".
 
 This is because the tool automatically commits all processed objects if the "Commit changes" checkbox is marked. However, if a deleted object is committed, then it will be re-inserted in the database (this is how Gramps works). Setting <i>commit_ok</i> to False will prevent this. This attribute is set in the actual Gramps object.
 
