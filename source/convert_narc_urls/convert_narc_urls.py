@@ -139,7 +139,7 @@ def kuid_to_astia_url(kuid):
         tiedot = {"searchString":"AY_" + ay, "searchTarget":"aineisto"};
 
         # var aineisto = await $.post("https://astia.narc.fi/uusiastia/aineisto/read.php", JSON.stringify(tiedot), function(data) {
-        url = "https://astia.narc.fi/uusiastia/aineisto/read.php"
+        url = "https://astia.narc.fi/uusiastia/ws/aineisto/read.php"
         s = urllib.request.urlopen(url, data=json.dumps(tiedot).encode("utf-8")).read()
         rsp = None
         try:
@@ -149,7 +149,7 @@ def kuid_to_astia_url(kuid):
             return None
 
         #  var tiedostot = await $.post("https://astia.narc.fi/uusiastia/json/json_tiedostot.php?id=" + id, function(data) {
-        url = "https://astia.narc.fi/uusiastia/json/json_tiedostot.php?id=" + aineistoId
+        url = "https://astia.narc.fi/uusiastia/ws/json/json_tiedostot.php?id=" + aineistoId
         s = urllib.request.urlopen(url, data=b'').read()
         try:
             rsp = json.loads(s)
