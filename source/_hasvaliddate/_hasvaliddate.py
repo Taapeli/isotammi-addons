@@ -49,6 +49,8 @@ class HasValidDate(Rule):
         """Rule that matches an event having a valid date"""
         return event.get_date_object().is_valid()
 
+    apply_to_one = apply    # for Gramps 6.0
+
 class HasInValidDate(Rule):
     """Rule that matches an event having a non-blank invalid date"""
 
@@ -60,3 +62,6 @@ class HasInValidDate(Rule):
     def apply(self, db, event):
         """Rule that matches an event having a valid date (or a blank date)"""
         return not (event.get_date_object().get_text() == "" or event.get_date_object().is_valid())
+    
+    apply_to_one = apply    # for Gramps 6.0
+    
