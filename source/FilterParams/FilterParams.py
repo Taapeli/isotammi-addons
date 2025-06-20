@@ -375,6 +375,7 @@ class Tool(tool.Tool, ManagedWindow):
                 self.parent = user.parent
                 self.uistate = user.uistate
                 self.parent = user.parent
+                self._progress = None
 
             def begin_progress(self, title, message, steps):
                 # type: (str,str,int) -> None
@@ -391,6 +392,8 @@ class Tool(tool.Tool, ManagedWindow):
 
             def step_progress(self):
                 # type: () -> None
+                if self._progress is None:
+                    return
                 res = self._progress.step()
                 if res:
                     self.end_progress()
