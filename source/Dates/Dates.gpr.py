@@ -34,7 +34,7 @@ register(
     authors="Kari Kujansuu",
     authors_email="kari.kujansuu@gmail.com",
     status=STABLE,
-    version="1.2.4",
+    version="1.2.5",
     gramps_target_version=major_version,
     fname="Dates.py",
     gramplet="Dates",

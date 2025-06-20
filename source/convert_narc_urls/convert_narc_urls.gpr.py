@@ -1,7 +1,7 @@
 #
 # Gramps - a GTK+/GNOME based genealogy program
 #
-# Copyright (C) 2022      KKu
+# Copyright (C) 2022-2025      Kari Kujansuu
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -42,7 +42,7 @@ register(TOOL,
     id    = 'convert_narc_urls',
     name  = _("Convert NARC URLs"),
     description =  _(""),
-    version = '1.0.6',
+    version = '1.0.7',
     gramps_target_version = major_version,
     status = STABLE,
     fname = 'convert_narc_urls.py',
