@@ -551,7 +551,7 @@ If you change the directory for the @include files then you should move all exis
 
 ## The 'supertool_execute' function
 
-It occured to me that SuperTool could also need an API (Application Programming Interface) so that one could use SuperTool type of scripting from another addons or other programs within Gramps.
+It occured to me that SuperTool could also need an API (Application Programming Interface) so that one could use SuperTool type of scripting from other addons or other programs within Gramps.
 
 Warning: this is an experimental feature. Or rather, more experimental than the other features :-)
 
@@ -589,8 +589,11 @@ A more detailed description will be in a separate document.
 
 ## More examples
 
-to be added
+Some sample SuperTool scripts can be found here:
 
+#### https://gramps.discourse.group/tag/supertool-script
+
+#### https://github.com/kkujansuu/supertool-scripts
 
 # Reference
 
