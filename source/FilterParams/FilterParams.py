@@ -129,6 +129,17 @@ regex_tip = _(
     "A dollar sign will match the end of a line."
 )
 
+NAMESPACES = [
+    "Person",
+    "Family",
+    "Event",
+    "Place",
+    "Citation",
+    "Source",
+    "Repository",
+    "Media",
+    "Note",
+]
 
 # -------------------------------------------------------------------------
 #
@@ -627,6 +638,8 @@ class Tool(tool.Tool, ManagedWindow):
             # filters of another namespace, name may be same as caller!
             elif v == _("Person filter name:"):
                 t = MyFilters(self.filterdb.get_filters("Person"))
+            elif v == _("Family filter name:"):
+                t = MyFilters(self.filterdb.get_filters("Family")) # added in Gramps 6.0
             elif v == _("Event filter name:"):
                 t = MyFilters(self.filterdb.get_filters("Event"))
             elif v == _("Source filter name:"):
@@ -635,6 +648,14 @@ class Tool(tool.Tool, ManagedWindow):
                 t = MyFilters(self.filterdb.get_filters("Repository"))
             elif v == _("Place filter name:"):
                 t = MyFilters(self.filterdb.get_filters("Place"))
+
+            # these are probably not used:                
+            elif v == _("Citation filter name:"):
+                t = MyFilters(self.filterdb.get_filters("Citation"))
+            elif v == _("Media filter name:"):
+                t = MyFilters(self.filterdb.get_filters("Media"))
+            elif v == _("Note filter name:"):
+                t = MyFilters(self.filterdb.get_filters("Note"))
             elif v in _name2typeclass:
                 additional = None
                 if v in (_("Event type:"), _("Personal event:"), _("Family event:")):
@@ -852,17 +873,12 @@ class Tool(tool.Tool, ManagedWindow):
                     entry.entry.connect("changed", self.update_params)
                 if isinstance(entry, MyFilters):
                     entry.connect("changed", self.update_params)
-                if self.is_filter_reference(clsname, caption, entry):
-                    matchcategory = self.get_matchcategory(clsname, caption, entry)
-                    if matchcategory == "":
-                        matchcategory = category
-                    filtername = rule.list[paramindex]
-
-                    self.add_frame_and_filter(
-                        grid2, matchcategory, filtername, "", level
-                    )
-                else:
-                    pass
+                    matchcategory = self.get_matchcategory(category, rule, caption)
+                    if matchcategory is not None:
+                        filtername = rule.list[paramindex]
+                        self.add_frame_and_filter(
+                            grid2, matchcategory, filtername, "", level
+                        )
 
             if rule.allow_regex:
                 use_regex = Gtk.CheckButton(label=_("Use regular expressions"))
@@ -871,25 +887,15 @@ class Tool(tool.Tool, ManagedWindow):
                 grid2.add(use_regex)
                 self.regexes.append((rule, use_regex))
 
-    def is_filter_reference(self, clsname, caption, entry):
-        if isinstance(entry, MyFilters):
-            return True
-        if caption.lower().endswith("filter name:"):
-            return True
-        if clsname.startswith("Matches") and clsname.endswith("Filter"):
-            return True  # e.g. MatchesEventFilter
-        if clsname.startswith("Is") and clsname.endswith("FilterMatch"):
-            return True  # e.g. IsChildOfFilterMatch
-        return False
-
-    def get_matchcategory(self, clsname, caption, entry):
-        if caption.lower().endswith(" filter name:"):
-            return caption.split()[0].capitalize()
-        if clsname.startswith("Matches") and clsname.endswith("Filter"):
-            return clsname.replace("Matches", "").replace(
-                "Filter", ""
-            )  # e.g. MatchesEventFilter
-        return ""
+    def get_matchcategory(self, namespace, rule, caption):
+        if isinstance(rule, MatchesFilterBase):
+            return rule.namespace
+        if caption == _("Filter name:"):
+            return namespace
+        for ns in NAMESPACES:
+            if caption == _(ns + " filter name:"):   
+                return namespace
+        return None
 
     def add_frame_and_filter(self, grid, category, filtername, caption, level):
         # type: (Gtk.Grid,str,str,int) -> Gtk.Frame
