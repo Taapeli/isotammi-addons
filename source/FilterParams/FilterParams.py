@@ -21,8 +21,12 @@
 import os
 import re
 import traceback
+
 from collections import defaultdict
+from io import StringIO
 from pprint import pprint
+from xml.sax import handler, make_parser, SAXParseException
+
 
 try:
     from typing import (
@@ -59,6 +63,8 @@ from gramps.gen.display.place import displayer as place_displayer
 from gramps.gen.errors import FilterError, WindowActiveError
 from gramps.gen.filters import GenericFilterFactory, reload_custom_filters
 from gramps.gen.filters.rules import MatchesFilterBase
+from gramps.gen.filters._filterparser import FilterParser
+
 from gramps.gen.lib import (
     Citation,
     Event,
@@ -75,7 +81,7 @@ from gramps.gen.utils.db import family_name
 from gramps.gen.utils.db import get_birth_or_fallback
 from gramps.gen.utils.string import conf_strings
 from gramps.gui.dbguielement import DbGUIElement
-from gramps.gui.dialog import ErrorDialog, QuestionDialog
+from gramps.gui.dialog import ErrorDialog, QuestionDialog, OkDialog, QuestionDialog2
 from gramps.gui.editors import (
     EditCitation,
     EditEvent,
@@ -285,30 +291,23 @@ class Tool(tool.Tool, ManagedWindow):
         self.box = glade.get_child_object("box")
         self.errorMsg = glade.get_child_object("errorMsg")
 
-        if 0:
-            glade.connect_signals(
-                {
-                    "on_filter_changed": self.on_filter_changed,
-                    "add_new_filter": self.add_new_filter,
-                    "edit_filter": self.edit_filter,
-                    "delete_filter": self.delete_filter,
-                    "execute_clicked": self.execute_clicked,
-                    "update_clicked": self.update_clicked,
-                    "close_clicked": self.close_clicked,
-                    "on_category_changed": self.on_category_changed,
-                }
-            )
-        if 1:
-            self.combo_filters.connect("changed", self.on_filter_changed)
 
-            self.add_button.connect("clicked", self.add_new_filter)
-            self.edit_button.connect("clicked", self.edit_filter)
-            self.clone_button.connect("clicked", self.clone_filter)
-            self.delete_button.connect("clicked", self.delete_filter)
+        self.export_button = glade.get_child_object("export_button")
+        self.import_button = glade.get_child_object("import_button")
 
-            self.execute_button.connect("clicked", self.execute_clicked)
-            self.update_button.connect("clicked", self.update_clicked)
-            self.close_button.connect("clicked", self.close_clicked)
+        self.combo_filters.connect("changed", self.on_filter_changed)
+
+        self.add_button.connect("clicked", self.add_new_filter)
+        self.edit_button.connect("clicked", self.edit_filter)
+        self.clone_button.connect("clicked", self.clone_filter)
+        self.delete_button.connect("clicked", self.delete_filter)
+
+        self.execute_button.connect("clicked", self.execute_clicked)
+        self.update_button.connect("clicked", self.update_clicked)
+        self.close_button.connect("clicked", self.close_clicked)
+
+        self.export_button.connect("clicked", self.export_button_clicked)
+        self.import_button.connect("clicked", self.import_button_clicked)
 
         for cat in self.categories_translated:
             self.combo_categories.append_text(cat)
@@ -327,6 +326,105 @@ class Tool(tool.Tool, ManagedWindow):
             "delete-event", lambda x, y: self.close_clicked(self.dialog)
         )
         return self.dialog
+
+    def export_button_clicked(self, _widget):
+        f = FilterExportImport()
+        file_ = StringIO()
+        file_.write("<filters>\n")
+
+        for namespace, filt_ in self.filterlist_for_export:
+            if filt_:
+                f.export_as_text(file_, namespace, filt_.name, filt_)
+
+        file_.write("\n</filters>\n")
+
+        value = file_.getvalue()
+
+        clip =  Gtk.Clipboard.get(Gdk.SELECTION_CLIPBOARD)
+        clip.set_text(value, -1)
+
+        d = Gtk.Dialog()
+        textview = Gtk.TextView()
+        textview.get_buffer().set_text(value) #, len(value))
+        sw = Gtk.ScrolledWindow()
+        sw.set_size_request(600, 300)
+        sw.add(textview)
+        d.get_content_area().add(sw)
+        d.get_content_area().add(Gtk.Label("Text copied to clipboard"))
+        d.add_button(_("OK"), 1)
+        d.show_all()
+        rsp = d.run()
+        d.destroy()
+        
+    def import_button_clicked(self, _widget):
+        def get_data(textview):
+            buf = textview.get_buffer()
+            return buf.get_text(buf.get_start_iter(), buf.get_end_iter(), False)
+
+        d = Gtk.Dialog()
+        textview = Gtk.TextView()
+        clip =  Gtk.Clipboard.get(Gdk.SELECTION_CLIPBOARD)
+        value = clip.wait_for_text()
+        if value is None:
+            ErrorDialog(_("Error"), _("Import failed: could not read the clipboard").format(e))
+        textview.get_buffer().set_text(value) #, len(value))
+        sw = Gtk.ScrolledWindow()
+        sw.set_size_request(600, 300)
+        sw.add(textview)
+        d.get_content_area().add(Gtk.Label("Text copied from clipboard"))
+        d.get_content_area().add(sw)
+        d.add_button(_("Import"), 1)
+        d.add_button(_("Cancel"), 2)
+        d.show_all()
+        rsp = d.run()
+        if rsp == 1:
+            try:
+                f = FilterExportImport()
+                data = get_data(textview)
+                s = StringIO(data)
+                names = f.parse_names_from_string(data)
+                if self.check_existing_filters(names):
+                    f.import_from_string(data)
+                    self.filterdb.save()
+                    reload_custom_filters()
+                    self.uistate.emit("filters-changed", (self.current_category,))
+                    if names:
+                        namespace = names[0][0]
+                        filtname = names[0][1]
+                        self.goto_filter(namespace, filtname)
+                    OkDialog(_("Imported"), _("OK"))
+                else:
+                    OkDialog(_("Nothing Imported"), "")
+            except Exception as e:
+                traceback.print_exc()
+                ErrorDialog(_("Error"), _("Import failed: {}").format(e))
+        d.destroy()
+            
+    def check_existing_filters(self, filters):
+        existing = []
+        for namespace, filtername in filters:
+            f = self.getfilter(namespace, filtername)
+            if f:
+                existing.append([namespace, filtername])
+        if existing:
+            existing_list = "\n".join(f"- {namespace}: {filtername}" for (namespace, filtername) in existing)
+            d = QuestionDialog2(_("Overwrite warning"), 
+                                _("The following filters already exist: \n\n{}\n").format(existing_list), 
+                                _("Overwrite"), _("Cancel"))
+            rsp = d.run()
+            if rsp:
+                return True
+            return False
+        else:
+            return True            
+
+    def goto_filter(self, namespace, filtname):
+        self.current_category = namespace
+        self.current_filtername = filtname
+        i = self.categories.index(self.current_category)
+        self.combo_categories.set_active(i)
+        self.populate_filters(self.current_category)
+
 
     def on_category_changed(self, combo):
         # type: (Gtk.ComboBox) -> None
@@ -788,6 +886,7 @@ class Tool(tool.Tool, ManagedWindow):
 
         Saves the widget in three arrays (entries, filterparams and regexes).
         """
+        self.filterlist_for_export.append([category, filter])
 
         if level > 20:
             lbl = Gtk.Label()
@@ -991,6 +1090,8 @@ class Tool(tool.Tool, ManagedWindow):
         caption = "<b>" + filtername + "</b>"
         self.errorMsg.set_text("")
 
+        self.filterlist_for_export = []
+
         frame2 = self.add_frame_and_filter(
             None, self.current_category, filtername, filtername, 0
         )
@@ -1193,6 +1294,82 @@ def get_category_info(db, category_name):
         objclass,
         editfunc,
     )
+
+class FilterExportImportParser(handler.ContentHandler):
+    """Parses the XML file and builds the list of filters"""
+    def __init__(self):
+        super().__init__()
+        self.names = []
+        
+    def startElement(self, tag, attrs):
+        if tag == "object":
+            if "type" in attrs:
+                self.namespace = attrs["type"]
+            else:
+                self.namespace = "generic"
+            if self.namespace == "MediaObject":
+                # deals with older custom filters
+                self.namespace = "Media"
+        if tag == "filter":
+            self.names.append([self.namespace, attrs["name"]])
+
+class FilterExportImport:
+
+    def parse_names_from_string(self, data):            
+        the_file = StringIO(data)
+        handler = FilterExportImportParser()
+        parser = make_parser()
+        parser.setContentHandler(handler)
+        parser.parse(the_file)
+        return handler.names
+
+    def import_from_string(self, data):
+        s = StringIO(data)
+        self.import_from_file(s)
+    
+    def import_from_file(self, the_file):
+        """load a custom filter"""
+        # code adapted from gramps.gen.filters._filterlist
+        filterlist = gramps.gen.filters.CustomFilters
+        parser = make_parser()
+        parser.setContentHandler(FilterParser(filterlist))
+        parser.parse(the_file)
+
+    def fix(self, line):
+        """sanitize the custom filter name, if needed"""
+        # code copied from gramps.gen.filters._filterlist
+        new_line = line.strip()
+        new_line = new_line.replace("&", "&amp;")
+        new_line = new_line.replace(">", "&gt;")
+        new_line = new_line.replace("<", "&lt;")
+        return new_line.replace('"', "&quot;")
+
+    def export_as_text(self, file, namespace, name, the_filter):
+        # code copied from gramps.gen.filters._filterlist
+        file.write('\n')
+        file.write('  <object type="%s">\n' % namespace)
+        file.write('    <filter name="%s"' % self.fix(name))
+        file.write(' function="%s"' % the_filter.get_logical_op())
+        if the_filter.invert:
+            file.write(' invert="1"')
+        comment = the_filter.get_comment()
+        if comment:
+            file.write(' comment="%s"' % self.fix(comment))
+        file.write(">\n")
+        for rule in the_filter.get_rules():
+            file.write(
+                '      <rule class="%s" use_regex="%s" use_case="%s">'
+                "\n"
+                % (rule.__class__.__name__, rule.use_regex, rule.use_case)
+            )
+            for value in list(rule.values()):
+                file.write(
+                    '        <arg value="%s"/>' "\n" % self.fix(value)
+                )
+            file.write("      </rule>\n")
+        file.write("    </filter>\n")
+        file.write('  </object>\n')
+    
 
 
 # -------------------------------------------------------------------------

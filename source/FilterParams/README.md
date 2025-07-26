@@ -2,7 +2,7 @@ FilterParams
 ------------
 Author: kari.kujansuu@gmail.com<br>
 September 2021<br>
-Updated February 2025
+Updated in July 2025
 
 Gramps add-on that displays the contents and structure of custom filters and allows changing parameters in one screen.
 
@@ -93,5 +93,48 @@ If a custom filter has a comment then the comment is shown as a tooltip when one
 The "invert" check box indicates the option "Return values that do not match the filter rules".
 
 The "All/At least one/Exactly one rule must apply" selection appears only if there actually are multiple rules in a filter.
+
+#### Export and Import
+
+![FilterParams](images/FilterParams-exportimport.png)
+
+These features try to make it easier to share custom filter definitions with other users. The Export button will open a dialog that displays the contents of the current filter and its dependencies in text format. You can then copy the text and send it to other users who can then import the same filters to their Gramps installations. 
+
+This can also be used as backup feature: you can save useful filters as text fragments outside Gramps.
+
+For the sample filter above clicking the Export button yields:
+
+![FilterParams](images/FilterParams-export.png)
+
+In this case there are three filters (for namespaces Person, Event and Place). The text is automatically copied to the (operating system) clipboard, so you can the paste it for example into a text document. You can also edit the definitions in this phase if needed.
+
+For import, you could first copy the relevant text to the clipboard and then press Import. Assuming the text above is still in the clipboard, you will get:
+
+![FilterParams](images/FilterParams-import.png)
+
+You can edit this text as needed - or replace it by pasting a different text. Editing should preserve the XML format.
+
+Then press Import in this dialog and the tool tries to import the filters. If there are no issues then the import is finished and the first imported filter is made active in the tool:
+
+![FilterParams](images/import-ok.png)
+
+If filters with the same name already exist, you will a dialog like:
+
+![FilterParams](images/Overwrite-warning.png)
+
+You can then cancel or overwrite the existing filters.
+
+Canceling gives this message:
+
+![FilterParams](images/Nothing-imported.png)
+
+In case of an error there may be a message like:
+
+![FilterParams](images/FilterParams-import-error.png)
+
+This kind of an error occurs if the text is not valid XML.
+
+
+
 
 
