@@ -10,6 +10,17 @@ Gramps add-on that displays the contents and structure of custom filters and all
 
 For details on custom filters, see https://gramps-project.org/wiki/index.php/Gramps_5.1_Wiki_Manual_-_Filters#Custom_Filters
 
+[Rationale and purpose](#rationale-and-purpose)
+<br>[Installation](#installation)
+<br>[Usage](#usage)
+<br>[Common usage tip](#common-usage-tip)
+<br>[Adding and editing filters](#adding-and-editing-filters)
+<br>[ID linking](#id-linking)
+<br>[Browsing](#browsing)
+<br>[Tooltips](#tooltips)
+<br>[Filter options](#filter-options)
+<br>[Export and Import](#export-and-import)
+
 ### Rationale and purpose
 
 Custom filters is a powerful feature of Gramps. The custom filters are built using built-in or third party rules as building blocks. Filters can also use other filters and such nesting can be arbitrarily deep. There is no feature in standard Gramps that would allow seeing the complete structure of a custom filter at a glance. This tool aims to help.
