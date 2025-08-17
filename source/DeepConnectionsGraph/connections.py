@@ -205,7 +205,7 @@ def generate_graph(dbdata, paths, start_handle, end_handle):
         prevnode = None
         for link in path:
             handle_type, handle = link.to_node
-            nodename = handle
+            nodename = "A" + handle # handle may start with digits and dot doesn't like that!
             color = "black"
             attrs = 'shape=box,style=rounded'
             if handle_type == 'Person' and nodename not in emitted_nodes:
