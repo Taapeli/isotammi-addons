@@ -395,7 +395,7 @@ class Tool(tool.Tool, ManagedWindow):
                         namespace = names[0][0]
                         filtname = names[0][1]
                         self.goto_filter(namespace, filtname)
-                    OkDialog(_("Imported"), _("OK"), parent=d)
+                    OkDialog(_("Imported {} filters").format(len(names)), _("OK"), parent=d)
                 else:
                     OkDialog(_("Nothing Imported"), "", parent=d)
             except Exception as e:
@@ -410,14 +410,32 @@ class Tool(tool.Tool, ManagedWindow):
             if f:
                 existing.append([namespace, filtername])
         if existing:
-            existing_list = "\n".join(f"- {namespace}: {filtername}" for (namespace, filtername) in existing)
-            d = QuestionDialog2(_("Overwrite warning"), 
-                                _("The following filters already exist: \n\n{}\n").format(existing_list), 
-                                _("Overwrite"), _("Cancel"), parent=d)
-            rsp = d.run()
-            if rsp:
-                return True
-            return False
+            existing_list = "\n".join("<b>" + namespace + "</b>: " + filtername for (namespace, filtername) in existing)
+            d2 = Gtk.Dialog(parent=d)
+            d2.set_title(_("Overwrite warning"))
+            d2.add_button( _("Overwrite"), 1)
+            d2.add_button(_("Cancel"), 2)
+            sw = Gtk.ScrolledWindow() 
+            sw.set_size_request(300, 300)
+            hdr = _("The following {} filters already exist:").format(len(existing)) 
+            lbl = Gtk.Label(hdr)
+            
+            grid = Gtk.Grid()
+            grid.set_column_spacing(5)
+            for row, (ns, fname) in enumerate(existing):
+                nslbl = Gtk.Label("<b>" + _(ns) + "</b>", use_markup=True)
+                nslbl.set_halign(Gtk.Align.START)
+                namelbl = Gtk.Label(fname)
+                namelbl.set_halign(Gtk.Align.START)
+                grid.attach(nslbl, 0, row, 1, 1)
+                grid.attach(namelbl, 1, row, 1, 1)
+            sw.add(grid)
+            d2.get_content_area().add(lbl)
+            d2.get_content_area().pack_start(sw, False, False, 10)
+            d2.show_all()
+            rsp = d2.run()
+            d2.destroy()
+            return rsp == 1
         else:
             return True            
 
