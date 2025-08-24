@@ -345,6 +345,7 @@ class Tool(tool.Tool, ManagedWindow):
         clip.set_text(value, -1)
 
         d = Gtk.Dialog()
+        d.set_transient_for(self.window)
         textview = Gtk.TextView()
         textview.get_buffer().set_text(value) #, len(value))
         sw = Gtk.ScrolledWindow()
@@ -363,6 +364,7 @@ class Tool(tool.Tool, ManagedWindow):
             return buf.get_text(buf.get_start_iter(), buf.get_end_iter(), False)
 
         d = Gtk.Dialog()
+        d.set_transient_for(self.window)
         textview = Gtk.TextView()
         clip =  Gtk.Clipboard.get(Gdk.SELECTION_CLIPBOARD)
         value = clip.wait_for_text()
@@ -384,7 +386,7 @@ class Tool(tool.Tool, ManagedWindow):
                 data = get_data(textview)
                 s = StringIO(data)
                 names = f.parse_names_from_string(data)
-                if self.check_existing_filters(names):
+                if self.check_existing_filters(names, d):
                     f.import_from_string(data)
                     self.filterdb.save()
                     reload_custom_filters()
@@ -393,15 +395,15 @@ class Tool(tool.Tool, ManagedWindow):
                         namespace = names[0][0]
                         filtname = names[0][1]
                         self.goto_filter(namespace, filtname)
-                    OkDialog(_("Imported"), _("OK"))
+                    OkDialog(_("Imported"), _("OK"), parent=d)
                 else:
-                    OkDialog(_("Nothing Imported"), "")
+                    OkDialog(_("Nothing Imported"), "", parent=d)
             except Exception as e:
                 traceback.print_exc()
-                ErrorDialog(_("Error"), _("Import failed: {}").format(e))
+                ErrorDialog(_("Error"), _("Import failed: {}").format(e), parent=d)
         d.destroy()
             
-    def check_existing_filters(self, filters):
+    def check_existing_filters(self, filters, d):
         existing = []
         for namespace, filtername in filters:
             f = self.getfilter(namespace, filtername)
@@ -411,7 +413,7 @@ class Tool(tool.Tool, ManagedWindow):
             existing_list = "\n".join(f"- {namespace}: {filtername}" for (namespace, filtername) in existing)
             d = QuestionDialog2(_("Overwrite warning"), 
                                 _("The following filters already exist: \n\n{}\n").format(existing_list), 
-                                _("Overwrite"), _("Cancel"))
+                                _("Overwrite"), _("Cancel"), parent=d)
             rsp = d.run()
             if rsp:
                 return True
