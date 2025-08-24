@@ -386,12 +386,14 @@ class Tool(tool.Tool, ManagedWindow):
                 data = get_data(textview)
                 s = StringIO(data)
                 names = f.parse_names_from_string(data)
-                if self.check_existing_filters(names, d):
+                existing = self.find_existing_filters(names)
+                if existing == [] or self.ok_to_override_existing_filters(existing, d):
+                    self.remove_existing(existing)
                     f.import_from_string(data)
                     self.filterdb.save()
                     reload_custom_filters()
                     self.uistate.emit("filters-changed", (self.current_category,))
-                    if names:
+                    if names: # go to first imported filter
                         namespace = names[0][0]
                         filtname = names[0][1]
                         self.goto_filter(namespace, filtname)
@@ -403,41 +405,48 @@ class Tool(tool.Tool, ManagedWindow):
                 ErrorDialog(_("Error"), _("Import failed: {}").format(e), parent=d)
         d.destroy()
             
-    def check_existing_filters(self, filters, d):
+    def find_existing_filters(self, filters):
         existing = []
         for namespace, filtername in filters:
             f = self.getfilter(namespace, filtername)
             if f:
                 existing.append([namespace, filtername])
-        if existing:
-            existing_list = "\n".join("<b>" + namespace + "</b>: " + filtername for (namespace, filtername) in existing)
-            d2 = Gtk.Dialog(parent=d)
-            d2.set_title(_("Overwrite warning"))
-            d2.add_button( _("Overwrite"), 1)
-            d2.add_button(_("Cancel"), 2)
-            sw = Gtk.ScrolledWindow() 
-            sw.set_size_request(300, 300)
-            hdr = _("The following {} filters already exist:").format(len(existing)) 
-            lbl = Gtk.Label(hdr)
-            
-            grid = Gtk.Grid()
-            grid.set_column_spacing(5)
-            for row, (ns, fname) in enumerate(existing):
-                nslbl = Gtk.Label("<b>" + _(ns) + "</b>", use_markup=True)
-                nslbl.set_halign(Gtk.Align.START)
-                namelbl = Gtk.Label(fname)
-                namelbl.set_halign(Gtk.Align.START)
-                grid.attach(nslbl, 0, row, 1, 1)
-                grid.attach(namelbl, 1, row, 1, 1)
-            sw.add(grid)
-            d2.get_content_area().add(lbl)
-            d2.get_content_area().pack_start(sw, False, False, 10)
-            d2.show_all()
-            rsp = d2.run()
-            d2.destroy()
-            return rsp == 1
-        else:
-            return True            
+        return existing
+
+    def ok_to_override_existing_filters(self, existing, parent_window):
+        d2 = Gtk.Dialog(parent=parent_window)
+        d2.set_title(_("Overwrite warning"))
+        d2.add_button( _("Overwrite"), 1)
+        d2.add_button(_("Cancel"), 2)
+        sw = Gtk.ScrolledWindow() 
+        sw.set_size_request(300, 300)
+        hdr = _("The following {} filters already exist:").format(len(existing)) 
+        lbl = Gtk.Label(hdr)
+        
+        grid = Gtk.Grid()
+        grid.set_column_spacing(5)
+        for row, (ns, fname) in enumerate(existing):
+            nslbl = Gtk.Label("<b>" + _(ns) + "</b>", use_markup=True)
+            nslbl.set_halign(Gtk.Align.START)
+            namelbl = Gtk.Label(fname)
+            namelbl.set_halign(Gtk.Align.START)
+            grid.attach(nslbl, 0, row, 1, 1)
+            grid.attach(namelbl, 1, row, 1, 1)
+        sw.add(grid)
+        d2.get_content_area().add(lbl)
+        d2.get_content_area().pack_start(sw, False, False, 10)
+        d2.show_all()
+        rsp = d2.run()
+        d2.destroy()
+        return rsp == 1
+
+
+    def remove_existing(self, existing):
+        for namespace, filtername in existing:
+            f = self.getfilter(namespace, filtername)
+            filterlist = self.filterdb.get_filters(namespace)
+            filterlist.remove(f)
+    
 
     def goto_filter(self, namespace, filtname):
         self.current_category = namespace
