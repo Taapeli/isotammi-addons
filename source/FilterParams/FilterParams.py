@@ -227,6 +227,7 @@ class Tool(tool.Tool, ManagedWindow):
 
     def populate_filters(self, category):
         # type: (str) -> None
+        self.errorMsg.set_text("")
         self.filterdb = gramps.gen.filters.CustomFilters
         filters = self.filterdb.get_filters_dict(category)
         self.filternames = []
