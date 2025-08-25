@@ -223,6 +223,7 @@ class Tool(tool.Tool, ManagedWindow):
         self.delete_button.set_sensitive(value)
         self.execute_button.set_sensitive(value)
         self.update_button.set_sensitive(value)
+        self.clone_button.set_sensitive(value)
         self.export_button.set_sensitive(value)
 
     def populate_filters(self, category):
