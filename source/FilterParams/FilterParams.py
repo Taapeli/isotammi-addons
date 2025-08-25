@@ -147,6 +147,7 @@ NAMESPACES = [
     "Note",
 ]
 
+
 # -------------------------------------------------------------------------
 #
 # Tool
@@ -209,7 +210,7 @@ class Tool(tool.Tool, ManagedWindow):
         """
         Needed by ManagedWindow to build the Windows menu
         """
-        return ("FilterParams", 'FilterParams')
+        return ("FilterParams", "FilterParams")
 
     def database_changed(self, db):
         # type: (DbGeneric) -> None
@@ -240,7 +241,10 @@ class Tool(tool.Tool, ManagedWindow):
             self.combo_filters.append_text(filtername)
             # activate the current filter
             # or, after deleting a filter, activate the next one
-            if current_index == -1 and filtername.lower() >= self.current_filtername.lower():
+            if (
+                current_index == -1
+                and filtername.lower() >= self.current_filtername.lower()
+            ):
                 current_index = i
         if len(self.filternames) > 0:
             if current_index == -1:
@@ -294,7 +298,6 @@ class Tool(tool.Tool, ManagedWindow):
         self.box = glade.get_child_object("box")
         self.errorMsg = glade.get_child_object("errorMsg")
 
-
         self.export_button = glade.get_child_object("export_button")
         self.import_button = glade.get_child_object("import_button")
 
@@ -343,13 +346,13 @@ class Tool(tool.Tool, ManagedWindow):
 
         value = file_.getvalue()
 
-        clip =  Gtk.Clipboard.get(Gdk.SELECTION_CLIPBOARD)
+        clip = Gtk.Clipboard.get(Gdk.SELECTION_CLIPBOARD)
         clip.set_text(value, -1)
 
         d = Gtk.Dialog()
         d.set_transient_for(self.window)
         textview = Gtk.TextView()
-        textview.get_buffer().set_text(value) #, len(value))
+        textview.get_buffer().set_text(value)  # , len(value))
         sw = Gtk.ScrolledWindow()
         sw.set_size_request(600, 300)
         sw.add(textview)
@@ -359,7 +362,7 @@ class Tool(tool.Tool, ManagedWindow):
         d.show_all()
         rsp = d.run()
         d.destroy()
-        
+
     def import_button_clicked(self, _widget):
         def get_data(textview):
             buf = textview.get_buffer()
@@ -368,11 +371,13 @@ class Tool(tool.Tool, ManagedWindow):
         d = Gtk.Dialog()
         d.set_transient_for(self.window)
         textview = Gtk.TextView()
-        clip =  Gtk.Clipboard.get(Gdk.SELECTION_CLIPBOARD)
+        clip = Gtk.Clipboard.get(Gdk.SELECTION_CLIPBOARD)
         value = clip.wait_for_text()
         if value is None:
-            ErrorDialog(_("Error"), _("Import failed: could not read the clipboard").format(e))
-        textview.get_buffer().set_text(value) #, len(value))
+            ErrorDialog(
+                _("Error"), _("Import failed: could not read the clipboard").format(e)
+            )
+        textview.get_buffer().set_text(value)  # , len(value))
         sw = Gtk.ScrolledWindow()
         sw.set_size_request(600, 300)
         sw.add(textview)
@@ -395,18 +400,20 @@ class Tool(tool.Tool, ManagedWindow):
                     self.filterdb.save()
                     reload_custom_filters()
                     self.uistate.emit("filters-changed", (self.current_category,))
-                    if names: # go to first imported filter
+                    if names:  # go to first imported filter
                         namespace = names[0][0]
                         filtname = names[0][1]
                         self.goto_filter(namespace, filtname)
-                    OkDialog(_("Imported {} filters").format(len(names)), _("OK"), parent=d)
+                    OkDialog(
+                        _("Imported {} filters").format(len(names)), _("OK"), parent=d
+                    )
                 else:
                     OkDialog(_("Nothing Imported"), "", parent=d)
             except Exception as e:
                 traceback.print_exc()
                 ErrorDialog(_("Error"), _("Import failed: {}").format(e), parent=d)
         d.destroy()
-            
+
     def find_existing_filters(self, filters):
         existing = []
         for namespace, filtername in filters:
@@ -418,13 +425,13 @@ class Tool(tool.Tool, ManagedWindow):
     def ok_to_override_existing_filters(self, existing, parent_window):
         d2 = Gtk.Dialog(parent=parent_window)
         d2.set_title(_("Overwrite warning"))
-        d2.add_button( _("Overwrite"), 1)
+        d2.add_button(_("Overwrite"), 1)
         d2.add_button(_("Cancel"), 2)
-        sw = Gtk.ScrolledWindow() 
+        sw = Gtk.ScrolledWindow()
         sw.set_size_request(300, 300)
-        hdr = _("The following {} filters already exist:").format(len(existing)) 
+        hdr = _("The following {} filters already exist:").format(len(existing))
         lbl = Gtk.Label(hdr)
-        
+
         grid = Gtk.Grid()
         grid.set_column_spacing(5)
         for row, (ns, fname) in enumerate(existing):
@@ -442,13 +449,11 @@ class Tool(tool.Tool, ManagedWindow):
         d2.destroy()
         return rsp == 1
 
-
     def remove_existing(self, existing):
         for namespace, filtername in existing:
             f = self.getfilter(namespace, filtername)
             filterlist = self.filterdb.get_filters(namespace)
             filterlist.remove(f)
-    
 
     def goto_filter(self, namespace, filtname):
         self.current_category = namespace
@@ -456,7 +461,6 @@ class Tool(tool.Tool, ManagedWindow):
         i = self.categories.index(self.current_category)
         self.combo_categories.set_active(i)
         self.populate_filters(self.current_category)
-
 
     def on_category_changed(self, combo):
         # type: (Gtk.ComboBox) -> None
@@ -769,7 +773,9 @@ class Tool(tool.Tool, ManagedWindow):
             elif v == _("Person filter name:"):
                 t = MyFilters(self.filterdb.get_filters("Person"))
             elif v == _("Family filter name:"):
-                t = MyFilters(self.filterdb.get_filters("Family")) # added in Gramps 6.0
+                t = MyFilters(
+                    self.filterdb.get_filters("Family")
+                )  # added in Gramps 6.0
             elif v == _("Event filter name:"):
                 t = MyFilters(self.filterdb.get_filters("Event"))
             elif v == _("Source filter name:"):
@@ -779,7 +785,7 @@ class Tool(tool.Tool, ManagedWindow):
             elif v == _("Place filter name:"):
                 t = MyFilters(self.filterdb.get_filters("Place"))
 
-            # these are probably not used:                
+            # these are probably not used:
             elif v == _("Citation filter name:"):
                 t = MyFilters(self.filterdb.get_filters("Citation"))
             elif v == _("Media filter name:"):
@@ -1024,7 +1030,7 @@ class Tool(tool.Tool, ManagedWindow):
         if caption == _("Filter name:"):
             return namespace
         for ns in NAMESPACES:
-            if caption == _(ns + " filter name:"):   
+            if caption == _(ns + " filter name:"):
                 return namespace
         return None
 
@@ -1325,12 +1331,14 @@ def get_category_info(db, category_name):
         editfunc,
     )
 
+
 class FilterExportImportParser(handler.ContentHandler):
     """Parses the XML file and builds the list of filters"""
+
     def __init__(self):
         super().__init__()
         self.names = []
-        
+
     def startElement(self, tag, attrs):
         if tag == "object":
             if "type" in attrs:
@@ -1343,9 +1351,10 @@ class FilterExportImportParser(handler.ContentHandler):
         if tag == "filter":
             self.names.append([self.namespace, attrs["name"]])
 
+
 class FilterExportImport:
 
-    def parse_names_from_string(self, data):            
+    def parse_names_from_string(self, data):
         the_file = StringIO(data)
         handler = FilterExportImportParser()
         parser = make_parser()
@@ -1356,7 +1365,7 @@ class FilterExportImport:
     def import_from_string(self, data):
         s = StringIO(data)
         self.import_from_file(s)
-    
+
     def import_from_file(self, the_file):
         """load a custom filter"""
         # code adapted from gramps.gen.filters._filterlist
@@ -1376,7 +1385,7 @@ class FilterExportImport:
 
     def export_as_text(self, file, namespace, name, the_filter):
         # code copied from gramps.gen.filters._filterlist
-        file.write('\n')
+        file.write("\n")
         file.write('  <object type="%s">\n' % namespace)
         file.write('    <filter name="%s"' % self.fix(name))
         file.write(' function="%s"' % the_filter.get_logical_op())
@@ -1389,17 +1398,13 @@ class FilterExportImport:
         for rule in the_filter.get_rules():
             file.write(
                 '      <rule class="%s" use_regex="%s" use_case="%s">'
-                "\n"
-                % (rule.__class__.__name__, rule.use_regex, rule.use_case)
+                "\n" % (rule.__class__.__name__, rule.use_regex, rule.use_case)
             )
             for value in list(rule.values()):
-                file.write(
-                    '        <arg value="%s"/>' "\n" % self.fix(value)
-                )
+                file.write('        <arg value="%s"/>' "\n" % self.fix(value))
             file.write("      </rule>\n")
         file.write("    </filter>\n")
-        file.write('  </object>\n')
-    
+        file.write("  </object>\n")
 
 
 # -------------------------------------------------------------------------
@@ -1410,13 +1415,22 @@ class FilterExportImport:
 class ShowResults(ManagedWindow):
     """Adapted from gramps/gui/editors/filtereditor.py"""
 
-
-    
-    def __init__(self, dbstate, uistate, track, handle_list, filtname, namespace, user, options_class, name):
+    def __init__(
+        self,
+        dbstate,
+        uistate,
+        track,
+        handle_list,
+        filtname,
+        namespace,
+        user,
+        options_class,
+        name,
+    ):
         # type: (DbState,DisplayState,list,list,str,str) -> None
-        self.filtname = filtname    # set these before invoking ManagedWindow.__init__
+        self.filtname = filtname  # set these before invoking ManagedWindow.__init__
         self.namespace = namespace  # so that build_menu_names can see the values
-        
+
         ManagedWindow.__init__(self, uistate, track, self)
 
         self.dbstate = dbstate
@@ -1424,7 +1438,7 @@ class ShowResults(ManagedWindow):
         self.user = user
         self.options_class = options_class
         self.name = name
-        
+
         self.category_info = get_category_info(self.db, namespace)
         glade = Glade(toplevel="test")
 
@@ -1436,18 +1450,15 @@ class ShowResults(ManagedWindow):
         test_title.set_markup(title)
         test_title2 = glade.get_child_object("test_title2")
         n = len(handle_list)
-        title2 = '{n} {objects}'.format(
+        title2 = "{n} {objects}".format(
             objects=_("object") if n == 1 else _("objects"),
             n=n,
         )
         test_title2.set_text(title2)
 
-        test_title.connect("button_press_event", self.invoke_tool) # lambda *x: print("link", x)) 
-        
-        
-        
-        
-
+        test_title.connect(
+            "button_press_event", self.invoke_tool
+        )  # lambda *x: print("link", x))
 
         self.set_window(glade.get_child_object("test"), None, _("Filter Test"))
 
@@ -1543,7 +1554,8 @@ class ShowResults(ManagedWindow):
         if isinstance(tree, list):
             for item in tree:
                 tool = self.find_tool_window(item)
-                if tool: return tool
+                if tool:
+                    return tool
         elif isinstance(tree, Tool):
             return tree
         else:
@@ -1559,7 +1571,7 @@ class ShowResults(ManagedWindow):
         tool.combo_categories.set_active(i)
         tool.populate_filters(tool.current_category)
         tool.dialog.present_with_time(_event.time)
-    
+
     def _select_row_at_coords(self, x, y):
         """
         Select the row at the current cursor position.
