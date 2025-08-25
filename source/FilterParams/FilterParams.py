@@ -1085,8 +1085,8 @@ class Tool(tool.Tool, ManagedWindow):
 
     def on_filter_changed(self, combo, reload=True):
         # type: (Gtk.ComboBox) -> None
-        #         import random
-        #         random.shuffle(self.colors)
+        if self.frame:
+            self.frame.destroy()
         tree_iter = combo.get_active_iter()
         if tree_iter is None:
             return
@@ -1103,8 +1103,6 @@ class Tool(tool.Tool, ManagedWindow):
         self.filterdb = gramps.gen.filters.CustomFilters
 
         self.current_filtername = filtername
-        if self.frame:
-            self.frame.destroy()
         self.entries = []  # type: List[Tuple[Rule,int,Gtk.Entry]]
         self.filterparams = (
             []
