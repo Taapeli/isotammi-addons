@@ -2,6 +2,7 @@
 {'t': 'Tool', 'i': 'FilterParams', 'n': 'FilterParams', 'v': '1.2.7', 'g': '5.1', 'd': 'Display custom filters and allow changing their parameters', 'z': 'FilterParams.addon.tgz', 's': 3, 'a': 1, 'h': 'https://gramps-project.org/wiki/index.php/Addon:Isotammi_addons#FilterParams_tool'}
 {'t': 'Gramplet', 'i': 'Multimergegramplet Gramplet', 'n': 'Multimerge Gramplet', 'v': '1.2.6', 'g': '5.1', 'd': 'Multimerge Gramplet', 'z': 'multimergegramplet.addon.tgz', 's': 3, 'a': 1, 'h': 'http://github.com/Taapeli/isotammi-addons/tree/master/source/multimergegramplet/README.md'}
 {'t': 'Tool', 'i': 'zipinstall', 'n': 'ZipInstall', 'v': '1.1.9', 'g': '5.1', 'd': 'Install a plugin from a ZIP file', 'z': 'zipinstall.addon.tgz', 's': 3, 'a': 1}
+{'t': 'Plugin library', 'i': 'recent-items', 'n': 'Recent items', 'v': '0.9.6', 'g': '5.1', 'd': 'Add recent items to selectors', 'z': 'recent-items.addon.tgz', 's': 3}
 {'t': 'Tool', 'i': 'generatecitations', 'n': 'Muodosta lähdeviitteet lisätietojen perusteella', 'v': '1.3.0', 'g': '5.1', 'd': 'Muodosta lähdeviitteet lisätietojen perusteella', 'z': 'generatecitations.addon.tgz', 's': 3, 'a': 1}
 {'t': 'Gramplet', 'i': 'Person-Filter+', 'n': 'Person Filter+', 'v': '1.0.9', 'g': '5.1', 'd': 'Gramplet providing a filter (enhanced)', 'z': 'Filter+.addon.tgz', 's': 3, 'a': 1, 'h': 'https://gramps-project.org/wiki/index.php/Addon:Isotammi_addons#Filter.2B'}
 {'t': 'Gramplet', 'i': 'Family-Filter+', 'n': 'Family Filter+', 'v': '1.0.9', 'g': '5.1', 'd': 'Gramplet providing a filter (enhanced)', 'z': 'Filter+.addon.tgz', 's': 3, 'a': 1, 'h': 'https://gramps-project.org/wiki/index.php/Addon:Isotammi_addons#Filter.2B'}
@@ -15,7 +16,7 @@
 {'t': 'Rule', 'i': 'HasEventBase+', 'n': 'HasEventBase+', 'v': '1.0.9', 'g': '5.1', 'd': 'HasEventBase+ - used by Filter+', 'z': 'Filter+.addon.tgz', 's': 3, 'a': 1, 'h': 'https://gramps-project.org/wiki/index.php/Addon:Isotammi_addons#Filter.2B'}
 {'t': 'Rule', 'i': 'HasSourceBase+', 'n': 'HasSourceBase+', 'v': '1.0.9', 'g': '5.1', 'd': 'HasSourceBase+ - used by Filter+', 'z': 'Filter+.addon.tgz', 's': 3, 'a': 1, 'h': 'https://gramps-project.org/wiki/index.php/Addon:Isotammi_addons#Filter.2B'}
 {'t': 'Gramplet', 'i': 'PropertyEditor', 'n': 'OminaisuusMuokkain', 'v': '1.1.9', 'g': '5.1', 'd': 'Gramplet jolla voi muokata usean kohteen ominaisuuksia samalla kertaa', 'z': 'PropertyEditor.addon.tgz', 's': 3, 'a': 1, 'h': 'PropertyEditor Gramplet'}
-{'t': 'Tool', 'i': 'NameMergeTool', 'n': 'Name Merge Tool', 'v': '1.1.8', 'g': '5.1', 'd': 'Merge names', 'z': 'NameMergeTool.addon.tgz', 's': 3, 'a': 1}
+{'t': 'Tool', 'i': 'NameMergeTool', 'n': 'Name Merge Tool', 'v': '1.1.9', 'g': '5.1', 'd': 'Merge names', 'z': 'NameMergeTool.addon.tgz', 's': 3, 'a': 1}
 {'t': 'Exporter', 'i': 'isotammiexportxml', 'n': 'Isotammi XML export', 'v': '1.0.9', 'g': '5.1', 'd': 'Isotammi XML export', 'z': 'isotammiexportxml.addon.tgz', 's': 3, 'a': 1}
 {'t': 'Rule', 'i': 'HasValidDate', 'n': 'Events with a valid date', 'v': '1.1.2', 'g': '5.1', 'd': 'Events with a valid date', 'z': '_hasvaliddate.addon.tgz', 's': 3, 'a': 1}
 {'t': 'Rule', 'i': 'HasInValidDate', 'n': 'Events with an in valid date', 'v': '1.1.2', 'g': '5.1', 'd': 'Events with an invalid date', 'z': '_hasvaliddate.addon.tgz', 's': 3, 'a': 1}
@@ -34,5 +35,5 @@
 {'t': 'Tool', 'i': 'NameEditorTool', 'n': 'Nimien  muokkaustyökalu', 'v': '1.1.3', 'g': '5.1', 'd': 'Muokkaa nimiä', 'z': 'NameEditorTool.addon.tgz', 's': 3, 'a': 1}
 {'t': 'Gramplet', 'i': 'Dates', 'n': 'Päivämäärät', 'v': '1.2.5', 'g': '5.1', 'd': 'Search and replace within Event date strings', 'z': 'Dates.addon.tgz', 's': 3, 'a': 1, 'h': 'Addon:Isotammi_addons#Dates'}
 {'t': 'Tool', 'i': 'convert_narc_urls', 'n': 'Convert NARC URLs', 'v': '1.0.7', 'g': '5.1', 'd': '', 'z': 'convert_narc_urls.addon.tgz', 's': 3, 'a': 1}
-{'t': 'Gramplet', 'i': 'DeepConnectionsGraph', 'n': 'Syväsuhteet kaaviona', 'v': '1.2.7', 'g': '5.1', 'd': 'DeepConnectionsGraph; a Dashboard Server Gramplet', 'z': 'DeepConnectionsGraph.addon.tgz', 's': 3, 'a': 1, 'h': 'Addon:Isotammi_addons#Deep_Connections_Graph'}
+{'t': 'Gramplet', 'i': 'DeepConnectionsGraph', 'n': 'Syväsuhteet kaaviona', 'v': '1.2.8', 'g': '5.1', 'd': 'DeepConnectionsGraph; a Dashboard Server Gramplet', 'z': 'DeepConnectionsGraph.addon.tgz', 's': 3, 'a': 1, 'h': 'Addon:Isotammi_addons#Deep_Connections_Graph'}
 {'t': 'Gramplet', 'i': 'AddSourcesGramplet', 'n': 'AddSourcesGramplet', 'v': '0.9.9', 'g': '5.1', 'd': 'Gramplet to add sources', 'z': 'AddSourcesGramplet.addon.tgz', 's': 3, 'a': 1, 'h': 'Addon:Isotammi_addons#Add_Sources_Gramplet'}
