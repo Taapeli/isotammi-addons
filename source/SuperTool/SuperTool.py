@@ -1312,7 +1312,7 @@ class SuperTool(ManagedWindow):
             src = ""
             fname = ""
             linenum2 = 0
-            if len(lines) >= 3 and lines[-2].strip() == "^":
+            if len(lines) >= 3 and lines[-2].strip().strip("^") == "": # only ^ characters
                 msglines = lines[-3:]
             elif len(lines) >= 2:
                 import re
