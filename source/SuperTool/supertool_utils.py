@@ -146,6 +146,7 @@ from gramps.gui.selectors.selectperson import SelectPerson
 import supertool_engine as engine
 import supertool_genfilter as genfilter
 
+
 config = configman.register_manager("supertool")
 config.register("defaults.include_location","")
 
@@ -389,6 +390,8 @@ def getargs_dialog(dbstate, uistate, **kwargs):
     from gramps.gen.const import GRAMPS_LOCALE as glocale
     _ = glocale.translation.gettext
 
+    from supertool_engine import SupertoolException
+
     def select_person(param):
         sel = SelectPerson(dbstate, uistate, [], "Select Person")
         result = sel.run()
@@ -435,6 +438,8 @@ def getargs_dialog(dbstate, uistate, **kwargs):
         value = config.get(key)
         
         param = Param()        
+        if type(val) not in (str, tuple):
+            raise SupertoolException(f"getargs: param must be a string or a tuple: {val}")
         if type(val) == str:
             title = val
             widget = Gtk.Entry()
@@ -442,7 +447,13 @@ def getargs_dialog(dbstate, uistate, **kwargs):
             paramtype = str
         if type(val) == tuple:
             title, paramtype, initvalue = val # type: ignore
+            if type(title) != str:
+                raise SupertoolException(f"getargs: invalid title - must be a string: {title}")
             param.initvalue = initvalue
+            if paramtype not in (
+                    bool, list, 'person',
+                ):
+                raise SupertoolException(f"getargs: invalid param type - use one of: bool, list, 'person': {paramtype}")
             if paramtype == bool:
                 widget = Gtk.CheckButton()
                 if value == "":
@@ -453,7 +464,10 @@ def getargs_dialog(dbstate, uistate, **kwargs):
                     value = False
                 widget.set_active(value)
             if paramtype == list:
-                initvalue = list(initvalue)  # type: ignore # ensure this is a real list
+                try:
+                    initvalue = list(initvalue)  # type: ignore # ensure this is a real list
+                except:
+                    raise SupertoolException(f"getargs: invalid value '{initvalue}' - must be a list")
                 widget = Gtk.ComboBoxText()
                 widget.set_entry_text_column(0)
                 widget.append_text("")
