@@ -115,6 +115,11 @@
     <property name="step-increment">1</property>
     <property name="page-increment">10</property>
   </object>
+  <object class="GtkRecentFilter" id="recentfilter1">
+    <patterns>
+      <pattern>*.script</pattern>
+    </patterns>
+  </object>
   <object class="GtkImage" id="save-as">
     <property name="visible">True</property>
     <property name="can-focus">False</property>
@@ -213,11 +218,35 @@
                       </object>
                     </child>
                     <child>
+                      <object class="GtkSeparatorMenuItem">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="label" translatable="yes">Recents</property>
+                        <property name="use-underline">True</property>
+                        <child type="submenu">
+                          <object class="GtkRecentChooserMenu" id="recentchooser">
+                            <property name="visible">True</property>
+                            <property name="can-focus">False</property>
+                            <property name="filter">recentfilter1</property>
+                            <property name="limit">10</property>
+                            <property name="show-tips">True</property>
+                            <signal name="item-activated" handler="select-recent" swapped="no"/>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                    <child>
                       <object class="GtkImageMenuItem">
                         <property name="label">gtk-preferences</property>
                         <property name="can-focus">False</property>
                         <property name="no-show-all">True</property>
-                        <property name="tooltip-text" translatable="yes">Edit settings</property>
+                        <property name="tooltip-text" translatable="yes">Edit settingsx</property>
                         <property name="use-underline">True</property>
                         <property name="use-stock">True</property>
                         <signal name="activate" handler="settings" swapped="no"/>
@@ -352,6 +381,12 @@
                     </child>
                   </object>
                 </child>
+              </object>
+            </child>
+            <child>
+              <object class="GtkSeparatorMenuItem">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
               </object>
             </child>
           </object>
