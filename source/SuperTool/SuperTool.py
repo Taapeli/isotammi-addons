@@ -1,7 +1,7 @@
 #
 # Gramps - a GTK+/GNOME based genealogy program
 #
-# Copyright (C) 2021-2023      Kari Kujansuu
+# Copyright (C) 2021-2025      Kari Kujansuu
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -35,6 +35,7 @@ import textwrap
 import time
 import traceback
 import types
+import urllib.parse
 
 from contextlib import contextmanager
 from contextlib import redirect_stdout, redirect_stderr
@@ -1956,6 +1957,7 @@ class SuperTool(ManagedWindow):
         uri = item.get_uri()
         if uri.startswith("file://"):
             filename = uri[7:]
+            filename = urllib.parse.unquote(filename)
             self.loadstate(filename)
             basename = os.path.basename(filename)
             self.window.set_title(basename + " - SuperTool")
