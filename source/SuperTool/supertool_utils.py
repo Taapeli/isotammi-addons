@@ -52,6 +52,8 @@ try:
 except:
     TYPE_CHECKING = False
 
+from gi.repository import Gtk, Gdk
+
 # -------------------------------------------------------------------------
 #
 # Gramps modules
@@ -451,7 +453,7 @@ def getargs_dialog(dbstate, uistate, **kwargs):
                 raise SupertoolException(f"getargs: invalid title - must be a string: {title}")
             param.initvalue = initvalue
             if paramtype not in (
-                    bool, list, 'person',
+                    bool, list, 'person', 'file',
                 ):
                 raise SupertoolException(f"getargs: invalid param type - use one of: bool, list, 'person': {paramtype}")
             if paramtype == bool:
@@ -501,6 +503,25 @@ def getargs_dialog(dbstate, uistate, **kwargs):
                 entry.connect("key-press-event",lambda _widget, event,
                               param=param: keypress(param, event))
                 button.connect("clicked", lambda _, param=param: select_person(param))
+            if paramtype == 'file':
+                print('file')
+                widget = Gtk.HBox()
+                widget.set_spacing(10)
+                entry = Gtk.Entry() #self.get_widget(opttype)
+                entry.set_text(value)
+                lbl = Gtk.Label()
+                button = Gtk.Button("Select")
+                widget.pack_start(entry, False, False, 0)
+                widget.pack_start(button, False, False, 0)
+                widget.pack_end(lbl, False, False, 0)
+
+                param.entry = entry
+                param.lbl = lbl
+                param.value = None
+
+                extension = initvalue
+
+                button.connect("clicked", lambda _, param=param: select_file(param, extension))
 
         param.name = param_name
         param.paramtype = paramtype
@@ -544,6 +565,11 @@ def getargs_dialog(dbstate, uistate, **kwargs):
                         if p:
                             value = getproxy(dbstate.db, p)
                 configvalue = value.gramps_id if value else ""
+            if param.paramtype == 'file':
+                value = param.value
+                if value is None:
+                    value = param.entry.get_text()
+                configvalue = value if value else ""
             values[param.name] = value
             key = "default-params." + param.name
             config.set(key, str(configvalue))
@@ -551,6 +577,54 @@ def getargs_dialog(dbstate, uistate, **kwargs):
         return SimpleNamespace(**values)
     finally:
         dialog.destroy()
+
+
+class FileChooserDialog(Gtk.FileChooserDialog):
+    def __init__(self, extension):
+        # type: (DisplayState) -> None
+        from gramps.gen.const import GRAMPS_LOCALE as glocale
+        _ = glocale.translation.gettext
+        Gtk.FileChooserDialog.__init__(
+            self,
+            title="Select a file",
+#            transient_for=uistate.window,
+            action=Gtk.FileChooserAction.OPEN,
+        )
+
+        self.add_buttons(
+            _("_Cancel"), Gtk.ResponseType.CANCEL, _("Select"), Gtk.ResponseType.OK
+        )
+
+        if extension:
+            if not extension.startswith("."):
+                extension = "." + extension
+            filefilter = Gtk.FileFilter()
+            filefilter.set_name(f"{extension} files")
+            filefilter.add_pattern("*"+extension)
+            self.add_filter(filefilter)
+
+        filter_all = Gtk.FileFilter()
+        filter_all.set_name("All files")
+        filter_all.add_pattern("*.*")
+        self.add_filter(filter_all)
+
+def select_file(param, extension):
+    # type: (Gtk.Widget) -> None
+    choose_file_dialog = FileChooserDialog(extension) #self.uistate)
+
+    while True:
+        response = choose_file_dialog.run()
+        if response == Gtk.ResponseType.CANCEL:
+            break
+        elif response == Gtk.ResponseType.DELETE_EVENT:
+            break
+        elif response == Gtk.ResponseType.OK:
+            filename = choose_file_dialog.get_filename()
+            param.entry.set_text(filename)
+            param.value = filename
+            break
+
+    choose_file_dialog.destroy()
 
 
 def uniq(items):

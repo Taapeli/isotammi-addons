@@ -1,6 +1,6 @@
 # SuperTool
-v1.4.5<br>
-13 July 2024<br>
+v1.6.2<br>
+25 December 2025<br>
 Author: kari.kujansuu@gmail.com<br>
 
  [Introduction](#introduction)
@@ -204,7 +204,7 @@ Next are four checkboxes:
 ![SuperTool-options](images/SuperTool-options.png)
 
 * Unwind lists - if any value in the "Expressions to display" is a list then each member of the list will be shown on a separate row
-* Commit changes - any changes to the selected objects are automatically committed if this is checked
+* Commit changes - any changes to the selected objects are automatically committed if this is checked (it is recommended NPT to use this feature - instead commit the chnages explicitly as needed)
 * Summary only - do not display values for every object, only a summary after processing all objects
 * Capture output - capture output of print statements and show it in the 'Print output' tab
 
@@ -270,7 +270,7 @@ This will first display a dialog like
 
 If the user presses "OK" then the script continues normally. The supplied value can be used in the script by using the 'argname' as a property of the 'args' object, e.g. 'args.limit'.
 
-The 'description' can also be a tuple of format (label, type, value). The label is a string used as a label. Type can be 'bool' or 'list' (without quotes). 
+The 'description' can also be a tuple of format (label, type, value). The label is a string used as a label. Type can be 'bool' or 'list' (without quotes) or 'person' or 'file' (with quotes).
 
 If the type is 'bool' then the dialog displays a checkbox. The value can be True or False and it determines if the checkbox is initially checked or not.
 
@@ -290,6 +290,7 @@ This will first display a dialog like
 
 ![Getargs dialog](images/SuperTool-getargs2.png)
 
+If the type is 'file' (as a string, include the quotes) then the returned value is a file name. There is also a 'Select' button that allows the user to select a specific file. The third item (value) in the tuple (label, 'file', value) is a file name extension. By default only the files with the extension are displayed when the 'Select' function is used.
 
 The given values are saved and reused as defaults when getargs is called the next time. 
 Note: if you change to another database, then the saved gramps ID (for a person selection) will point to a person in the current database.
