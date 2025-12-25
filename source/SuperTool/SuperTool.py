@@ -67,10 +67,16 @@ except:
 from gi.repository import Gtk, Gdk, GObject, Gio
 
 from gramps.gen.config import config as configman
+from gramps.gen.const import CUSTOM_FILTERS
 from gramps.gen.const import GRAMPS_LOCALE as glocale
 from gramps.gen.db.txn import DbTxn
 from gramps.gen.dbstate import DbState
 from gramps.gen.lib import PrimaryObject
+
+
+from gramps.gen.filters._genericfilter import GenericFilterFactory
+from gramps.gen.filters._filterlist import FilterList
+from gramps.gen.filters import reload_custom_filters
 
 from gramps.gen.plug import PluginRegister
 from gramps.gen.utils.debug import profile
@@ -1785,14 +1791,72 @@ class SuperTool(ManagedWindow):
         self, category, filtername, filtertext, initial_statements, statements
     ):
         # type: (supertool_utils.Context, str, str, str, str) -> None
-        ok, msg = supertool_utils.makefilter(
-            category, filtername, filtertext, initial_statements, statements
-        )
-        if not ok:
-            OkDialog(_("Error"), msg, parent=self.uistate.window)
-            return
-        self.uistate.emit("filters-changed", (category.objclass,))
-        OkDialog(_("Done"), msg, parent=self.uistate.window)
+        namespace = category.objclass
+
+        filterdb = FilterList(CUSTOM_FILTERS)
+        filterdb.load()
+        filters = filterdb.get_filters_dict(namespace)
+        
+        def changed(entry):
+            name = entry.get_text()
+            if name.strip() == "":
+                errmsg.set_visible(False)
+                btn_ok.set_label("OK")
+                btn_ok.set_sensitive(False)
+                return
+            name_ok = name not in filters
+            if name_ok:
+                errmsg.set_visible(False)
+                btn_ok.set_label("OK")
+            else:
+                errmsg.set_label('<span color="red">Filter already exists</span>')
+                errmsg.set_visible(True)
+                btn_ok.set_label("Overwrite")
+            btn_ok.set_sensitive(True)
+            
+        d = Gtk.Dialog()
+        d.set_title("Save as filter")
+        d.set_size_request(300, 100)
+
+        box = Gtk.HBox()
+        entry = Gtk.Entry()
+        entry.set_text(filtername)
+        entry.connect("changed", changed)
+        box.pack_start(Gtk.Label("Name:"), False, False, 0)
+        box.pack_start(entry, True, True, 10)
+        
+        errmsg = Gtk.Label(use_markup=True)
+
+        d.get_content_area().add(box)
+        d.get_content_area().add(errmsg)
+
+        btn_ok = d.add_button("OK", 1)
+        d.add_button("Cancel", 2)
+        d.show_all()
+        changed(entry)
+
+        rsp = d.run()
+        if rsp == 1:
+            new_filter = GenericFilterFactory(namespace)()
+            rule = category.filterrule([filtertext, initial_statements, statements])
+            filtername = entry.get_text()
+            new_filter.add_rule(rule)
+            new_filter.set_name(filtername)
+            if namespace not in filterdb.filter_namespaces:
+                filterdb.filter_namespaces[namespace] = []
+            filterlist = filterdb.filter_namespaces[namespace]
+            for f in filterlist:
+                if f.get_name() == filtername:
+                    filterlist.remove(f)
+                    break
+            filterlist.append(new_filter)
+            
+            filterdb.save()
+            reload_custom_filters()
+            self.uistate.emit("filters-changed", (namespace,))
+            msg = "Created filter '{}'".format(filtername)
+            OkDialog(_("Done"), msg, parent=self.uistate.window)
+        d.destroy()
 
     def pageswitch(self, *args):
         # type: (Any) -> None

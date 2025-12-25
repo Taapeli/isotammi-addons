@@ -52,20 +52,14 @@ try:
 except:
     TYPE_CHECKING = False
 
-from gi.repository import Gtk, Gdk
+from gi.repository import Gtk
 
 # -------------------------------------------------------------------------
 #
 # Gramps modules
 #
 # -------------------------------------------------------------------------
-from gramps.gen.const import CUSTOM_FILTERS
-
 from gramps.gen.db import DbGeneric
-
-from gramps.gen.filters._genericfilter import GenericFilterFactory
-from gramps.gen.filters._filterlist import FilterList
-from gramps.gen.filters import reload_custom_filters
 
 from gramps.gen.lib import PrimaryObject
 
@@ -893,30 +887,6 @@ def supertool_execute_query(*, query, dbstate=None, db=None, trans=None, handles
         return Response(rows=rows, query=query, result=result)
     
 
-def makefilter(
-        category, filtername, filtertext, initial_statements, statements
-    ):
-        # type: (Context, str, str, str, str) -> Tuple[bool, str]
-        the_filter = GenericFilterFactory(category.objclass)()
-        rule = category.filterrule([filtertext, initial_statements, statements])
-        if not filtername:
-            return (False, "Please supply a title/name")
-        if not filtertext:
-            return (False, "Please supply a filtering condition")
-        the_filter.add_rule(rule)
-        the_filter.set_name(filtername)
-        filterdb = FilterList(CUSTOM_FILTERS)
-        filterdb.load()
-        filters = filterdb.get_filters_dict(category.objclass)
-        if filtername in filters:
-            msg = "Filter '{}' already exists; choose another name".format(filtername)
-            return (False, msg)
-        filterdb.add(category.objclass, the_filter)
-        filterdb.save()
-        reload_custom_filters()
-
-        msg = "Created filter '{}'".format(filtername)
-        return (True, msg)
 
 def getproxy(db, obj):
     # type: (DbGeneric, PrimaryObject) -> engine.Proxy
