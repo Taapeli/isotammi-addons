@@ -138,6 +138,7 @@ from gramps.gen.db import DbTxn
 from gramps.gen.lib.date import Today
 from gramps.gen.user import User
 
+from gramps.gui.dialog import OkDialog
 from gramps.gui.selectors.selectperson import SelectPerson
 
 # -------------------------------------------------------------------------
@@ -384,7 +385,7 @@ def compile_expression(expression, source):
     return compile(expression.strip().replace("\n"," "), source, 'eval')
 
 
-def getargs_dialog(dbstate, uistate, **kwargs):
+def getargs_dialog(dbstate, uistate, from_genfilter, **kwargs):
     # type: (Dict[str, Union[str, Tuple[str,str,str]]]) -> Any
     from types import SimpleNamespace
 
@@ -540,6 +541,8 @@ def getargs_dialog(dbstate, uistate, **kwargs):
     try:
         result = dialog.run()
         if result != Gtk.ResponseType.OK:
+            if from_genfilter:
+                OkDialog("Warning", "Canceling the dialog will cause a Gramps exception. This is expected. Please ignore the next message.")
             raise engine.SupertoolException("canceled")
     
         values = {}

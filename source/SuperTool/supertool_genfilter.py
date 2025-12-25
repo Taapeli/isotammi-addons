@@ -163,7 +163,7 @@ class GenericFilterRule(Rule):
         self.init_env["category"] = self.category_name
         self.init_env["namespace"] = context.objclass
         self.init_env["getproxy"] = functools.partial(supertool_utils.getproxy, db)
-        self.init_env["getargs"] = functools.partial(supertool_utils.getargs_dialog, dbstate, user.uistate)
+        self.init_env["getargs"] = functools.partial(supertool_utils.getargs_dialog, dbstate, user.uistate, True)
 
         s = self.initial_statements
         if s:
