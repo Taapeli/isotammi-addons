@@ -534,7 +534,7 @@ def getargs_dialog(dbstate, uistate, **kwargs):
         grid.attach(widget, 1, row, 1, 1)
 
     dialog.vbox.pack_start(grid, False, False, 5)
-    dialog.set_transient_for(uistate.window)
+    if uistate: dialog.set_transient_for(uistate.window)
     dialog.set_urgency_hint(True)
     dialog.show_all()
     try:

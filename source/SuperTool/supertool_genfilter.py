@@ -155,7 +155,7 @@ class GenericFilterRule(Rule):
         self.init_env = supertool_utils.get_globals()  # type: Dict[str,Any]
         self.init_env["trans"] = None
         self.init_env["user"] = user
-        self.init_env["uistate"] = None # user.uistate is None!
+        self.init_env["uistate"] = user.uistate 
         self.init_env["dbstate"] = dbstate
         self.init_env["db"] = db
 
@@ -163,7 +163,7 @@ class GenericFilterRule(Rule):
         self.init_env["category"] = self.category_name
         self.init_env["namespace"] = context.objclass
         self.init_env["getproxy"] = functools.partial(supertool_utils.getproxy, db)
-        self.init_env["getargs"] = functools.partial(supertool_utils.getargs_dialog, dbstate, None)
+        self.init_env["getargs"] = functools.partial(supertool_utils.getargs_dialog, dbstate, user.uistate)
 
         s = self.initial_statements
         if s:
