@@ -499,7 +499,6 @@ def getargs_dialog(dbstate, uistate, from_genfilter, **kwargs):
                               param=param: keypress(param, event))
                 button.connect("clicked", lambda _, param=param: select_person(param))
             if paramtype == 'file':
-                print('file')
                 widget = Gtk.HBox()
                 widget.set_spacing(10)
                 entry = Gtk.Entry() #self.get_widget(opttype)
