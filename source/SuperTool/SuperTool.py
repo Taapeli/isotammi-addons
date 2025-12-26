@@ -912,6 +912,10 @@ class GrampsEngine:
 class SuperTool(ManagedWindow):
     def __init__(self, user, dbstate, plugindata):
         # type: (User, DbState, Any) -> None
+        if not dbstate.is_open():
+            OkDialog("Error", "SuperTool requires a family tree")
+            return
+
         ManagedWindow.__init__(self, user.uistate, [], self.__class__, modal=False)
         self.user = user
         self.uistate = user.uistate
@@ -1019,7 +1023,7 @@ class SuperTool(ManagedWindow):
 
     def button_press(self, treeview, event):
         # type: (Gtk.TreeView, Gtk.Event) -> bool
-        if not self.db.db_is_open:
+        if not self.dbstate.is_open():
             return True
         try:  # may fail if clicked too frequently
             if event.type == Gdk.EventType.DOUBLE_BUTTON_PRESS and event.button == 1:
@@ -1251,10 +1255,10 @@ class SuperTool(ManagedWindow):
     def db_changed(self, db):
         # type: (Any) -> None
         self.db = self.dbstate.db
-        if db.db_is_open:
+        if self.dbstate.is_open():
             self.btn_execute.set_sensitive(True)
-        self.statusmsg.set_text("")
-        self.select_category()
+            self.statusmsg.set_text("")
+            self.select_category()
 
     def db_closed(self):
         # type: () -> None
@@ -1262,6 +1266,7 @@ class SuperTool(ManagedWindow):
             self.output_window.remove(self.listview)
         self.listview = None
         self.btn_execute.set_sensitive(False)
+        self.statusmsg.set_text("Database closed")
 
     def download(self, _widget):
         # type: (Gtk.Widget) -> None
@@ -2008,10 +2013,11 @@ class SuperTool(ManagedWindow):
 
     def select_category(self):
         # type: () -> None
-        self.execute_func = None
-        if self.uistate.viewmanager.active_page is None:
+        if not self.dbstate.is_open():
             return
-        if not self.db.is_open():
+        self.execute_func = None
+        self.category_name = ""
+        if self.uistate.viewmanager.active_page is None:
             return
         self.category_name = self.uistate.viewmanager.active_page.get_category()
         self.context = supertool_utils.get_context(self.db, self.category_name)
