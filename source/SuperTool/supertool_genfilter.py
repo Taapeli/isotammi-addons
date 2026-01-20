@@ -171,7 +171,7 @@ class GenericFilterRule(Rule):
                 dbstate, None, s, self.init_env, "exec"
             )
 
-    def apply(self, db, obj):
+    def apply_to_one(self, db, obj):
         # type: (DbGeneric, PrimaryObject) -> bool
         self.db = db
         dbstate = self  # self emulates dbstate
