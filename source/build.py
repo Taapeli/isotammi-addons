@@ -23,6 +23,7 @@ def ignore(fname):
     if fname.endswith("/__pycache__"): return True
     if fname.endswith("~"): return True
     if fname.endswith(".script"): return True
+    if fname.endswith("recent-items.json"): return True
     if fname.split("/")[-1].startswith("."): return True
     return False
 
