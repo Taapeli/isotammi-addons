@@ -32,7 +32,7 @@ plug.tool.tool_categories["Isotammi"] = ("Isotammi", _("Isotammi tools"))
 # SuperTool
 #
 # ------------------------------------------------------------------------
-VERSION="1.6.2"
+VERSION="1.6.3"
  
 
 if VERSION_TUPLE < (5, 2, 0):
