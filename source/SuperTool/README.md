@@ -1,6 +1,6 @@
 # SuperTool
-v1.6.2<br>
-25 December 2025<br>
+v1.6.3<br>
+7 February 2026<br>
 Author: kari.kujansuu@gmail.com<br>
 
  [Introduction](#introduction)
@@ -153,6 +153,8 @@ Note that none of the above experiments required saving the Python code in a fil
 The "Initialization statements" part can be used to briefly document the script by including Python comments. However, the space there is very limited. The "Description" link in the top right corner can be used to write a longer description. That description is also stored in the script file (see [Saving the query as a script file](#saving-the-query-as-a-script-file)).
 
 Clicking the link will open a new window where the description can be written or edited. Clicking OK will then save the description in SuperTool - but it will NOT be stored in a script file until the script is saved from the menu (File > Save). The asterisk at the window header will indicate that there are unsaved changes.
+
+If the description contains internet links (URLs) then they are automatically made clickable - just like in the Note editor. The user can open the link by using the context menu (with right-click with the mouse) or by Ctrl-clicking the link.
 
 ## Capturing print output
 
