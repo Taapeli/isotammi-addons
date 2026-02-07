@@ -83,6 +83,7 @@ from gramps.gen.utils.debug import profile
 from gramps.gen.user import User
 
 from gramps.gen.lib import Note
+from gramps.gen.lib import StyledText
 
 from gramps.gui.displaystate import DisplayState
 from gramps.gui.dialog import OkDialog, ErrorDialog, QuestionDialog2
@@ -92,7 +93,7 @@ from gramps.gui.managedwindow import ManagedWindow
 from gramps.gui.plug import tool
 from gramps.gui.utils import ProgressMeter
 from gramps.gui.views.treemodels.treebasemodel import TreeBaseModel
-
+from gramps.gui.widgets.styledtexteditor import StyledTextEditor
 
 try:
     _trans = glocale.get_addon_translator(__file__)
@@ -416,7 +417,7 @@ class DescriptionDialog(Gtk.Dialog):
         self.box = Gtk.VBox(spacing=6)
         self.get_content_area().add(self.box)
 
-        textview = Gtk.TextView()
+        textview = StyledTextEditor() # use this only for automatic handling of URLs
         self.textbuffer = textview.get_buffer()
         textview.set_size_request(400, 200)
         textview.set_wrap_mode(Gtk.WrapMode.WORD)
@@ -427,11 +428,11 @@ class DescriptionDialog(Gtk.Dialog):
         # type: () -> str
         start = self.textbuffer.get_start_iter()
         end = self.textbuffer.get_end_iter()
-        return self.textbuffer.get_text(start, end, False)
+        return str(self.textbuffer.get_text(start, end, False))
 
     def set_description(self, description):
         # type: (str) -> None
-        self.textbuffer.set_text(description)
+        self.textbuffer.set_text(StyledText(description))
 
 
 class Query:
