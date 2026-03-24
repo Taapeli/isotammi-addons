@@ -53,6 +53,7 @@ from gramps.gui.utils import ProgressMeter
 from gramps.gui.dialog import OkDialog
 from gramps.gen.db import DbTxn
 
+from gramps.gen.lib import Citation
 from gramps.gen.lib import Event
 from gramps.gen.lib import EventRef
 from gramps.gen.lib import Repository
@@ -60,6 +61,7 @@ from gramps.gen.lib import RepoRef
 from gramps.gen.lib import Source
 from gramps.gen.lib import SrcAttribute
 
+from gramps.gen.datehandler import parser as date_parser
 from gramps.gen.display.name import displayer as name_displayer
 
 from gramps.gen.utils.libformatting import ImportInfo
@@ -316,6 +318,18 @@ class CSVParser:
             source.add_attribute(attr)
             self.db.commit_source(source, self.trans)
 
+        citationdate = rd(line_number, row, col, "date")
+        citationvolpage = rd(line_number, row, col, "volumepage")
+        if citationdate or citationvolpage:
+            citation = Citation()
+            if citationdate:
+                date = date_parser.parse(citationdate)
+                citation.set_date_object(date)
+            citation.set_page(citationvolpage)
+            citation.set_reference_handle(source.handle)
+            self.db.add_citation(citation, self.trans)
+            
+            
 
 #------------------------------------------------------------------------
 #
