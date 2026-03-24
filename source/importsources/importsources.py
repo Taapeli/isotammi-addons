@@ -43,7 +43,9 @@ except:
 try:
     from pyexcel_ods import get_data # ods (OpenOffice/Libreoffice) support
     import odf, defusedxml
+    ods_supported = True
 except:
+    ods_supported = False
     pass
 
 from gi.repository import Gtk
@@ -133,6 +135,11 @@ class Tool(tool.Tool):
         filter_csv.set_name("CSV files")
         filter_csv.add_pattern("*.csv")
         choose_file_dialog.add_filter(filter_csv)
+        if ods_supported:
+            filter_csv = Gtk.FileFilter()
+            filter_csv.set_name("ODS files")
+            filter_csv.add_pattern("*.ods")
+            choose_file_dialog.add_filter(filter_csv)
         
         while True:
             response = choose_file_dialog.run()
