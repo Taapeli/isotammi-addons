@@ -1,6 +1,6 @@
 # Import Sources
 
-The tool "Import Sources" is a specialized tool that can load sources into Gramps from a CSV format file. From each line of the file, the tool creates a new source and optionally attaches it to a repository. The CSV file can also contain one or more attributes for the source.
+The tool "Import Sources" is a specialized tool that can load sources into Gramps from a CSV format file. From each line of the file, the tool creates a new source and optionally attaches it to a repository or creates a citation referring to the source. The CSV file can also contain one or more attributes for the source.
 
 The tool is installed in Tools > Isotammi tools.
 
@@ -12,6 +12,8 @@ The tool is given a .csv file as input, with the following column headings:
 * Repository
 * Attributetype
 * Attributevalue
+* VolumePage
+* Date
 
 The headings are not case-sensitive. The order of the columns does not matter and you do not need to use all of them. Other columns are ignored.
 
@@ -31,7 +33,9 @@ If there is another value in the column, then it is interpreted as the name of t
 You can attach multiple repositories and attribute values to one source. 
 This is done by adding new rows below the row for the source. Those rows should only contain repository and/or attribute information. 
 
-The CSV file should use the UTF-8 encoding and comma as the column delimiter.
+If either VolumePage or Date column is present and non-empty then a citation is created with those values. The citation will refer to the new source.
+
+The CSV file should use UTF-8 encoding and comma as the column delimiter.
 
 Here is an example of a CSV file:
 
@@ -43,4 +47,4 @@ Here is an example of a CSV file:
 5|                   |        |       |       |R0123      |              |               |
 
 
-
+An .ods file is also supported if the pyexcel_ods package is installed. 
