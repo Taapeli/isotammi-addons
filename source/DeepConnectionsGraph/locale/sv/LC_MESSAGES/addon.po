@@ -21,22 +21,22 @@ msgstr ""
 msgid "DeepConnectionsGraph; a Dashboard Server Gramplet"
 msgstr ""
 
-#: DeepConnectionsGraph/DeepConnectionsGraph.py:194
+#: DeepConnectionsGraph/DeepConnectionsGraph.py:193
 msgid "Port:"
 msgstr ""
 
-#: DeepConnectionsGraph/DeepConnectionsGraph.py:209
+#: DeepConnectionsGraph/DeepConnectionsGraph.py:208
 msgid "Start server"
 msgstr ""
 
-#: DeepConnectionsGraph/DeepConnectionsGraph.py:214
+#: DeepConnectionsGraph/DeepConnectionsGraph.py:213
 msgid "Stop server"
 msgstr ""
 
-#: DeepConnectionsGraph/DeepConnectionsGraph.py:221
+#: DeepConnectionsGraph/DeepConnectionsGraph.py:220
 msgid "Refresh tree"
 msgstr ""
 
-#: DeepConnectionsGraph/DeepConnectionsGraph.py:227
+#: DeepConnectionsGraph/DeepConnectionsGraph.py:226
 msgid "Start browser"
 msgstr ""

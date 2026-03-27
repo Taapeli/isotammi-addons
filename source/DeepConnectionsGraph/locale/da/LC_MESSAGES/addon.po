@@ -23,22 +23,22 @@ msgstr "Skema over dybe slægtskaber"
 msgid "DeepConnectionsGraph; a Dashboard Server Gramplet"
 msgstr "DybeSlægtskaberSkema Gramplet"
 
-#: DeepConnectionsGraph/DeepConnectionsGraph.py:194
+#: DeepConnectionsGraph/DeepConnectionsGraph.py:193
 msgid "Port:"
 msgstr "Port:"
 
-#: DeepConnectionsGraph/DeepConnectionsGraph.py:209
+#: DeepConnectionsGraph/DeepConnectionsGraph.py:208
 msgid "Start server"
 msgstr "Start server"
 
-#: DeepConnectionsGraph/DeepConnectionsGraph.py:214
+#: DeepConnectionsGraph/DeepConnectionsGraph.py:213
 msgid "Stop server"
 msgstr "Stop server"
 
-#: DeepConnectionsGraph/DeepConnectionsGraph.py:221
+#: DeepConnectionsGraph/DeepConnectionsGraph.py:220
 msgid "Refresh tree"
 msgstr "Gendindlæs træ"
 
-#: DeepConnectionsGraph/DeepConnectionsGraph.py:227
+#: DeepConnectionsGraph/DeepConnectionsGraph.py:226
 msgid "Start browser"
 msgstr "Start browser"

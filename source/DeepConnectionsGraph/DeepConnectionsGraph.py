@@ -156,7 +156,6 @@ class DeepConnectionsGraph(Gramplet):
 
     def db_changed(self):
         self.__clear(None)
-        print("db changed: ",self.dbstate.db)
         if self.server:
             self.server.dbdata = connections.load_dbdata(self.dbstate)
 

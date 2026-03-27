@@ -29,22 +29,22 @@ msgstr "Syväsuhteet kaaviona"
 msgid "DeepConnectionsGraph; a Dashboard Server Gramplet"
 msgstr "Syväsuhteet kaaviona -gramplet"
 
-#: DeepConnectionsGraph/DeepConnectionsGraph.py:194
+#: DeepConnectionsGraph/DeepConnectionsGraph.py:193
 msgid "Port:"
 msgstr "Portti:"
 
-#: DeepConnectionsGraph/DeepConnectionsGraph.py:209
+#: DeepConnectionsGraph/DeepConnectionsGraph.py:208
 msgid "Start server"
 msgstr "Käynnistä web-palvelin"
 
-#: DeepConnectionsGraph/DeepConnectionsGraph.py:214
+#: DeepConnectionsGraph/DeepConnectionsGraph.py:213
 msgid "Stop server"
 msgstr "Pysäytä web-palvelin"
 
-#: DeepConnectionsGraph/DeepConnectionsGraph.py:221
+#: DeepConnectionsGraph/DeepConnectionsGraph.py:220
 msgid "Refresh tree"
 msgstr "Päivitä sukupuu"
 
-#: DeepConnectionsGraph/DeepConnectionsGraph.py:227
+#: DeepConnectionsGraph/DeepConnectionsGraph.py:226
 msgid "Start browser"
 msgstr "Käynnistä selain"
