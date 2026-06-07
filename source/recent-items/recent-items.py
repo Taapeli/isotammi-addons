@@ -290,9 +290,7 @@ def new_init(self, dbstate, uistate, *args, **kwargs):
     sw.set_max_content_width(3)
     sw.set_min_content_height(100)
 
-    vbox = Gtk.VBox()
-    vbox.add(tree)
-    sw.add(vbox)
+    sw.add(tree)
     recent_box.add(lbl)
     recent_box.add(sw)
     recent_box.show_all()   

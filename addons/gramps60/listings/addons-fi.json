@@ -38,7 +38,7 @@
     "t": 6,
     "i": "recent-items",
     "n": "Recent items",
-    "v": "0.9.8",
+    "v": "0.9.9",
     "g": "6.0",
     "d": "Add recent items to selectors",
     "z": "recent-items.addon.tgz",
