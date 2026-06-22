@@ -207,7 +207,7 @@ def new_init(self, dbstate, uistate, *args, **kwargs):
     numcolumns = maxindex + 1
     args = [str] * (numcolumns + 1)  # one for the handle
     model = Gtk.ListStore(*args)
-    tree = PersistentTreeView(config_name=self.__class__.__name__.lower())
+    self.recent_items_tree = tree = PersistentTreeView(config_name=self.__class__.__name__.lower())
     tree.set_model(model)
     tree.set_headers_visible(False)
 
@@ -357,6 +357,12 @@ if VERSION_TUPLE < (6, 0, 0):
                 handle = id_list[0]
                 result = self.get_from_handle_func()(handle)
                 update_recent_items(self, self.db.get_dbid(), result)
+            else: # no selection on main list, try the recent items list
+                model, treeiter = self.recent_items_tree.get_selection().get_selected()
+                if treeiter:
+                    row = list(model[treeiter])
+                    handle = row[-1]
+                    result = self.get_from_handle_func()(handle)
             self.close()
         elif val != Gtk.ResponseType.DELETE_EVENT:
             self.close()
@@ -384,6 +390,15 @@ else: # 6.0 is a bit different
                     if handle_list[0]:
                         result = self.get_from_handle_func()(handle_list[0])
                         update_recent_items(self, self.db.get_dbid(), result)
+            else: # no selection on main list, try the recent items list
+                model, treeiter = self.recent_items_tree.get_selection().get_selected()
+                if treeiter:
+                    row = list(model[treeiter])
+                    handle = row[-1]
+                    result = self.get_from_handle_func()(handle)
+                    if self.allow_multiple_selection:
+                        result = [result]
+                
             self.close()
         elif val != Gtk.ResponseType.DELETE_EVENT:
             self.close()
