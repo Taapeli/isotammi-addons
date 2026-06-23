@@ -189,7 +189,6 @@ def new_init(self, dbstate, uistate, *args, **kwargs):
     """
     filter = kwargs.get("filter", None)
     skip = kwargs.get("skip", [])
-    print("new init", args, kwargs)
     BaseSelector.orig_init(self, dbstate, uistate, *args, **kwargs)
 
     vbox = self.glade.get_object("select_person_vbox")
