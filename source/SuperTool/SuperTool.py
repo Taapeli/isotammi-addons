@@ -1053,8 +1053,8 @@ class SuperTool(ManagedWindow):
         # type: () -> None
         category_ok = self.context.objclass is not None
         if category_ok:
-            self.label_filter.show()
-            self.label_statements.show()
+            self.box_filter.show()
+            self.box_statements.show()
             self.statements.show()
             self.filter.show()
             self.save_as_filter_menu_item.set_sensitive(True)
@@ -1062,8 +1062,8 @@ class SuperTool(ManagedWindow):
                 "Save the filter as a custom filter"
             )
         else:
-            self.label_filter.hide()
-            self.label_statements.hide()
+            self.box_filter.hide()
+            self.box_statements.hide()
             self.statements.hide()
             self.filter.hide()
             self.save_as_filter_menu_item.set_sensitive(False)
@@ -1137,13 +1137,6 @@ class SuperTool(ManagedWindow):
         self.version = glade.get_child_object("version")
         self.version.set_text("v" + self.plugindata.version)
 
-        self.label_filter = glade.get_child_object("label_filter")
-        self.label_statements = glade.get_child_object("label_statements")
-
-        self.initial_statements = glade.get_child_object("initial_statements")
-        self.statements = glade.get_child_object("statements")
-        self.filter = glade.get_child_object("filter")
-        self.expressions = glade.get_child_object("expressions")
 
         self.all_objects = glade.get_child_object("all_objects")
         self.filtered_objects = glade.get_child_object("filtered_objects")
@@ -1228,16 +1221,61 @@ class SuperTool(ManagedWindow):
         self.btn_csv.hide()
         self.listview = None
 
-        ver = (Gtk.get_major_version(), Gtk.get_minor_version())
-        if ver >= (3, 22):
-            self.initial_statements_window = glade.get_child_object(
-                "initial_statements_window"
-            )
-            self.statements_window = glade.get_child_object("statements_window")
-            # self.initial_statements_window.set_max_content_height(200)
-            self.initial_statements_window.set_propagate_natural_height(True)
-            self.statements_window.set_propagate_natural_height(True)
-            # self.statements_window.set_max_content_height(200)
+        self.input_fields = glade.get_child_object("input_fields")
+        self.toplevel_box = glade.get_child_object("toplevel_box")
+        self._icon = Gtk.Image.new_from_icon_name(
+            "view-fullscreen-symbolic", Gtk .IconSize.BUTTON
+        )
+        self.maximized_item = None
+                
+        labels = [
+            "Initialization statements:",
+            "Statements executed for each object:",
+            "Filter:",
+            "Expressions to display:",
+        ]
+        
+        items = []
+        class Item: pass
+        i = 0
+        for label in labels:
+            label = Gtk.Label(label, halign=Gtk.Align.START)
+            box = Gtk.VBox()
+            textview = Gtk.TextView()
+            sw = Gtk.ScrolledWindow()
+            sw.add(textview)
+            heading_box = Gtk.HBox()
+            heading_box.pack_start(label, False, False, 0)
+            resize_button = Gtk.Button()
+            icon = Gtk.Image.new_from_icon_name(
+                "view-fullscreen-symbolic", Gtk .IconSize.BUTTON
+                )
+            resize_button.set_image(icon)
+            resize_button.set_tooltip_text("Maximize editor")
+            resize_button.connect("clicked", lambda btn, i=i: self._on_toggle_clicked(items[i]))
+            heading_box.pack_end(resize_button, False, False, 0)
+            box.pack_start(heading_box, False, False, 0)
+            box.pack_start(sw, True, True, 0)
+            textview.connect("key-press-event", self._on_key_press)
+            self.input_fields.add(box)
+            item = Item()
+            item.box = box
+            item.resize_button = resize_button
+            item.sw = sw
+            item.textview = textview
+            item.label = label
+            item.icon = icon
+            items.append(item)
+            i += 1
+
+
+        self.box_statements =  items[1].box
+        self.box_filter =  items[2].box
+
+        self.initial_statements = items[0].textview
+        self.statements = items[1].textview
+        self.filter = items[2].textview
+        self.expressions = items[3].textview
 
         self.title.connect("changed", self.content_changed)
         self.initial_statements.get_buffer().connect("changed", self.content_changed)
@@ -1251,7 +1289,62 @@ class SuperTool(ManagedWindow):
         self.commit_checkbox.connect("toggled", self.content_changed)
         self.summary_checkbox.connect("toggled", self.content_changed)
 
+        
         return glade.toplevel
+
+    # ---- maximize / restore ----
+    def _on_toggle_clicked(self, item):
+        print("_on_toggle_clicked", item.__dict__)
+        self.restore(item) if self.maximized_item else self.maximize(item)
+
+    def _on_key_press(self, textview, event):
+        if event.keyval == Gdk.KEY_Escape:
+            self.restore(self.maximized_item)
+
+    def maximize(self, item):
+        if self.maximized_item:
+            return
+
+        self._hidden_widgets = []
+            
+        def hide_children(widget, exception):
+            for child in widget.get_children():
+                if child is not exception and child.get_visible():
+                    self._hidden_widgets.append(child)
+                    child.hide()
+            
+        toplevel = self.window
+                    
+        hide_children(self.toplevel_box, self.input_fields)
+        hide_children(self.input_fields, item.box)
+        
+        self._saved_size =  toplevel.get_size()
+
+        w, h = toplevel.get_size()
+        item.box.set_size_request(w, h)
+
+        item.icon.set_from_icon_name("view-restore-symbolic", Gtk.IconSize.BUTTON)
+        item.resize_button.set_image(item.icon)
+        item.resize_button.set_tooltip_text("Restore")
+        item.textview.grab_focus()
+        self.maximized_item = item
+
+    def restore(self, item):
+        if not self.maximized_item:
+            return
+
+        for widget in self._hidden_widgets:
+            widget.show()
+        self._hidden_widgets = []
+
+        toplevel = self.window
+
+        self.maximized_item.box.set_size_request(-1, -1)
+        self.maximized_item.resize_button.set_tooltip_text("Maximize editor")
+        item.icon.set_from_icon_name("view-fullscreen-symbolic", Gtk.IconSize.BUTTON)
+        item.resize_button.set_image(item.icon)
+        self.maximized_item = None
+
 
     def db_changed(self, db):
         # type: (Any) -> None
