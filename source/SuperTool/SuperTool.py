@@ -109,6 +109,7 @@ _ = _trans.gettext
 import supertool_engine as engine
 import supertool_utils
 from supertool_utils import compile_statements, compile_expression, process_includes
+from supertool_editor import PythonCodeView
 
 config = configman.register_manager("supertool")
 config.register("defaults.encoding", "utf-8")
@@ -521,7 +522,7 @@ class Query:
             elif line.startswith(Query.ESCAPE):
                 value += line[1:]
             else:
-                value += line
+                value += line.replace("\t", "    ")
         if key:
             data[key] = value.rstrip()
         return data
@@ -1241,7 +1242,8 @@ class SuperTool(ManagedWindow):
         for label in labels:
             label = Gtk.Label(label, halign=Gtk.Align.START)
             box = Gtk.VBox()
-            textview = Gtk.TextView()
+            # textview = Gtk.TextView()
+            textview = PythonCodeView()
             sw = Gtk.ScrolledWindow()
             sw.add(textview)
             heading_box = Gtk.HBox()
@@ -1294,7 +1296,6 @@ class SuperTool(ManagedWindow):
 
     # ---- maximize / restore ----
     def _on_toggle_clicked(self, item):
-        print("_on_toggle_clicked", item.__dict__)
         self.restore(item) if self.maximized_item else self.maximize(item)
 
     def _on_key_press(self, textview, event):

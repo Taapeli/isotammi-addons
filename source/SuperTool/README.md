@@ -82,6 +82,8 @@ However, if the current category is Dashboard, Relationships, Charts or Geograph
 
 The result of the query is displayed in the "Result" tab in the bottom part of the dialog. In addition, if the "Capture output" checkbox is selected, any output from print statements is displayed in the "Print output" tab.
 
+NOTE. The latest version includes "maximize" buttons for each input field - like in the above image.  Additionally there is syntax highlighting for Python keywords etc. The screenshots below do not contain these enhancements.
+    
 ## Basic examples
 
 All the input fields (except Title) will be in Python syntax. All fields are optional but if you want to see any results then the last field, "Expressions to display" must contain something (comma separated Python expressions). For example, if the People category is selected you can simply write "name" in the field, select one or more people from the person list and click "Execute"
@@ -94,7 +96,7 @@ Multiple values are displayed in separate columns and the filter expression can 
 
 ![SuperTool](images/SuperTool-3.png)
 
-This is not very impressive but remember that you can use arbitrary Python syntax in each input field: you can execute one or more arbitrary statements for each object, use a complicated filter if that is needed and display whatever is needed. The result list can also be sorted by clicking the column headers. See examples later in this document.
+This is not very impressive but remember that you can use arbitrary Python syntax in each input field: you can execute one or more arbitrary statements for each object, define helper functions, use a complicated filter if that is needed and display whatever is needed. The result list can also be sorted by clicking the column headers. See examples later in this document.
 
 
 ## Pre-defined variables
