@@ -1,7 +1,7 @@
 #
 # Gramps - a GTK+/GNOME based genealogy program
 #
-# Copyright (C) 2024      Kari Kujansuu
+# Copyright (C) 2024-2026      Kari Kujansuu
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -34,5 +34,6 @@ register(
     gramps_target_version=major_version,
     status=STABLE,
     fname="recent-items.py",
+    help_url="https://github.com/Taapeli/isotammi-addons/blob/master/source/recent-items/README.md",
     load_on_reg=True,
 )
