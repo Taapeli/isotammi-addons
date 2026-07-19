@@ -520,7 +520,7 @@ This is an experimental feature. There is a pre-defined variable 'result' which 
 
 Normally the rows displayed will correspond to the processed Gramps objects. With 'result.add_row(data)' you can add arbitrary data to the result. The 'data' argument must be a list with values to be displayed. The number and types of the values must be consistent: there must be the same number of values in each call of add_row and the number must be the same as the number of items in the "Expressions to display" field (if any). The types (str, int or float) must also match (all other types are converted to strings).
 
-The 'add_row' function also accepts thee optional parameter 'obj'. These can be used if you want the row to correspond to a specific Gramps object. Double-clicking the row will then open the corresponding object editor. For example this code will display the parents of the family and their children - and also allow the children be edited (this should be run in the Families category):
+The 'add_row' function also accepts the optional parameter 'obj'. This can be used if you want the row to correspond to a specific Gramps object. Double-clicking the row will then open the corresponding object editor. For example this code will display the parents of the family and their children - and also allow the children be edited (this should be run in the Families category):
 
 ```python
 result.add_row([father.name, mother.name], obj=self)
