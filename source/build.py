@@ -12,10 +12,11 @@ from gramps.gen.const import GRAMPS_LOCALE as glocale
 from gramps.gen.plug import make_environment, PTYPE_STR
 
 grampsversions = [
-    ("5.0","gramps50"),
+#   ("5.0","gramps50"),
     ("5.1","gramps51"),
     ("5.2","gramps52"),
     ("6.0","gramps60"),
+    ("6.1","gramps61"),
 ]
 languages = ["en","fi","sv","da"]
 
@@ -133,20 +134,37 @@ def skip(gver, addon):
     return False
 
 def rebuild(addon):
-    def filter(tarinfo):
-        if ignore(tarinfo.name): return None
-        return tarinfo
     bump_version(addon)
     update_translations(addon)
     for gver, grampsver in grampsversions:
+        create_target_folders(grampsver)
         if skip(gver, addon): continue
-        tgz = get_tgz(addon, grampsver)
-        tf = tarfile.open(tgz,"w:gz")
-        tf.add(addon, addon, recursive=True, filter=filter)
-        tf.close()
+        build(addon, grampsver)
 
 
-def update_listings():
+def create_target_folders(grampsver):
+    os.makedirs(f"../addons/{grampsver}/download", exist_ok=True)
+    os.makedirs(f"../addons/{grampsver}/listings", exist_ok=True)
+
+def init_versions():
+    for gver, grampsver in grampsversions:
+        if not os.path.exists(f"../addons/{grampsver}"):
+            create_target_folders(grampsver)
+            for addon in get_addons():
+                if skip(gver, addon): continue
+                build(addon, grampsver)
+    update_listings(new_only=True)
+
+def build(addon, grampsver):
+    def filter(tarinfo):
+        if ignore(tarinfo.name): return None
+        return tarinfo
+    tgz = get_tgz(addon, grampsver)
+    tf = tarfile.open(tgz,"w:gz")
+    tf.add(addon, addon, recursive=True, filter=filter)
+    tf.close()
+
+def update_listings(new_only=False):
     def register(ptype, **kwargs):
         #global plugins
         # need to take care of translated types
@@ -192,6 +210,8 @@ def update_listings():
         for lang in languages:
             listing = listings[(grampsver,lang)]
             listing_file = get_listing(grampsver,lang)
+            if new_only and os.path.exists(listing_file):
+                continue
             print("-",listing_file)
             with open(listing_file,"w") as f:
                 if grampsver < "gramps52":
@@ -241,6 +261,8 @@ def main():
         print("Check and update the above translations and then try again")
         return
 
+    init_versions()
+    
     rebuilt = False
     for addon in get_addons():
         if need_rebuild(addon):
@@ -255,3 +277,4 @@ def main():
     
     
 main()            
+
