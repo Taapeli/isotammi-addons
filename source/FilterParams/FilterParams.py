@@ -54,7 +54,7 @@ from gi.repository import Gdk, GObject, Gtk
 
 import gramps.gen.filters
 from gramps.gen.config import config as configman
-from gramps.gen.const import CUSTOM_FILTERS
+from gramps.gen.const import CUSTOM_FILTERS, VERSION_TUPLE
 from gramps.gen.const import GRAMPS_LOCALE as glocale
 from gramps.gen.datehandler import displayer
 from gramps.gen.db import DbTxn
@@ -1396,10 +1396,16 @@ class FilterExportImport:
             file.write(' comment="%s"' % self.fix(comment))
         file.write(">\n")
         for rule in the_filter.get_rules():
-            file.write(
-                '      <rule class="%s" use_regex="%s" use_case="%s">'
-                "\n" % (rule.__class__.__name__, rule.use_regex, rule.use_case)
-            )
+            if  VERSION_TUPLE < (5, 2, 0):
+                file.write(
+                    '      <rule class="%s" use_regex="%s">'
+                    "\n" % (rule.__class__.__name__, rule.use_regex)
+                )
+            else:
+                file.write(
+                    '      <rule class="%s" use_regex="%s" use_case="%s">'
+                    "\n" % (rule.__class__.__name__, rule.use_regex, rule.use_case)
+                )
             for value in list(rule.values()):
                 file.write('        <arg value="%s"/>' "\n" % self.fix(value))
             file.write("      </rule>\n")

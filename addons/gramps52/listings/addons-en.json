@@ -3,7 +3,7 @@
     "t": 2,
     "i": "FilterParams",
     "n": "FilterParams",
-    "v": "1.2.7",
+    "v": "1.2.8",
     "g": "5.2",
     "d": "Display custom filters and allow changing their parameters",
     "z": "FilterParams.addon.tgz",
@@ -42,7 +42,8 @@
     "g": "5.2",
     "d": "Add recent items to selectors",
     "z": "recent-items.addon.tgz",
-    "s": 3
+    "s": 3,
+    "h": "https://github.com/Taapeli/isotammi-addons/blob/master/source/recent-items/README.md"
   },
   {
     "t": 2,
