@@ -20,6 +20,7 @@
 
 import os
 import re
+import textwrap
 import traceback
 
 from collections import defaultdict
@@ -506,7 +507,7 @@ class Tool(tool.Tool, ManagedWindow):
             return None
 
     def execute_clicked(self, _widget):
-        # type: (str) -> None
+        # type: (Gtk.Widget) -> None
         class User2:
             """
             Helper class to provide "can_cancel" functionality to
@@ -594,7 +595,7 @@ class Tool(tool.Tool, ManagedWindow):
 
     # methods copied from gramps/gui/editors/filtereditor.py
     def add_new_filter(self, obj):
-        # type: (str) -> None
+        # type: (Gtk.Widget) -> None
         self.filterdb = gramps.gen.filters.CustomFilters
         the_filter = GenericFilterFactory(self.current_category)()
         EditFilter(
@@ -608,7 +609,7 @@ class Tool(tool.Tool, ManagedWindow):
         )
 
     def edit_filter(self, obj):
-        # type: (str) -> None
+        # type: (Gtk.Widget) -> None
         if not self.current_category:
             return
         if not self.current_filtername:
@@ -626,8 +627,7 @@ class Tool(tool.Tool, ManagedWindow):
         )
 
     def clone_filter(self, obj):  # not used
-        # type: (str) -> None
-        print("clone_filter")
+        # type: (Gtk.Widget) -> None
         if not self.current_category:
             return
         if not self.current_filtername:
@@ -645,86 +645,129 @@ class Tool(tool.Tool, ManagedWindow):
             update=self.update,
         )
 
-    def delete_filter(self, obj):
-        # type: (str) -> None
+    def delete_filter(self, _button):
+        # type: (Gtk.Widget) -> None
         if not self.current_category:
             return
         if not self.current_filtername:
             return
         gfilter = self.getfilter(self.current_category, self.current_filtername)
         name = gfilter.get_name()
-        using_filters = self.check_recursive_filters(self.current_category, name)
+        using_filters = self._find_dependent_filters(self.current_category, gfilter)
         if using_filters:
-            QuestionDialog(
-                _("Delete Filter?"),
-                _(
-                    "This filter is currently being used "
-                    "as the base for other filters. Deleting "
-                    "this filter will result in removing all "
-                    "other filters that depend on it:\n"
-                    + ", ".join(f.get_name() for f in using_filters)
-                ),
-                _("Delete Filter"),
-                self._do_delete_selected_filter,
-                parent=self.dialog,
-            )
+            self.dependencies_dialog(using_filters)
         else:
             self._do_delete_selected_filter()
 
-    def _find_dependent_filters(self, space, gfilter, filter_set):
-        # type: (str,GenericFilter,Set[GenericFilter]) -> None
+
+    def dependencies_dialog(self, using_filters):
+        # type: (Set[Tuple[str, GenericFilter]]) -> None
+        msg = textwrap.dedent(_("""
+            This filter is being used as the base for other filters.
+            
+            Deleting this filter will invalidate these filters that depend on it:\n
+        """))
+
+        d = Gtk.Dialog() 
+        d.set_transient_for(self.window)
+        d.set_title(_("Dependencies warning"))
+        d.add_button(_("Delete"), 1)
+        d.add_button(_("Cancel"), 2)
+        sw = Gtk.ScrolledWindow()
+        sw.set_size_request(300, 300)
+        lbl = Gtk.Label(msg)
+        lbl.set_halign(Gtk.Align.START)
+
+        grid = Gtk.Grid()
+        grid.set_column_spacing(5)
+        for row, (ns, f) in enumerate(using_filters):
+            nslbl = Gtk.Label("<b>" + _(ns) + "</b>", use_markup=True)
+            nslbl.set_halign(Gtk.Align.START)
+            nslbl.set_margin_left(20)
+            namelbl = Gtk.Label(f.get_name())
+            namelbl.set_halign(Gtk.Align.START)
+            #namelbl.set_margin_left(20)
+            grid.attach(nslbl, 0, row, 1, 1)
+            grid.attach(namelbl, 1, row, 1, 1)
+        sw.add(grid)
+        cb = Gtk.CheckButton(_("Delete all dependencies"))
+        d.get_content_area().add(lbl)
+        d.get_content_area().add(cb)
+        d.get_content_area().pack_start(sw, False, False, 10)
+        d.show_all()
+        rsp = d.run()
+        d.destroy()
+        if rsp == 1:
+            self._do_delete_selected_filter(cb.get_active(), using_filters)
+
+    
+    def _find_dependent_filters(self, current_category, gfilter):
+        # type: (str,GenericFilter,Set[GenericFilter]) -> Set[Tuple[str, GenericFilter]]
+        """
+        Find all filters that depend on the given filter, either directly through one of the rules,
+        or through the chain of dependencies.
+
+        Returns a set of tuples (namespace, filter-obj)
+        """
+        # Add itself to the filter_set
+        filter_set = set()
+        for space in NAMESPACES:
+            filter_set.update(self. _find_dependent_filters_in_namespace(space, current_category, gfilter))
+        return filter_set
+
+    def _find_dependent_filters_in_namespace(self, space, gspace, gfilter):
+        # type: (str,GenericFilter,Set[GenericFilter]) -> Set[Tuple[str, GenericFilter]]
         """
         This method recursively calls itself to find all filters that
         depend on the given filter, either directly through one of the rules,
         or through the chain of dependencies.
 
-        The filter_set is amended with the found filters.
+        Returns a set of tuples (namespace, filter-obj)
         """
-        # Add itself to the filter_set
-        filter_set.add(gfilter)
         name = gfilter.get_name()
+        filter_set = set()
         filters = self.filterdb.get_filters(space)
         for the_filter in filters:
+            #print("-", the_filter.get_name())
             if the_filter.get_name() == name:
                 continue
-            if the_filter in filter_set:  # prevent infinite recursion
+            if (space, the_filter) in filter_set:  # prevent infinite recursion
                 continue
             for rule in the_filter.get_rules():
                 values = list(rule.values())
                 if issubclass(rule.__class__, MatchesFilterBase) and (name in values):
-                    self._find_dependent_filters(space, the_filter, filter_set)
-                    break
+                    # rule.__class__ must also be derived from Matches{gspace}Filter  !!
+                    if self.is_subclass_by_name(rule, f"Matches{gspace}Filter"):
+                        filter_set.add((space, the_filter))
+                        fset = self._find_dependent_filters(space, the_filter)
+                        filter_set.update(fset)
+                        break  # matching one rule is enough
+                
+        return filter_set
+                
+                
+    def is_subclass_by_name(self, obj, base_name):
+        # type: (Any, str) -> bool
+        return any(cls.__name__ == base_name for cls in type(obj).__mro__)
 
-    def check_recursive_filters(self, space, name):
-        # type: (str,str) -> List[GenericFilter]
-        using_filters = []
-        for the_filter in self.filterdb.get_filters(space):
-            for rule in the_filter.get_rules():
-                values = list(rule.values())
-                if issubclass(rule.__class__, MatchesFilterBase) and (name in values):
-                    using_filters.append(the_filter)
-        return using_filters
-
-    def _do_delete_selected_filter(self):
-        # type: () -> None
+    def _do_delete_selected_filter(self, delete_dependencies=False, dependent_filters=None):
+        # type: (bool, (Set[Tuple[str, GenericFilter]]) -> None
         if not self.current_category:
             return
         if not self.current_filtername:
             return
         gfilter = self.getfilter(self.current_category, self.current_filtername)
         self._do_delete_filter(self.current_category, gfilter)
+        if delete_dependencies:
+            for ns, f in dependent_filters:
+                self._do_delete_filter(ns, f)
         self.update()
         self.combo_filters.grab_focus()
 
     def _do_delete_filter(self, space, gfilter):
-        # type: (str,str) -> None
-        # Find everything we need to remove
-        filter_set = set()  # type: Set[GenericFilter]
-        self._find_dependent_filters(space, gfilter, filter_set)
-
-        # Remove what we found
+        # type: (str, GenericFilter) -> None
         filters = self.filterdb.get_filters(space)
-        list(map(filters.remove, filter_set))
+        filters.remove(gfilter)
 
     def update_clicked(self, _widget):
         # type: (str) -> None

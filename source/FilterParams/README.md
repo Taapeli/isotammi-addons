@@ -95,6 +95,13 @@ If you need the IDs to be different then you must change the values using the Gr
 
 You can browse through all filters for a category quickly by using the up and down arrow keys.
 
+#### Deleting a filter
+
+If you try to delete a filter that is used by other filters then you will get a warning dialog like this:
+
+![FilterParams](images/Dependencies-warning.png)
+
+
 #### Tooltips
 
 If a custom filter has a comment then the comment is shown as a tooltip when one hovers the mouse over the filter. For individual rules their name and description are displayed.
