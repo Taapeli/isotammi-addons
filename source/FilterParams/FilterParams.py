@@ -572,7 +572,7 @@ class Tool(tool.Tool, ManagedWindow):
         ShowResults(
             self.dbstate,
             self.uistate,
-            [],
+            self.track,
             handle_list,
             self.current_filtername,
             self.current_category,
