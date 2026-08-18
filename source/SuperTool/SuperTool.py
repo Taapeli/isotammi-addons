@@ -1597,6 +1597,10 @@ class SuperTool(ManagedWindow):
                 selected_handles,
                 query,
                 step,
+                env={
+                    "supertool_window": self.window,
+                },
+                
             )
             for values in gramps_engine.get_values(self.trans, result):
                 if not self.listview:

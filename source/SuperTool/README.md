@@ -830,6 +830,7 @@ The lists below include the attributes defined in the various proxy classes. In 
 | namespace            | E.g. 'Person', 'Family' etc. None for unsupported categories (Dashboard etc.)     |
 | referrers(category)  | Function returning objects of type 'category' that refer to this object           |
 | result               | A special object (see above)                                                      |
+| supertool_window     | Gtk widget that refers to SuperTool's main window (experimental)                  |
 | today                | Function that returns today's date                                                |
 | trans                | Current transaction                                                               |
 | uistate              | UI state object                                                                   |

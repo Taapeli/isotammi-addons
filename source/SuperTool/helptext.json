@@ -103,6 +103,10 @@
             "Function returning objects of specified category that refer to this object"
         ],
         [
+            "supertool_window",
+            "Gtk widget that refers to SuperTool's main window (experimental)"
+        ],
+        [
             "today",
             "Function that returns today's date"
         ],
