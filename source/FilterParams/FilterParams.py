@@ -17,7 +17,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-
+import html
 import os
 import re
 import textwrap
@@ -956,7 +956,7 @@ class Tool(tool.Tool, ManagedWindow):
         # type: (str) -> str
         if len(text) > 80:
             text = text[0:77] + "..."
-        text = text.replace("<", "&lt;")
+        text = html.escape(text)
         return text
 
     def addfilter(self, grid, category, filter, level):
@@ -1021,7 +1021,7 @@ class Tool(tool.Tool, ManagedWindow):
                 "<b>"
                 + self.clean(_(rule.name))
                 + "</b>\n"
-                + self.clean(_(rule.description)),
+                + "<span style='italic'>" + self.clean(_(rule.description)) + "</span>", 
                 tooltip=_(rule.name) + "\n\n" + _(rule.description),
             )
             for paramindex, (caption1, value) in enumerate(zip(rule.labels, rule.list)):
@@ -1097,11 +1097,11 @@ class Tool(tool.Tool, ManagedWindow):
             grid.add(lbl)
             self.errorMsg.set_markup(msg)
             return
-        # caption = "<b>"+self.clean(filtername)+"</b>"
+        caption = "<b>"+self.clean(filtername)+"</b>"
         if filter.comment.strip():
-            caption += "\n" + self.clean(filter.comment)
-
-        tooltip = filtername + "\n\n" + filter.comment
+            caption += "\n" + '<span style="italic">' + self.clean(filter.comment) + '</span>'
+ 
+        tooltip = filtername + "\n\n" + filter.comment 
         frame, grid2 = self.add_frame(grid, level, caption, tooltip)
         self.addfilter(grid2, category, filter, level + 1)
         return frame
