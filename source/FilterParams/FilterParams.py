@@ -1000,9 +1000,10 @@ class Tool(tool.Tool, ManagedWindow):
         combo = self.MyCombo(choices)
         combo.widget.set_active(self.ops.index(op))
         hbox = Gtk.HBox()
-        hbox.add(invert_checkbox)
+        hbox.pack_start(invert_checkbox, False, False, 0)
         if len(filter.get_rules()) > 1:
-            hbox.add(combo.widget)
+            hbox.pack_start(combo.widget, False, False, 20)
+#            hbox.add(combo.widget)
         grid.add(hbox)
 
         self.filterparams.append((filter, invert_checkbox, combo))
